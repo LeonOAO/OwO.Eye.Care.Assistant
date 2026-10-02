@@ -9,10 +9,8 @@ import android.os.Build
 import android.os.IBinder
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
@@ -21,14 +19,11 @@ import owo.eye.care.assistant.overlay.DistanceOverlayController
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class DistanceForegroundService : Service(), LifecycleOwner {
-    private val lifecycleRegistry = LifecycleRegistry(this)
-    override fun getLifecycle(): Lifecycle = lifecycleRegistry
-
+class DistanceForegroundService : Service() {
     private lateinit var stateStore: DistanceStateStore
     private lateinit var distanceOverlay: DistanceOverlayController
     private lateinit var cameraExecutor: ExecutorService
-    private var isCameraStarted = false
+    private var cameraProvider: ProcessCameraProvider? = null
 
     private val detector = FaceDetection.getClient(
         FaceDetectorOptions.Builder()
@@ -38,32 +33,27 @@ class DistanceForegroundService : Service(), LifecycleOwner {
 
     override fun onCreate() {
         super.onCreate()
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
         stateStore = DistanceStateStore(this)
         distanceOverlay = DistanceOverlayController(this)
         cameraExecutor = Executors.newSingleThreadExecutor()
         startForeground(2002, createNotification())
+        startCamera()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        super.onStartCommand(intent, flags, startId)
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
         stateStore.setServiceRunning(true)
-        if (!isCameraStarted) {
-            isCameraStarted = true
-            startCamera()
-        }
         return START_STICKY
     }
 
     override fun onDestroy() {
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         stateStore.setServiceRunning(false)
         stateStore.setBlocked(false)
         distanceOverlay.hide()
+        
+        try {
+            cameraProvider?.unbindAll()
+        } catch (_: Exception) {}
+
         cameraExecutor.shutdown()
         stopForeground(true)
         super.onDestroy()
@@ -75,7 +65,7 @@ class DistanceForegroundService : Service(), LifecycleOwner {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         cameraProviderFuture.addListener({
             try {
-                val cameraProvider = cameraProviderFuture.get()
+                cameraProvider = cameraProviderFuture.get()
                 val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
 
                 val imageAnalysis = ImageAnalysis.Builder()
@@ -86,8 +76,14 @@ class DistanceForegroundService : Service(), LifecycleOwner {
                     processImageProxy(imageProxy)
                 }
 
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(this, cameraSelector, imageAnalysis)
+                cameraProvider?.unbindAll()
+                // 使用 Service 本身作為 LifecycleOwner (Android Service 支援 LifecycleOwner 需要 LifecycleService，此處我們透過 ProcessCameraProvider 繫結)
+                // 為了避免生命週期繫結異常，我們直接利用 Context 啟動分析
+                cameraProvider?.bindToLifecycle(
+                    this as androidx.lifecycle.LifecycleOwner,
+                    cameraSelector,
+                    imageAnalysis
+                )
             } catch (e: Exception) {
                 e.printStackTrace()
             }
