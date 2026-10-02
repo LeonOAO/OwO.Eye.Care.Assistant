@@ -3,7 +3,7 @@ import android.content.Context
 import android.graphics.PixelFormat
 import android.os.Build
 import android.view.*
-import owo.eye.care.assistant.R
+import android.widget.TextView
 
 class DistanceOverlayController(private val context: Context) {
     private val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -12,8 +12,15 @@ class DistanceOverlayController(private val context: Context) {
     fun show() {
         if (view != null) return
         try {
-            val themedContext = ContextThemeWrapper(context, R.style.AppTheme)
-            val v = LayoutInflater.from(themedContext).inflate(R.layout.overlay_distance, null, false)
+            val v = TextView(context).apply {
+                val shield = String(intArrayOf(0x1F6E1), 0, 1) + "\uFE0F"
+                text = "太近囉 (OwO) $shield"
+                setTextColor(android.graphics.Color.parseColor("#D32F2F"))
+                textSize = 36f
+                setTypeface(null, android.graphics.Typeface.BOLD)
+                gravity = Gravity.CENTER
+                setBackgroundColor(android.graphics.Color.parseColor("#E6FFFFFF"))
+            }
             v.fitsSystemWindows = false
             
             val params = WindowManager.LayoutParams(
