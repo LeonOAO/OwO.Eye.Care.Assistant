@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="OwO 護眼小助手（全域計時 + 次數制遮罩 + 30cm 硬性距離）"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnOpenAccessibility"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="開啟無障礙服務（必須）"
+            android:layout_marginTop="12dp" />
+
+        <TextView
+            android:id="@+id/tvAccStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="無障礙狀態：未知"
+            android:layout_marginTop="6dp" />
+
+        <EditText
+            android:id="@+id/etPin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:hint="家長 PIN（至少 4 碼）"
+            android:inputType="numberPassword"
+            android:padding="12dp" />
+
+        <Button
+            android:id="@+id/btnSetPin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="設定/更新 家長 PIN"
+            android:layout_marginTop="8dp" />
+
+        <EditText
+            android:id="@+id/etStopPin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:hint="停止 PIN（次數用完時可關閉管控）"
+            android:inputType="numberPassword"
+            android:padding="12dp" />
+
+        <Button
+            android:id="@+id/btnSetStopPin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="設定/更新 停止 PIN"
+            android:layout_marginTop="8dp" />
+
+        <EditText
+            android:id="@+id/etLimitMinutes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:hint="每次上限（分鐘）例如 20"
+            android:inputType="number"
+            android:padding="12dp" />
+
+        <EditText
+            android:id="@+id/etDailyQuota"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="每天可解鎖次數（例如 3）"
+            android:inputType="number"
+            android:padding="12dp" />
+
+        <Button
+            android:id="@+id/btnSaveRules"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="儲存規則（全域）"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/btnToggleControl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="開始管控"
+            android:layout_marginTop="14dp" />
+
+        <Button
+            android:id="@+id/btnResetTodayQuota"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="手動重置：今日解鎖次數歸零"
+            android:layout_marginTop="10dp" />
+
+        <Button
+            android:id="@+id/btnStartDistance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="啟動距離守護（相機前台服務）"
+            android:layout_marginTop="14dp" />
+
+        <Button
+            android:id="@+id/btnStopDistance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="停止距離守護"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/btnCalibrate30"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="校正 30cm（硬性模式建議必做）"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/tvDistanceStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="距離狀態：未啟動"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="狀態："
+            android:layout_marginTop="14dp" />
+
+    </LinearLayout>
+</ScrollView>
