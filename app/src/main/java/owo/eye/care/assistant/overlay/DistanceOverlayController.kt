@@ -2,6 +2,7 @@ package owo.eye.care.assistant.overlay
 
 import android.content.Context
 import android.graphics.PixelFormat
+import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -17,23 +18,29 @@ class DistanceOverlayController(private val context: Context) {
 
     fun show(distanceCm: Int) {
         if (view == null) {
-            val v = LayoutInflater.from(context).inflate(R.layout.overlay_distance, null, false)
+            try {
+                val themedContext = ContextThemeWrapper(context, R.style.AppTheme)
+                val v = LayoutInflater.from(themedContext).inflate(R.layout.overlay_distance, null, false)
 
-            val params = WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                PixelFormat.TRANSLUCENT
-            )
-            params.gravity = Gravity.TOP or Gravity.START
+                val params = WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    PixelFormat.TRANSLUCENT
+                )
+                params.gravity = Gravity.TOP or Gravity.START
 
-            wm.addView(v, params)
-            view = v
+                wm.addView(v, params)
+                view = v
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return
+            }
         }
 
-        val msg = view!!.findViewById<TextView>(R.id.distanceMsg)
+        val msg = view?.findViewById<TextView>(R.id.distanceMsg) ?: return
         msg.text = if (distanceCm > 0) {
             "目前距離：約 ${distanceCm} 公分\n請將裝置移至 30 公分以上"
         } else {
