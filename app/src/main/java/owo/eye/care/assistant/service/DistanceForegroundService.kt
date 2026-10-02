@@ -27,7 +27,6 @@ class DistanceForegroundService : Service(), LifecycleOwner {
     private lateinit var distanceState: DistanceStateStore
     private val cameraExecutor = Executors.newSingleThreadExecutor()
 
-    //  修正點：將原本的 getLifecycle() 替換為覆寫 lifecycle 變數
     override val lifecycle: Lifecycle
         get() = lifecycleRegistry
 

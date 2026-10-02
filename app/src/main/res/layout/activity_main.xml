@@ -152,7 +152,6 @@
                     android:padding="10dp" />
             </LinearLayout>
 
-            <!-- 整合按鈕 -->
             <Button
                 android:id="@+id/btnSaveSettings"
                 style="@style/AppButton"
@@ -169,7 +168,6 @@
                 android:layout_marginTop="10dp"
                 android:text="啟用保護" />
 
-            <!--  移進來的保護狀態顯示 -->
             <TextView
                 android:id="@+id/tvProtectionStatus"
                 style="@style/BodyText"
@@ -225,8 +223,6 @@
                 android:layout_marginTop="10dp"
                 android:text="進行 30 公分校正" />
         </LinearLayout>
-
-        <!-- (原本這裡的 tvStatus 已經徹底移除，畫面最下方完全乾淨！) -->
 
     </LinearLayout>
 </ScrollView>

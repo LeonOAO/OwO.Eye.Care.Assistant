@@ -46,7 +46,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //  全新的浮動提示函數，取代原本在畫面最下方的醜文字
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
@@ -71,10 +70,8 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // 初始化時間框
         vb.etLimitMinutes.setText((rules.getCycleLimitSeconds() / 60).toString())
 
-        // 一鍵儲存所有設定邏輯
         vb.btnSaveSettings.setOnClickListener {
             val limitStr = vb.etLimitMinutes.text?.toString()
             val pin = vb.etPin.text?.toString() ?: ""
@@ -96,7 +93,6 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // 儲存邏輯
             rules.setCycleLimitSeconds(limitMin * 60)
             if (pin.isNotEmpty()) {
                 rules.setParentPin(pin)
@@ -111,7 +107,6 @@ class MainActivity : AppCompatActivity() {
             refreshUi()
         }
 
-        // 啟用/停用保護
         vb.btnToggleControl.setOnClickListener {
             val enabled = rules.isControlEnabled()
 
@@ -186,10 +181,10 @@ class MainActivity : AppCompatActivity() {
         input.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
         val pad = (20 * resources.displayMetrics.density).toInt()
         input.setPadding(pad, pad, pad, pad)
-        input.hint = "輸入停止鎖定 PIN"
+        input.hint = "請輸入密碼"
 
         AlertDialog.Builder(this)
-            .setTitle("停用保護")
+            .setTitle("停用保護 (OwO) ")
             .setView(input)
             .setPositiveButton("確定") { _, _ ->
                 val pin = input.text.toString()
@@ -217,7 +212,6 @@ class MainActivity : AppCompatActivity() {
 
         vb.btnToggleControl.text = if (rules.isControlEnabled()) "停用保護" else "啟用保護"
 
-        //  這裡更新了保護卡片最下方的文字，只顯示這兩行！
         val limitMin = rules.getCycleLimitSeconds() / 60
         vb.tvProtectionStatus.text = "循環時間：$limitMin 分鐘\n保護控管：${if (rules.isControlEnabled()) "已啟動" else "未啟動"}"
     }

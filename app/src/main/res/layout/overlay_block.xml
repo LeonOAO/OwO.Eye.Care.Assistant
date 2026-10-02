@@ -23,7 +23,7 @@
                 android:id="@+id/blockMsg"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="眼睛需要休息一下哦 (OwO) b"
+                android:text="眼睛需要休息一下哦 (OwO) "
                 android:gravity="center"
                 android:textSize="20sp"
                 android:textStyle="bold"
@@ -48,7 +48,7 @@
                 android:layout_marginTop="16dp"
                 android:backgroundTint="#4CAF50"
                 android:textColor="#FFFFFF"
-                android:text="休息完畢，解鎖！ (OwO) y" />
+                android:text="休息完畢，解鎖！ (OwO) " />
 
             <LinearLayout
                 android:layout_width="match_parent"

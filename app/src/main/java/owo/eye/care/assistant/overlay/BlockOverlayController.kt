@@ -79,13 +79,11 @@ class BlockOverlayController(
                 pinInput.text.clear()
             }
 
-            msg.text = "請輸入解除鎖定 PIN"
-
             unlockBtn.setOnClickListener {
                 val input = pinInput.text?.toString() ?: ""
                 
                 if (!rules.verifyParentPin(input)) {
-                    msg.text = "解除鎖定 PIN 不正確，請重新輸入"
+                    msg.text = "密碼不正確，請重新輸入 (OwO)"
                     pinInput.setText("")
                     return@setOnClickListener
                 }
