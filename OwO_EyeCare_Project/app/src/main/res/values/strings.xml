@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">OwO EyeCare</string>
+    <string name="notif_title">OwO 護眼距離守護中 (OwO) </string>
+    <string name="too_close_text">太近囉 (OwO) </string>
+    <string name="block_title">眼睛需要休息一下哦 (OwO) </string>
+    <string name="unlock_btn_text">休息完畢，解鎖 (OwO) </string>
+    <string name="dialog_title">解除護眼魔法 (OwO) </string>
+</resources>
