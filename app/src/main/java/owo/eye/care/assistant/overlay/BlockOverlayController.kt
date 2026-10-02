@@ -6,6 +6,7 @@ import android.view.*
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.view.ContextThemeWrapper
 import owo.eye.care.assistant.R
 import owo.eye.care.assistant.data.RulesStore
 

@@ -4,6 +4,7 @@ import android.graphics.PixelFormat
 import android.os.Build
 import android.view.*
 import android.widget.TextView
+import androidx.appcompat.view.ContextThemeWrapper
 import owo.eye.care.assistant.R
 
 class DistanceOverlayController(private val context: Context) {
