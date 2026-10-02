@@ -6,7 +6,6 @@ import android.view.*
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import androidx.appcompat.view.ContextThemeWrapper
 import owo.eye.care.assistant.R
 import owo.eye.care.assistant.data.RulesStore
 
@@ -17,20 +16,13 @@ class BlockOverlayController(private val context: Context, private val rules: Ru
     fun show() {
         if (view != null) return
         try {
-            val themedContext = ContextThemeWrapper(context, R.style.Theme_AppCompat_Light)
+            val themedContext = ContextThemeWrapper(context, R.style.AppTheme)
             val v = LayoutInflater.from(themedContext).inflate(R.layout.overlay_block, null, false)
             v.fitsSystemWindows = false
             v.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
             val pinInput = v.findViewById<EditText>(R.id.pinInput)
             val unlockBtn = v.findViewById<Button>(R.id.unlockBtn)
             val msg = v.findViewById<TextView>(R.id.blockMsg)
-            
-            // 使用純 Unicode 字元避免亂碼
-            val zzz = "\uD83D\uDCA4"
-            val wand = "\uD83E\uDE84"
-            msg.text = "眼睛需要休息一下哦 (OwO) $zzz"
-            unlockBtn.text = "休息完畢，解鎖 (OwO) $wand"
-
             pinInput.showSoftInputOnFocus = false
             pinInput.requestFocus()
 
