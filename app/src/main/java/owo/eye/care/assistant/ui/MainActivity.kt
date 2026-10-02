@@ -138,7 +138,7 @@ class MainActivity : AppCompatActivity() {
             hint = "請輸入密碼"
         }
         AlertDialog.Builder(this)
-            .setTitle("解除護眼魔法 (OwO) \u1FA84")
+            .setTitle("解除護眼魔法 (OwO) \uD83E\uDE84")
             .setView(input)
             .setPositiveButton("確定") { _, _ ->
                 if (rules.verifyStopPin(input.text.toString())) {
@@ -158,19 +158,19 @@ class MainActivity : AppCompatActivity() {
             vb.btnToggleControl.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#E53935"))
             vb.btnToggleControl.setTextColor(Color.WHITE)
         } else {
-            vb.btnToggleControl.text = "啟動護眼魔法 (OwO) \u1FA84"
+            vb.btnToggleControl.text = "啟動護眼魔法 (OwO) \uD83E\uDE84"
             vb.btnToggleControl.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#4CAF50"))
             vb.btnToggleControl.setTextColor(Color.WHITE)
         }
 
-        vb.btnCalibrate30.text = "設定護眼基準線 \u1FA84"
+        vb.btnCalibrate30.text = "設定護眼基準線 \uD83E\uDE84"
         
         if (distanceState.isServiceRunning()) {
             vb.btnToggleDistance.text = "解除距離偵測"
             vb.btnToggleDistance.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#E53935"))
             vb.btnToggleDistance.setTextColor(Color.WHITE)
         } else {
-            vb.btnToggleDistance.text = "啟動距離偵測 (OwO) \u1F6E1\uFE0F"
+            vb.btnToggleDistance.text = "啟動距離偵測 (OwO) \uD83D\uDEE1\uFE0F"
             vb.btnToggleDistance.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#4CAF50"))
             vb.btnToggleDistance.setTextColor(Color.WHITE)
         }
