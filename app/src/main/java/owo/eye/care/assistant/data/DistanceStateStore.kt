@@ -1,19 +1,15 @@
 package owo.eye.care.assistant.data
-
 import android.content.Context
-
 class DistanceStateStore(context: Context) {
-    private val sp = context.getSharedPreferences("distance_state", Context.MODE_PRIVATE)
-
-    fun setBlocked(blocked: Boolean) = sp.edit().putBoolean("is_blocked", blocked).apply()
-    fun isBlocked(): Boolean = sp.getBoolean("is_blocked", false)
-
-    fun setLastDistanceCm(cm: Int) = sp.edit().putInt("last_distance_cm", cm).apply()
-    fun getLastDistanceCm(): Int = sp.getInt("last_distance_cm", 0)
-
-    fun setLastFaceWidthPx(px: Int) = sp.edit().putInt("last_face_width_px", px).apply()
-    fun getLastFaceWidthPx(): Int = sp.getInt("last_face_width_px", 0)
-
-    fun setRefFaceWidthPxAt30cm(px: Int) = sp.edit().putInt("ref_face_width_px", px).apply()
-    fun getRefFaceWidthPxAt30cm(): Int = sp.getInt("ref_face_width_px", 0)
+    private val prefs = context.getSharedPreferences("owo_distance", Context.MODE_PRIVATE)
+    fun setBlocked(b: Boolean) = prefs.edit().putBoolean("blocked", b).apply()
+    fun isBlocked() = prefs.getBoolean("blocked", false)
+    fun setLastDistanceCm(cm: Int) = prefs.edit().putInt("last_cm", cm).apply()
+    fun getLastDistanceCm() = prefs.getInt("last_cm", 0)
+    fun setLastFaceWidthPx(px: Int) = prefs.edit().putInt("last_face_px", px).apply()
+    fun getLastFaceWidthPx() = prefs.getInt("last_face_px", 0)
+    fun setRefFaceWidthPxAt30cm(px: Int) = prefs.edit().putInt("ref_face_30", px).apply()
+    fun getRefFaceWidthPxAt30cm() = prefs.getInt("ref_face_30", 0)
+    fun setServiceRunning(b: Boolean) = prefs.edit().putBoolean("running", b).apply()
+    fun isServiceRunning() = prefs.getBoolean("running", false)
 }

@@ -2,19 +2,19 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/overlay_scrim"
-    android:padding="24dp">
+    android:background="#E6FFFFFF"> 
+    <!-- E6FFFFFF 是 90% 不透明度的白色，呈現霧面毛玻璃感 -->
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@drawable/bg_overlay_card"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="28dp">
-
-        <TextView android:id="@+id/distanceTitle" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:includeFontPadding="true" android:lineSpacingExtra="4dp" android:text="守護距離過近" android:textColor="@color/danger" android:textSize="26sp" android:textStyle="bold" />
-        <TextView android:id="@+id/distanceMsg" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:gravity="center" android:includeFontPadding="true" android:lineSpacingExtra="7dp" android:text="請保持 30 公分以上距離\n拉遠後將自動解除提醒" android:textColor="@color/text_primary" android:textSize="18sp" />
-    </LinearLayout>
+        android:text="太近囉 (OwO) &#x1F441;&#xFE0F;" 
+        android:textColor="#D32F2F"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:shadowColor="#FFFFFF"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="5" />
 </FrameLayout>
