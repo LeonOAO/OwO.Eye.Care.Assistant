@@ -23,12 +23,13 @@ import java.util.concurrent.Executors
 
 class DistanceForegroundService : Service(), LifecycleOwner {
 
-    //  手動建立生命週期，讓 CameraX 可以成功綁定
     private val lifecycleRegistry = LifecycleRegistry(this)
     private lateinit var distanceState: DistanceStateStore
     private val cameraExecutor = Executors.newSingleThreadExecutor()
 
-    override fun getLifecycle(): Lifecycle = lifecycleRegistry
+    //  修正點：將原本的 getLifecycle() 替換為覆寫 lifecycle 變數
+    override val lifecycle: Lifecycle
+        get() = lifecycleRegistry
 
     override fun onCreate() {
         super.onCreate()
@@ -49,7 +50,6 @@ class DistanceForegroundService : Service(), LifecycleOwner {
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         cameraExecutor.shutdown()
         
-        // 關閉時重置狀態
         distanceState.setBlocked(false)
         distanceState.setLastDistanceCm(0)
         distanceState.setLastFaceWidthPx(0)
@@ -107,7 +107,6 @@ class DistanceForegroundService : Service(), LifecycleOwner {
 
                                 val refWidth = distanceState.getRefFaceWidthPxAt30cm()
                                 if (refWidth > 0) {
-                                    // 距離計算：(參考臉寬 / 當前臉寬) * 30cm
                                     val cm = (refWidth.toFloat() / faceWidthPx.toFloat() * 30f).toInt()
                                     distanceState.setLastDistanceCm(cm)
                                     distanceState.setBlocked(cm < 30)
