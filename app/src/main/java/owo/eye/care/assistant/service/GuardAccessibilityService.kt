@@ -101,7 +101,9 @@ class GuardAccessibilityService : AccessibilityService() {
         if (distanceState.isBlocked()) {
             val cm = distanceState.getLastDistanceCm()
             if (timeOverlay.isShowing()) timeOverlay.hide()
-            distanceOverlay.show(cm)
+            
+            //  已修正：移除錯誤的 cm 參數，直接呼叫 show()
+            distanceOverlay.show()
             lastTickMs = now
             return
         } else {
@@ -143,8 +145,11 @@ class GuardAccessibilityService : AccessibilityService() {
         } catch (_: Exception) {
         }
         handler.removeCallbacksAndMessages(null)
-        distanceOverlay.destroy()
-        timeOverlay.destroy()
+        
+        //  已修正：將 destroy() 替換為標準的 hide()
+        distanceOverlay.hide()
+        timeOverlay.hide()
+        
         super.onDestroy()
     }
 }

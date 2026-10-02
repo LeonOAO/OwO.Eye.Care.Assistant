@@ -7,11 +7,9 @@
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:padding="20dp">
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/bg_overlay_card" android:orientation="vertical" android:padding="24dp">
             
-            <!-- 標題使用 Unicode: &#x1F44D; 就是  -->
             <TextView android:id="@+id/blockMsg" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="眼睛需要休息一下哦 (OwO) &#x1F44D;" android:gravity="center" android:textSize="20sp" android:textStyle="bold" android:textColor="@color/text_primary" />
             <EditText android:id="@+id/pinInput" style="@style/AppField" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:hint="請輸入密碼" android:gravity="center" android:focusable="true" android:inputType="numberPassword" />
             
-            <!-- 綠色解鎖按鈕，使用 Unicode: &#x270C;&#xFE0F; 就是  -->
             <android.widget.Button android:id="@+id/unlockBtn" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:backgroundTint="#4CAF50" android:textColor="#FFFFFF" android:textStyle="bold" android:textSize="18sp" android:padding="12dp" android:text="休息完畢，解鎖！ (OwO) &#x270C;&#xFE0F;" />
 
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="20dp">

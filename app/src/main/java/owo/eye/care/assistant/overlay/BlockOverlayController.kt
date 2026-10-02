@@ -13,8 +13,6 @@ class BlockOverlayController(private val context: Context, private val rules: Ru
     private val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private var view: View? = null
     fun isShowing(): Boolean = view != null
-    
-    // 乾淨的 show 函數，無參數
     fun show() {
         if (view != null) return
         try {
@@ -61,7 +59,6 @@ class BlockOverlayController(private val context: Context, private val rules: Ru
             view = v
         } catch (e: Exception) { e.printStackTrace(); view = null }
     }
-    
     fun hide() {
         val v = view ?: return
         try { wm.removeView(v) } catch (_: Exception) {}
