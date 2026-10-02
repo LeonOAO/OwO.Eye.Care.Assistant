@@ -35,9 +35,9 @@ class DistanceOverlayController(private val context: Context) {
 
         val msg = view!!.findViewById<TextView>(R.id.distanceMsg)
         msg.text = if (distanceCm > 0) {
-            "目前約 ${distanceCm}cm\n請保持 30cm 以上\n拉遠後會自動解除"
+            "目前距離：約 ${distanceCm} 公分\n請將裝置移至 30 公分以上"
         } else {
-            "請保持 30cm 以上\n拉遠後會自動解除"
+            "請將裝置移至 30 公分以上"
         }
     }
 

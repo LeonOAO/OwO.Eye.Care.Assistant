@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">OwO 護眼小助手</string>
-    <string name="accessibility_desc">全域計時遮罩 + 距離硬性遮罩（30cm），家長 PIN 解鎖與停止 PIN 停止管控。</string>
+    <string name="accessibility_desc">全域使用時間管控與 30 公分觀看距離守護，支援家長 PIN 解鎖。</string>
 </resources>

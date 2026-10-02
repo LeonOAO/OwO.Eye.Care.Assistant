@@ -1,29 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#CC000000"
-    android:gravity="center"
-    android:orientation="vertical"
+    android:background="@color/overlay_scrim"
     android:padding="24dp">
 
-    <TextView
-        android:id="@+id/distanceTitle"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="距離過近"
-        android:textColor="#FFFFFF"
-        android:textSize="24sp"
-        android:textStyle="bold"/>
-
-    <TextView
-        android:id="@+id/distanceMsg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_overlay_card"
         android:gravity="center"
-        android:text="請保持 30cm 以上
-拉遠後會自動解除"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"/>
-</LinearLayout>
+        android:orientation="vertical"
+        android:padding="28dp">
+
+        <TextView android:id="@+id/distanceTitle" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:includeFontPadding="true" android:lineSpacingExtra="4dp" android:text="守護距離過近" android:textColor="@color/danger" android:textSize="26sp" android:textStyle="bold" />
+        <TextView android:id="@+id/distanceMsg" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:gravity="center" android:includeFontPadding="true" android:lineSpacingExtra="7dp" android:text="請保持 30 公分以上距離\n拉遠後將自動解除提醒" android:textColor="@color/text_primary" android:textSize="18sp" />
+    </LinearLayout>
+</FrameLayout>

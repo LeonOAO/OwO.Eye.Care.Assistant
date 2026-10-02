@@ -61,7 +61,7 @@ class DistanceForegroundService : LifecycleService() {
             return START_NOT_STICKY
         }
 
-        val notification = buildNotification("距離守護中：強制 ≥30cm（無臉不鎖）")
+        val notification = buildNotification("距離守護已開啟")
         val fgsType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
         } else 0
@@ -176,7 +176,7 @@ class DistanceForegroundService : LifecycleService() {
 
     private fun buildNotification(text: String): Notification {
         return NotificationCompat.Builder(this, channelId)
-            .setContentTitle("OwO 護眼小助手・距離守護")
+            .setContentTitle("OwO 護眼小助手")
             .setContentText(text)
             .setSmallIcon(android.R.drawable.ic_lock_idle_lock)
             .setOngoing(true)
@@ -186,7 +186,7 @@ class DistanceForegroundService : LifecycleService() {
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val nm = getSystemService(NotificationManager::class.java)
-            val ch = NotificationChannel(channelId, "OwO 護眼小助手・距離守護", NotificationManager.IMPORTANCE_LOW)
+            val ch = NotificationChannel(channelId, "OwO 護眼小助手", NotificationManager.IMPORTANCE_LOW)
             nm.createNotificationChannel(ch)
         }
     }

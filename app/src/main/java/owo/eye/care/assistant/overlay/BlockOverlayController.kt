@@ -38,24 +38,24 @@ class BlockOverlayController(
         val stopHint = v.findViewById<TextView>(R.id.stopHint)
 
         fun refreshRemaining() {
-            remainingTv.text = "今日剩餘解鎖次數：${rules.getRemainingUnlocksToday()}"
+            remainingTv.text = "今日可解鎖：${rules.getRemainingUnlocksToday()} 次"
         }
 
         refreshRemaining()
-        msg.text = "請輸入家長 PIN 解鎖（扣 1 次）"
+        msg.text = "請輸入家長 PIN"
 
         unlockBtn.setOnClickListener {
             val input = pinInput.text?.toString() ?: ""
 
             if (!rules.verifyParentPin(input)) {
-                msg.text = "家長 PIN 錯誤，請再試一次"
+                msg.text = "家長 PIN 不正確，請重新輸入"
                 pinInput.setText("")
                 return@setOnClickListener
             }
 
             val ok = rules.consumeOneUnlockToday()
             if (!ok) {
-                msg.text = "今天已無可解鎖次數（可用停止 PIN 關閉管控）"
+                msg.text = "今日解鎖額度已用完"
                 pinInput.setText("")
                 refreshRemaining()
                 return@setOnClickListener
@@ -67,20 +67,20 @@ class BlockOverlayController(
 
         stopBtn.setOnClickListener {
             if (rules.getRemainingUnlocksToday() > 0) {
-                stopHint.text = "停止 PIN 只在「今日解鎖次數用完」時可用"
+                stopHint.text = "解鎖額度用完後才可停止管控"
                 stopPinInput.setText("")
                 return@setOnClickListener
             }
 
             val input = stopPinInput.text?.toString() ?: ""
             if (!rules.hasStopPin()) {
-                stopHint.text = "尚未設定停止 PIN，請回主畫面設定"
+                stopHint.text = "尚未設定停止管控 PIN"
                 stopPinInput.setText("")
                 return@setOnClickListener
             }
 
             if (!rules.verifyStopPin(input)) {
-                stopHint.text = "停止 PIN 錯誤，請再試一次"
+                stopHint.text = "停止管控 PIN 不正確，請重新輸入"
                 stopPinInput.setText("")
                 return@setOnClickListener
             }
