@@ -50,6 +50,31 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         vb = ActivityMainBinding.inflate(layoutInflater)
         setContentView(vb.root)
+
+        // 點擊空白處自動取消焦點並收起鍵盤
+        vb.root.setOnTouchListener { _, _ ->
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+            currentFocus?.windowToken?.let { imm.hideSoftInputFromWindow(it, 0) }
+            currentFocus?.clearFocus()
+            false
+        }
+
+        // 監聽輸入框的「打勾/完成」按鈕
+        val imeListener = android.widget.TextView.OnEditorActionListener { v, actionId, _ ->
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE ||
+                actionId == android.view.inputmethod.EditorInfo.IME_ACTION_NEXT ||
+                actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH) {
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+                imm.hideSoftInputFromWindow(v.windowToken, 0)
+                v.clearFocus()
+                true
+            } else {
+                false
+            }
+        }
+        vb.etLimitMinutes.setOnEditorActionListener(imeListener)
+        vb.etPin.setOnEditorActionListener(imeListener)
+        vb.etStopPin.setOnEditorActionListener(imeListener)
         rules = RulesStore(this)
         distanceState = DistanceStateStore(this)
 
@@ -58,7 +83,10 @@ class MainActivity : AppCompatActivity() {
         
         vb.etLimitMinutes.setText((rules.getCycleLimitSeconds() / 60).toString())
 
-        vb.btnSaveSettings.setOnClickListener {
+                vb.btnSaveSettings.setOnClickListener {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+            currentFocus?.windowToken?.let { imm.hideSoftInputFromWindow(it, 0) }
+            currentFocus?.clearFocus()
             val limitMin = vb.etLimitMinutes.text?.toString()?.toIntOrNull()
             if (limitMin == null || limitMin !in 1..1440) { showToast("使用時間必須是 1 到 1440 分鐘"); return@setOnClickListener }
             rules.setCycleLimitSeconds(limitMin * 60)
