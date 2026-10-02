@@ -14,8 +14,8 @@ class BlockOverlayController(private val context: Context, private val rules: Ru
     private var view: View? = null
     fun isShowing(): Boolean = view != null
     
-    //  補回字串參數相容舊版
-    fun show(msgString: String? = null) {
+    // 乾淨的 show 函數，無參數
+    fun show() {
         if (view != null) return
         try {
             val themedContext = ContextThemeWrapper(context, R.style.AppTheme)
@@ -67,7 +67,4 @@ class BlockOverlayController(private val context: Context, private val rules: Ru
         try { wm.removeView(v) } catch (_: Exception) {}
         view = null
     }
-    
-    //  補回 destroy 方法相容舊版
-    fun destroy() { hide() }
 }
