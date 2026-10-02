@@ -23,9 +23,9 @@
                 android:id="@+id/blockMsg"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="請輸入解除鎖定 PIN"
+                android:text="眼睛需要休息一下哦 (OwO) b"
                 android:gravity="center"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary" />
 
@@ -34,8 +34,8 @@
                 style="@style/AppField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="點擊輸入解除鎖定 PIN"
+                android:layout_marginTop="20dp"
+                android:hint="請輸入密碼"
                 android:gravity="center"
                 android:focusable="true"
                 android:inputType="numberPassword" />
@@ -45,14 +45,16 @@
                 style="@style/AppButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="解鎖並開始下一輪" />
+                android:layout_marginTop="16dp"
+                android:backgroundTint="#4CAF50"
+                android:textColor="#FFFFFF"
+                android:text="休息完畢，解鎖！ (OwO) y" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="20dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"

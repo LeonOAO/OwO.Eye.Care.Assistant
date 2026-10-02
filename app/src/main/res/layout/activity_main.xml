@@ -48,15 +48,16 @@
                 android:layout_marginTop="12dp"
                 android:background="@drawable/bg_status"
                 android:padding="12dp"
-                android:text="上層顯示權限：檢查中" />
+                android:text="顯示在其他應用程式上層：檢查中" />
 
             <Button
                 android:id="@+id/btnOpenOverlay"
                 style="@style/AppButton"
                 android:layout_marginTop="12dp"
-                android:text="授權顯示在其他應用程式上層" />
+                android:text="顯示在其他應用程式上層" />
         </LinearLayout>
 
+        <!--  全新整合的保護設定區塊 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -71,71 +72,103 @@
                 android:layout_height="wrap_content"
                 android:text="保護設定" />
 
-            <EditText
-                android:id="@+id/etPin"
-                style="@style/AppField"
+            <!-- 時間設定 -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:hint="輸入至少 4 碼解除鎖定 PIN"
-                android:inputType="numberPassword" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
+                <TextView
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:text="時間設定(分鐘)"
+                    android:textColor="@color/text_primary"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/etLimitMinutes"
+                    style="@style/AppField"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="1~1440"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:padding="10dp" />
+            </LinearLayout>
+
+            <!-- 解除鎖定 PIN -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:text="解除鎖定 PIN"
+                    android:textColor="@color/text_primary"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/etPin"
+                    style="@style/AppField"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="留空不修改"
+                    android:gravity="center"
+                    android:inputType="numberPassword"
+                    android:padding="10dp" />
+            </LinearLayout>
+
+            <!-- 停止鎖定 PIN -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:text="停止鎖定 PIN"
+                    android:textColor="@color/text_primary"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/etStopPin"
+                    style="@style/AppField"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="留空不修改"
+                    android:gravity="center"
+                    android:inputType="numberPassword"
+                    android:padding="10dp" />
+            </LinearLayout>
+
+            <!-- 整合按鈕 -->
             <Button
-                android:id="@+id/btnSetPin"
+                android:id="@+id/btnSaveSettings"
                 style="@style/AppButton"
-                android:layout_marginTop="10dp"
-                android:text="設定或更新解除鎖定 PIN" />
-
-            <EditText
-                android:id="@+id/etStopPin"
-                style="@style/AppField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="輸入至少 4 碼停止管控 PIN"
-                android:inputType="numberPassword" />
-
-            <Button
-                android:id="@+id/btnSetStopPin"
-                style="@style/AppButton"
-                android:layout_marginTop="10dp"
-                android:text="設定或更新停止管控 PIN" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/section_spacing"
-            android:background="@drawable/bg_card"
-            android:orientation="vertical"
-            android:padding="@dimen/card_padding">
-
-            <TextView
-                style="@style/SectionTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="時間管控" />
-
-            <EditText
-                android:id="@+id/etLimitMinutes"
-                style="@style/AppField"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:hint="單次使用時間（分鐘，1~1440）"
-                android:inputType="number" />
-
-            <Button
-                android:id="@+id/btnSaveRules"
-                style="@style/AppButton"
-                android:layout_marginTop="12dp"
-                android:text="儲存使用規則" />
+                android:text="儲存設定" />
 
             <Button
                 android:id="@+id/btnToggleControl"
                 style="@style/AppButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="開始管控" />
+                android:text="啟用保護" />
         </LinearLayout>
 
         <LinearLayout

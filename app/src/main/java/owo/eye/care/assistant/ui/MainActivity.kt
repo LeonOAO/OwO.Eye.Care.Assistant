@@ -65,46 +65,53 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        vb.btnSetPin.setOnClickListener {
+        // 初始化時間框
+        vb.etLimitMinutes.setText((rules.getCycleLimitSeconds() / 60).toString())
+
+        //  一鍵儲存所有設定邏輯
+        vb.btnSaveSettings.setOnClickListener {
+            val limitStr = vb.etLimitMinutes.text?.toString()
             val pin = vb.etPin.text?.toString() ?: ""
-            if (pin.length >= 4) {
-                rules.setParentPin(pin)
-                vb.tvStatus.text = "解除鎖定 PIN 已儲存"
-            } else {
-                vb.tvStatus.text = "解除鎖定 PIN 必須至少 4 碼"
-            }
-            refreshUi()
-        }
+            val stopPin = vb.etStopPin.text?.toString() ?: ""
 
-        vb.btnSetStopPin.setOnClickListener {
-            val pin = vb.etStopPin.text?.toString() ?: ""
-            if (pin.length >= 4) {
-                rules.setStopPin(pin)
-                vb.tvStatus.text = "停止管控 PIN 已儲存"
-            } else {
-                vb.tvStatus.text = "停止管控 PIN 必須至少 4 碼"
-            }
-            refreshUi()
-        }
-
-        vb.btnSaveRules.setOnClickListener {
-            val limitMin = vb.etLimitMinutes.text?.toString()?.toIntOrNull()
+            val limitMin = limitStr?.toIntOrNull()
             if (limitMin == null || limitMin !in 1..1440) {
                 vb.tvStatus.text = "使用時間必須是 1 到 1440 分鐘"
                 return@setOnClickListener
             }
 
+            if (pin.isNotEmpty() && pin.length < 4) {
+                vb.tvStatus.text = "解除鎖定 PIN 必須至少 4 碼"
+                return@setOnClickListener
+            }
+
+            if (stopPin.isNotEmpty() && stopPin.length < 4) {
+                vb.tvStatus.text = "停止鎖定 PIN 必須至少 4 碼"
+                return@setOnClickListener
+            }
+
+            // 儲存邏輯
             rules.setCycleLimitSeconds(limitMin * 60)
-            vb.tvStatus.text = "時間設定已儲存"
+            if (pin.isNotEmpty()) {
+                rules.setParentPin(pin)
+                vb.etPin.setText("") // 存完清空輸入框，避免被別人偷看
+            }
+            if (stopPin.isNotEmpty()) {
+                rules.setStopPin(stopPin)
+                vb.etStopPin.setText("") 
+            }
+
+            vb.tvStatus.text = "保護設定已全部儲存！"
             refreshUi()
         }
 
+        //  啟用/停用保護
         vb.btnToggleControl.setOnClickListener {
             val enabled = rules.isControlEnabled()
 
             if (!enabled) {
                 if (!rules.hasParentPin()) {
-                    vb.tvStatus.text = "請先設定至少 4 碼的解除鎖定 PIN"
+                    vb.tvStatus.text = "請先設定解除鎖定 PIN"
                     return@setOnClickListener
                 }
                 if (!isAccessibilityEnabled()) {
@@ -112,17 +119,17 @@ class MainActivity : AppCompatActivity() {
                     return@setOnClickListener
                 }
                 if (!Settings.canDrawOverlays(this)) {
-                    vb.tvStatus.text = "請先授予「顯示在其他應用程式上層」權限"
+                    vb.tvStatus.text = "請先開啟「顯示在其他應用程式上層」權限"
                     return@setOnClickListener
                 }
                 rules.setControlEnabled(true)
-                vb.tvStatus.text = "時間管控已開啟"
+                vb.tvStatus.text = "保護功能已啟用"
                 refreshUi()
             } else {
                 if (rules.hasStopPin()) {
                     showStopPinDialog()
                 } else {
-                    vb.tvStatus.text = "請先設定停止管控 PIN，才能停止管控"
+                    vb.tvStatus.text = "請先設定停止鎖定 PIN，才能停用保護"
                 }
             }
         }
@@ -147,8 +154,6 @@ class MainActivity : AppCompatActivity() {
             distanceState.setRefFaceWidthPxAt30cm(wPx)
             vb.tvStatus.text = "30 公分校正已完成"
         }
-
-        vb.etLimitMinutes.setText((rules.getCycleLimitSeconds() / 60).toString())
 
         refreshUi()
     }
@@ -175,19 +180,19 @@ class MainActivity : AppCompatActivity() {
         input.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
         val pad = (20 * resources.displayMetrics.density).toInt()
         input.setPadding(pad, pad, pad, pad)
-        input.hint = "輸入停止管控 PIN"
+        input.hint = "輸入停止鎖定 PIN"
 
         AlertDialog.Builder(this)
-            .setTitle("停止管控")
+            .setTitle("停用保護")
             .setView(input)
             .setPositiveButton("確定") { _, _ ->
                 val pin = input.text.toString()
                 if (rules.verifyStopPin(pin)) {
                     rules.setControlEnabled(false)
-                    vb.tvStatus.text = "時間管控已關閉"
+                    vb.tvStatus.text = "保護功能已停用"
                     refreshUi()
                 } else {
-                    vb.tvStatus.text = "停止管控 PIN 錯誤，無法關閉"
+                    vb.tvStatus.text = "密碼錯誤，無法停用"
                 }
             }
             .setNegativeButton("取消", null)
@@ -199,15 +204,18 @@ class MainActivity : AppCompatActivity() {
         val overlayGranted = Settings.canDrawOverlays(this)
 
         vb.tvAccStatus.text = "無障礙服務：${if (accEnabled) "已開啟" else "尚未開啟"}"
-        vb.tvOverlayStatus.text = "上層顯示權限：${if (overlayGranted) "已開啟" else "尚未開啟"}"
+        vb.tvOverlayStatus.text = "顯示在其他應用程式上層：${if (overlayGranted) "已開啟" else "尚未開啟"}"
         
-        vb.btnOpenOverlay.text = "授權顯示在其他應用程式上層"
+        vb.btnOpenOverlay.text = "顯示在其他應用程式上層"
         vb.btnOpenOverlay.isEnabled = true
 
-        vb.btnToggleControl.text = if (rules.isControlEnabled()) "停止管控" else "開始管控"
+        vb.btnToggleControl.text = if (rules.isControlEnabled()) "停用保護" else "啟用保護"
 
         val limitMin = rules.getCycleLimitSeconds() / 60
-        vb.tvStatus.text = "單次時間：$limitMin 分鐘\n時間管控：${if (rules.isControlEnabled()) "已開啟" else "已關閉"}\n停止管控 PIN：${if (rules.hasStopPin()) "已設定" else "尚未設定"}"
+        vb.tvStatus.text = "保護狀態：${if (rules.isControlEnabled()) "已啟用" else "未啟用"}\n" +
+                           "單次時間：$limitMin 分鐘\n" +
+                           "解除鎖定 PIN：${if (rules.hasParentPin()) "已設定" else "尚未設定"}\n" +
+                           "停止鎖定 PIN：${if (rules.hasStopPin()) "已設定" else "尚未設定"}"
     }
 
     private fun isAccessibilityEnabled(): Boolean {
