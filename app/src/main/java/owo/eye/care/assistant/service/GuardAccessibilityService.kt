@@ -9,6 +9,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
 import android.view.accessibility.AccessibilityEvent
+import androidx.core.content.ContextCompat
 import owo.eye.care.assistant.data.DistanceStateStore
 import owo.eye.care.assistant.data.RulesStore
 import owo.eye.care.assistant.overlay.BlockOverlayController
@@ -53,10 +54,11 @@ class GuardAccessibilityService : AccessibilityService() {
         rules = RulesStore(applicationContext)
         distanceState = DistanceStateStore(applicationContext)
 
-        distanceOverlay = DistanceOverlayController(applicationContext)
+        // 關鍵修改：必須傳入 this（AccessibilityService 自身的實例），才有合法的 Window Token
+        distanceOverlay = DistanceOverlayController(this)
 
         timeOverlay = BlockOverlayController(
-            applicationContext,
+            this,
             rules,
             onUnlocked = {
                 cycleUsedSec = 0
@@ -77,7 +79,13 @@ class GuardAccessibilityService : AccessibilityService() {
             addAction(Intent.ACTION_SCREEN_OFF)
             addAction(Intent.ACTION_USER_PRESENT)
         }
-        registerReceiver(screenReceiver, filter)
+        // 相容 Android 14+ 廣播接收器安全性要求
+        ContextCompat.registerReceiver(
+            this,
+            screenReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
 
         cycleUsedSec = 0
         lastTickMs = System.currentTimeMillis()
