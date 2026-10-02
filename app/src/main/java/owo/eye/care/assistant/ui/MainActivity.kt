@@ -32,11 +32,13 @@ class MainActivity : AppCompatActivity() {
             val cm = distanceState.getLastDistanceCm()
             val ref = distanceState.getRefFaceWidthPxAt30cm()
             val isRun = distanceState.isServiceRunning()
+            val wPx = distanceState.getLastFaceWidthPx()
             
             vb.tvDistanceStatus.text = "守護距離狀態：\n" +
                 "服務狀態：${if (isRun) "偵測中" else "未啟動"}\n" +
+                "當前臉部：${if (wPx > 0) "已偵測 ($wPx px)" else "未偵測到"}\n" +
                 "估算距離：${if (cm > 0) "約 ${cm} 公分" else "尚未取得"}\n" +
-                "校正狀態：${if (ref > 0) "已完成" else "尚未完成"}"
+                "校正狀態：${if (ref > 0) "已完成 (基準: $ref px)" else "尚未完成"}"
             uiHandler.postDelayed(this, 500L)
         }
     }
@@ -84,7 +86,7 @@ class MainActivity : AppCompatActivity() {
         
         vb.etLimitMinutes.setText((rules.getCycleLimitSeconds() / 60).toString())
 
-                vb.btnSaveSettings.setOnClickListener {
+        vb.btnSaveSettings.setOnClickListener {
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
             currentFocus?.windowToken?.let { imm.hideSoftInputFromWindow(it, 0) }
             currentFocus?.clearFocus()
