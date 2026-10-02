@@ -99,7 +99,6 @@ class DistanceForegroundService : Service(), LifecycleOwner {
                                 val cm = (refWidth.toFloat() / faceWidthPx.toFloat() * 30f).toInt()
                                 distanceState.setLastDistanceCm(cm)
                                 
-                                // 判斷是否太近 (小於 30 公分)
                                 if (cm < 30) {
                                     distanceState.setBlocked(true)
                                     mainHandler.post { distanceOverlay.show() }
@@ -116,7 +115,7 @@ class DistanceForegroundService : Service(), LifecycleOwner {
                             distanceState.setLastFaceWidthPx(0)
                             distanceState.setLastDistanceCm(0)
                             distanceState.setBlocked(false)
-                            mainHandler.post { distanceOverlay.hide() } // 沒看到臉也解除霧面罩
+                            mainHandler.post { distanceOverlay.hide() } 
                         }
                     }.addOnCompleteListener { imageProxy.close() }
                 } else { imageProxy.close() }

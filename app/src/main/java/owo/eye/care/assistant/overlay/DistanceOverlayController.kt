@@ -16,7 +16,6 @@ class DistanceOverlayController(private val context: Context) {
             val v = LayoutInflater.from(themedContext).inflate(R.layout.overlay_distance, null, false)
             v.fitsSystemWindows = false
             
-            // 使用 FLAG_NOT_TOUCHABLE 與 FLAG_NOT_FOCUSABLE 讓它只是蓋著，不會影響鍵盤與其他操作
             val params = WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT,

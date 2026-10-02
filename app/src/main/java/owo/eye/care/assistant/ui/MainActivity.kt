@@ -65,7 +65,6 @@ class MainActivity : AppCompatActivity() {
             refreshUi()
         }
 
-        // 單一開關：護眼魔法
         vb.btnToggleControl.setOnClickListener {
             if (!rules.isControlEnabled()) {
                 if (!rules.hasParentPin()) { showToast("請先設定解除鎖定 PIN"); return@setOnClickListener }
@@ -79,7 +78,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // 校正按鈕
         vb.btnCalibrate30.setOnClickListener {
             val wPx = distanceState.getLastFaceWidthPx()
             if (wPx <= 0) { showToast("尚未偵測到臉部，請稍後再試"); return@setOnClickListener }
@@ -87,7 +85,6 @@ class MainActivity : AppCompatActivity() {
             showToast("護眼基準線已設定完成！")
         }
 
-        // 單一開關：距離偵測
         vb.btnToggleDistance.setOnClickListener {
             if (!distanceState.isServiceRunning()) {
                 if (distanceState.getRefFaceWidthPxAt30cm() <= 0) {
@@ -125,7 +122,7 @@ class MainActivity : AppCompatActivity() {
             hint = "請輸入密碼"
         }
         AlertDialog.Builder(this)
-            .setTitle("停用保護 (OwO) \u2728") // \u2728 = 
+            .setTitle("停用保護 (OwO) \u2728")
             .setView(input)
             .setPositiveButton("確定") { _, _ ->
                 if (rules.verifyStopPin(input.text.toString())) {
@@ -139,15 +136,9 @@ class MainActivity : AppCompatActivity() {
     private fun refreshUi() {
         vb.tvAccStatus.text = "無障礙服務：${if (isAccessibilityEnabled()) "已開啟" else "尚未開啟"}"
         vb.tvOverlayStatus.text = "顯示在其他應用程式上層：${if (Settings.canDrawOverlays(this)) "已允許" else "尚未允許"}"
-        
-        // 按鈕文字替換 (使用安全的 Unicode 編碼避免亂碼)
-        // \u2728 = 
         vb.btnToggleControl.text = if (rules.isControlEnabled()) "解除護眼魔法 (OwO)" else "啟動護眼魔法 (OwO) \u2728"
         vb.btnCalibrate30.text = "設定護眼基準線 \u2728"
-        
-        // \uD83D\uDC41\uFE0F = 
         vb.btnToggleDistance.text = if (distanceState.isServiceRunning()) "解除距離偵測" else "啟動距離偵測 (OwO) \uD83D\uDC41\uFE0F"
-
         vb.tvProtectionStatus.text = "循環時間：${rules.getCycleLimitSeconds() / 60} 分鐘\n保護控管：${if (rules.isControlEnabled()) "已啟動" else "未啟動"}"
     }
 
