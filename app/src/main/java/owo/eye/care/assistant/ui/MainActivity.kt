@@ -76,17 +76,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         vb.btnSaveRules.setOnClickListener {
-            val limitMin = vb.etLimitMinutes.text?.toString()?.toIntOrNull()
-            val quota = vb.etDailyQuota.text?.toString()?.toIntOrNull()
-
-            if (limitMin == null || limitMin !in 1..1440) {
-                vb.tvStatus.text = "使用時間必須是 1 到 1440 分鐘"
-                return@setOnClickListener
-            }
-            if (quota == null || quota !in 0..100) {
-                vb.tvStatus.text = "每日解鎖次數必須是 0 到 100 次"
-                return@setOnClickListener
-            }
+            val limitMin = vb.etLimitMinutes.text?.toString()?.toIntOrNull() ?: 20
+            val quota = vb.etDailyQuota.text?.toString()?.toIntOrNull() ?: 3
 
             rules.setCycleLimitSeconds(limitMin * 60)
             rules.setDailyUnlockQuota(quota)
@@ -97,14 +88,6 @@ class MainActivity : AppCompatActivity() {
 
         vb.btnToggleControl.setOnClickListener {
             val enabled = rules.isControlEnabled()
-            if (!enabled && !rules.hasParentPin()) {
-                vb.tvStatus.text = "請先設定至少 4 碼的家長 PIN"
-                return@setOnClickListener
-            }
-            if (!enabled && !isAccessibilityEnabled()) {
-                vb.tvStatus.text = "請先到系統設定啟用 OwO 護眼小助手的無障礙服務"
-                return@setOnClickListener
-            }
             rules.setControlEnabled(!enabled)
             vb.tvStatus.text = if (!enabled) "已開始管控（開始全域計時）" else "已停止管控"
             refreshUi()

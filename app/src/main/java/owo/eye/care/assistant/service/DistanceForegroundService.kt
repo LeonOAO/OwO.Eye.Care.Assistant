@@ -39,7 +39,6 @@ class DistanceForegroundService : LifecycleService() {
     private var lastAnalysisStartMs: Long = 0
 
     companion object {
-        // 遊戲低負載模式：每秒最多執行 3 次 ML Kit 推論。
         private const val ANALYSIS_INTERVAL_MS = 333L
         private val ANALYSIS_RESOLUTION = Size(480, 360)
     }
@@ -62,7 +61,7 @@ class DistanceForegroundService : LifecycleService() {
             return START_NOT_STICKY
         }
 
-        val notification = buildNotification("遊戲低負載距離守護：強制 ≥30cm")
+        val notification = buildNotification("距離守護中：強制 ≥30cm（無臉不鎖）")
         val fgsType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
         } else 0

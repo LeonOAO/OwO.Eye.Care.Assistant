@@ -1,21 +1,12 @@
 #!/usr/bin/env sh
 set -eu
-
-GRADLE_VERSION="8.7"
-BOOTSTRAP_DIR="${GRADLE_USER_HOME:-$HOME/.gradle}/bootstrap"
-GRADLE_HOME="$BOOTSTRAP_DIR/gradle-$GRADLE_VERSION"
-ARCHIVE="$BOOTSTRAP_DIR/gradle-$GRADLE_VERSION-bin.zip"
-
-if [ ! -x "$GRADLE_HOME/bin/gradle" ]; then
-  mkdir -p "$BOOTSTRAP_DIR"
-  if [ ! -f "$ARCHIVE" ]; then
-    echo "Downloading Gradle $GRADLE_VERSION..."
-    curl -fL --retry 3 --retry-delay 2 \
-      "https://services.gradle.org/distributions/gradle-$GRADLE_VERSION-bin.zip" \
-      -o "$ARCHIVE"
-  fi
-  rm -rf "$GRADLE_HOME"
-  unzip -q "$ARCHIVE" -d "$BOOTSTRAP_DIR"
+V=8.7
+D="${GRADLE_USER_HOME:-$HOME/.gradle}/bootstrap"
+H="$D/gradle-$V"
+Z="$D/gradle-$V-bin.zip"
+if [ ! -x "$H/bin/gradle" ]; then
+  mkdir -p "$D"
+  [ -f "$Z" ] || curl -fL --retry 3 "https://services.gradle.org/distributions/gradle-$V-bin.zip" -o "$Z"
+  unzip -q -o "$Z" -d "$D"
 fi
-
-exec "$GRADLE_HOME/bin/gradle" "$@"
+exec "$H/bin/gradle" "$@"
