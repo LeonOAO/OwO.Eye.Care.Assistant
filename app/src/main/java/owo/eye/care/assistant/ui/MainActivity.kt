@@ -1,9 +1,9 @@
 package owo.eye.care.assistant.ui
 
 import android.Manifest
-import android.net.Uri
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
@@ -52,6 +52,14 @@ class MainActivity : AppCompatActivity() {
 
         vb.btnOpenAccessibility.setOnClickListener {
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+        }
+
+        vb.btnOpenOverlay.setOnClickListener {
+            if (hasOverlayPermission()) {
+                vb.tvStatus.text = "「顯示在其他應用程式上層」權限已啟用"
+            } else {
+                requestOverlayPermission()
+            }
         }
 
         vb.btnOpenManual.setOnClickListener {
@@ -109,6 +117,11 @@ class MainActivity : AppCompatActivity() {
                 vb.tvStatus.text = "請先啟用 OwO 護眼小助手的無障礙服務"
                 return@setOnClickListener
             }
+            if (!enabled && !hasOverlayPermission()) {
+                vb.tvStatus.text = "請先授予「顯示在其他應用程式上層」權限"
+                requestOverlayPermission()
+                return@setOnClickListener
+            }
             rules.setControlEnabled(!enabled)
             vb.tvStatus.text = if (!enabled) "時間管控已開啟" else "時間管控已關閉"
             refreshUi()
@@ -164,8 +177,30 @@ class MainActivity : AppCompatActivity() {
         vb.tvStatus.text = "距離守護已開啟"
     }
 
+    private fun hasOverlayPermission(): Boolean {
+        return Settings.canDrawOverlays(this)
+    }
+
+    private fun requestOverlayPermission() {
+        if (!hasOverlayPermission()) {
+            val intent = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:$packageName")
+            )
+            startActivity(intent)
+        }
+    }
+
     private fun refreshUi() {
-        vb.tvAccStatus.text = "無障礙服務：${if (isAccessibilityEnabled()) "已開啟" else "尚未開啟"}"
+        val accEnabled = isAccessibilityEnabled()
+        val overlayGranted = hasOverlayPermission()
+
+        vb.tvAccStatus.text = "無障礙服務：${if (accEnabled) "已開啟" else "尚未開啟"}"
+        vb.tvOverlayStatus.text = "上層顯示權限：${if (overlayGranted) "已開啟" else "尚未開啟"}"
+
+        vb.btnOpenOverlay.text = if (overlayGranted) "上層顯示權限已授權" else "開啟上層顯示權限"
+        vb.btnOpenOverlay.isEnabled = !overlayGranted
+
         vb.btnToggleControl.text = if (rules.isControlEnabled()) "停止管控" else "開始管控"
 
         val remaining = rules.getRemainingUnlocksToday()

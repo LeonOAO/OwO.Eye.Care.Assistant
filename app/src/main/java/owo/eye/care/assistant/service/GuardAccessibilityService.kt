@@ -54,7 +54,7 @@ class GuardAccessibilityService : AccessibilityService() {
         rules = RulesStore(applicationContext)
         distanceState = DistanceStateStore(applicationContext)
 
-        // 關鍵修改：必須傳入 this（AccessibilityService 自身的實例），才有合法的 Window Token
+        // 傳入 this 獲得合法的 Accessibility Window Token
         distanceOverlay = DistanceOverlayController(this)
 
         timeOverlay = BlockOverlayController(
@@ -79,7 +79,6 @@ class GuardAccessibilityService : AccessibilityService() {
             addAction(Intent.ACTION_SCREEN_OFF)
             addAction(Intent.ACTION_USER_PRESENT)
         }
-        // 相容 Android 14+ 廣播接收器安全性要求
         ContextCompat.registerReceiver(
             this,
             screenReceiver,
@@ -106,7 +105,7 @@ class GuardAccessibilityService : AccessibilityService() {
             return
         }
 
-        // distance hard mode has priority
+        // 距離過近具備最高優先級
         if (distanceState.isBlocked()) {
             val cm = distanceState.getLastDistanceCm()
             if (timeOverlay.isShowing()) timeOverlay.hide()
