@@ -3,7 +3,6 @@ package owo.eye.care.assistant.service
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.Service
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
@@ -11,6 +10,7 @@ import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LifecycleService
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
@@ -19,11 +19,12 @@ import owo.eye.care.assistant.overlay.DistanceOverlayController
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class DistanceForegroundService : Service() {
+class DistanceForegroundService : LifecycleService() {
     private lateinit var stateStore: DistanceStateStore
     private lateinit var distanceOverlay: DistanceOverlayController
     private lateinit var cameraExecutor: ExecutorService
     private var cameraProvider: ProcessCameraProvider? = null
+    private var isCameraStarted = false
 
     private val detector = FaceDetection.getClient(
         FaceDetectorOptions.Builder()
@@ -37,11 +38,15 @@ class DistanceForegroundService : Service() {
         distanceOverlay = DistanceOverlayController(this)
         cameraExecutor = Executors.newSingleThreadExecutor()
         startForeground(2002, createNotification())
-        startCamera()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
         stateStore.setServiceRunning(true)
+        if (!isCameraStarted) {
+            isCameraStarted = true
+            startCamera()
+        }
         return START_STICKY
     }
 
@@ -49,17 +54,18 @@ class DistanceForegroundService : Service() {
         stateStore.setServiceRunning(false)
         stateStore.setBlocked(false)
         distanceOverlay.hide()
-        
         try {
             cameraProvider?.unbindAll()
         } catch (_: Exception) {}
-
         cameraExecutor.shutdown()
         stopForeground(true)
         super.onDestroy()
     }
 
-    override fun onBind(intent: Intent?): IBinder? = null
+    override fun onBind(intent: Intent): IBinder? {
+        super.onBind(intent)
+        return null
+    }
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
@@ -77,13 +83,7 @@ class DistanceForegroundService : Service() {
                 }
 
                 cameraProvider?.unbindAll()
-                // 使用 Service 本身作為 LifecycleOwner (Android Service 支援 LifecycleOwner 需要 LifecycleService，此處我們透過 ProcessCameraProvider 繫結)
-                // 為了避免生命週期繫結異常，我們直接利用 Context 啟動分析
-                cameraProvider?.bindToLifecycle(
-                    this as androidx.lifecycle.LifecycleOwner,
-                    cameraSelector,
-                    imageAnalysis
-                )
+                cameraProvider?.bindToLifecycle(this, cameraSelector, imageAnalysis)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -133,9 +133,9 @@ class DistanceForegroundService : Service() {
             val manager = getSystemService(NotificationManager::class.java)
             manager?.createNotificationChannel(channel)
         }
-        val shieldEmoji = String(intArrayOf(0x1F6E1), 0, 1) + "\uFE0F"
+        val shield = "\uD83D\uDEE1\uFE0F"
         return NotificationCompat.Builder(this, channelId)
-            .setContentTitle("OwO 護眼距離守護中 (OwO) $shieldEmoji")
+            .setContentTitle("OwO 護眼距離守護中 (OwO) $shield")
             .setContentText("正在背景監測您的用眼距離")
             .setSmallIcon(android.R.drawable.ic_menu_camera)
             .build()

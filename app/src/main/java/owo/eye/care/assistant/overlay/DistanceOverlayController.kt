@@ -12,8 +12,8 @@ class DistanceOverlayController(private val context: Context) {
     fun show() {
         if (view != null) return
         try {
+            val shield = "\uD83D\uDEE1\uFE0F"
             val v = TextView(context).apply {
-                val shield = String(intArrayOf(0x1F6E1), 0, 1) + "\uFE0F"
                 text = "太近囉 (OwO) $shield"
                 setTextColor(android.graphics.Color.parseColor("#D32F2F"))
                 textSize = 36f

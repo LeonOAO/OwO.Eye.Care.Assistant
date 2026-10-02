@@ -24,9 +24,8 @@ class BlockOverlayController(private val context: Context, private val rules: Ru
             val unlockBtn = v.findViewById<Button>(R.id.unlockBtn)
             val msg = v.findViewById<TextView>(R.id.blockMsg)
             
-            // 動態產生 Emoji 防止亂碼
-            val zzz = String(intArrayOf(0x1F4A4), 0, 1)
-            val wand = String(intArrayOf(0x1FA84), 0, 1)
+            val zzz = "\uD83D\uDCA4"
+            val wand = "\uD83E\uDE84"
             msg.text = "眼睛需要休息一下哦 (OwO) $zzz"
             unlockBtn.text = "休息完畢，解鎖 (OwO) $wand"
 
