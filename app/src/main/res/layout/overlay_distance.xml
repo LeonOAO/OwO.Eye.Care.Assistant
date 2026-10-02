@@ -7,7 +7,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="太近囉 (OwO) &#x1F441;&#xFE0F;" 
+        android:text="太近囉 (OwO) &#x1F6E1;&#xFE0F;" 
         android:textColor="#D32F2F"
         android:textSize="36sp"
         android:textStyle="bold"

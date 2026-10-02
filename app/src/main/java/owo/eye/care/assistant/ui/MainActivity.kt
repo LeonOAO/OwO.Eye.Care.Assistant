@@ -1,7 +1,10 @@
 package owo.eye.care.assistant.ui
+
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -80,7 +83,20 @@ class MainActivity : AppCompatActivity() {
 
         vb.btnCalibrate30.setOnClickListener {
             val wPx = distanceState.getLastFaceWidthPx()
-            if (wPx <= 0) { showToast("尚未偵測到臉部，請稍後再試"); return@setOnClickListener }
+            if (wPx <= 0) {
+                if (!distanceState.isServiceRunning()) {
+                    val hasCam = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+                    if (hasCam) {
+                        startDistanceService()
+                        showToast("相機已啟動！請將臉部對準後『再按一次』本按鈕完成定位")
+                    } else {
+                        requestCamera.launch(Manifest.permission.CAMERA)
+                    }
+                } else {
+                    showToast("尚未偵測到臉部，請保持光線充足並正對前鏡頭")
+                }
+                return@setOnClickListener
+            }
             distanceState.setRefFaceWidthPxAt30cm(wPx)
             showToast("護眼基準線已設定完成！")
         }
@@ -122,23 +138,43 @@ class MainActivity : AppCompatActivity() {
             hint = "請輸入密碼"
         }
         AlertDialog.Builder(this)
-            .setTitle("停用保護 (OwO) \u2728")
+            .setTitle("解除護眼魔法 (OwO) \u1FA84")
             .setView(input)
             .setPositiveButton("確定") { _, _ ->
                 if (rules.verifyStopPin(input.text.toString())) {
                     rules.setControlEnabled(false)
                     showToast("護眼魔法已解除")
                     refreshUi()
-                } else showToast("密碼錯誤，無法解除")
+                } else showToast("密碼錯誤，請重新輸入 (QwQ)")
             }.setNegativeButton("取消", null).show()
     }
 
     private fun refreshUi() {
         vb.tvAccStatus.text = "無障礙服務：${if (isAccessibilityEnabled()) "已開啟" else "尚未開啟"}"
         vb.tvOverlayStatus.text = "顯示在其他應用程式上層：${if (Settings.canDrawOverlays(this)) "已允許" else "尚未允許"}"
-        vb.btnToggleControl.text = if (rules.isControlEnabled()) "解除護眼魔法 (OwO)" else "啟動護眼魔法 (OwO) \u2728"
-        vb.btnCalibrate30.text = "設定護眼基準線 \u2728"
-        vb.btnToggleDistance.text = if (distanceState.isServiceRunning()) "解除距離偵測" else "啟動距離偵測 (OwO) \uD83D\uDC41\uFE0F"
+        
+        if (rules.isControlEnabled()) {
+            vb.btnToggleControl.text = "解除護眼魔法 (OwO)"
+            vb.btnToggleControl.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#E53935"))
+            vb.btnToggleControl.setTextColor(Color.WHITE)
+        } else {
+            vb.btnToggleControl.text = "啟動護眼魔法 (OwO) \u1FA84"
+            vb.btnToggleControl.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#4CAF50"))
+            vb.btnToggleControl.setTextColor(Color.WHITE)
+        }
+
+        vb.btnCalibrate30.text = "設定護眼基準線 \u1FA84"
+        
+        if (distanceState.isServiceRunning()) {
+            vb.btnToggleDistance.text = "解除距離偵測"
+            vb.btnToggleDistance.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#E53935"))
+            vb.btnToggleDistance.setTextColor(Color.WHITE)
+        } else {
+            vb.btnToggleDistance.text = "啟動距離偵測 (OwO) \u1F6E1\uFE0F"
+            vb.btnToggleDistance.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#4CAF50"))
+            vb.btnToggleDistance.setTextColor(Color.WHITE)
+        }
+
         vb.tvProtectionStatus.text = "循環時間：${rules.getCycleLimitSeconds() / 60} 分鐘\n保護控管：${if (rules.isControlEnabled()) "已啟動" else "未啟動"}"
     }
 
