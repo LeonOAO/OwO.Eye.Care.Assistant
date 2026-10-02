@@ -7,6 +7,8 @@ import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
+import android.os.SystemClock
+import android.util.Size
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
@@ -34,6 +36,13 @@ class DistanceForegroundService : LifecycleService() {
     private var tooCloseAccumMs: Long = 0
     private var farAccumMs: Long = 0
     private var lastFrameTsMs: Long = 0
+    private var lastAnalysisStartMs: Long = 0
+
+    companion object {
+        // 遊戲低負載模式：每秒最多執行 3 次 ML Kit 推論。
+        private const val ANALYSIS_INTERVAL_MS = 333L
+        private val ANALYSIS_RESOLUTION = Size(480, 360)
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -53,7 +62,7 @@ class DistanceForegroundService : LifecycleService() {
             return START_NOT_STICKY
         }
 
-        val notification = buildNotification("距離守護中：強制 ≥30cm（無臉不鎖）")
+        val notification = buildNotification("遊戲低負載距離守護：強制 ≥30cm")
         val fgsType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
         } else 0
@@ -71,10 +80,15 @@ class DistanceForegroundService : LifecycleService() {
 
             val options = FaceDetectorOptions.Builder()
                 .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
+                .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_NONE)
+                .setContourMode(FaceDetectorOptions.CONTOUR_MODE_NONE)
+                .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_NONE)
+                .setMinFaceSize(0.15f)
                 .build()
             val detector = FaceDetection.getClient(options)
 
             val analysis = ImageAnalysis.Builder()
+                .setTargetResolution(ANALYSIS_RESOLUTION)
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
 
@@ -93,6 +107,13 @@ class DistanceForegroundService : LifecycleService() {
     }
 
     private fun analyzeFrame(detector: com.google.mlkit.vision.face.FaceDetector, imageProxy: ImageProxy) {
+        val analysisStartMs = SystemClock.elapsedRealtime()
+        if (analysisStartMs - lastAnalysisStartMs < ANALYSIS_INTERVAL_MS) {
+            imageProxy.close()
+            return
+        }
+        lastAnalysisStartMs = analysisStartMs
+
         val mediaImage = imageProxy.image
         if (mediaImage == null) {
             imageProxy.close()
@@ -104,7 +125,7 @@ class DistanceForegroundService : LifecycleService() {
 
         detector.process(image)
             .addOnSuccessListener { faces ->
-                val now = System.currentTimeMillis()
+                val now = SystemClock.elapsedRealtime()
                 if (lastFrameTsMs == 0L) lastFrameTsMs = now
                 val delta = now - lastFrameTsMs
                 lastFrameTsMs = now
