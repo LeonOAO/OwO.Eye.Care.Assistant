@@ -23,12 +23,6 @@ class BlockOverlayController(private val context: Context, private val rules: Ru
             val pinInput = v.findViewById<EditText>(R.id.pinInput)
             val unlockBtn = v.findViewById<Button>(R.id.unlockBtn)
             val msg = v.findViewById<TextView>(R.id.blockMsg)
-            
-            val zzz = "\uD83D\uDCA4"
-            val wand = "\uD83E\uDE84"
-            msg.text = "眼睛需要休息一下哦 (OwO) $zzz"
-            unlockBtn.text = "休息完畢，解鎖 (OwO) $wand"
-
             pinInput.showSoftInputOnFocus = false
             pinInput.requestFocus()
 
