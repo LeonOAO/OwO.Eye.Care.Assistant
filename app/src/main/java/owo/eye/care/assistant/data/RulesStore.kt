@@ -1,13 +1,10 @@
 package owo.eye.care.assistant.data
 
 import android.content.Context
-import java.time.LocalDate
 
 class RulesStore(context: Context) {
 
     private val sp = context.getSharedPreferences("guardian_rules", Context.MODE_PRIVATE)
-
-    private fun todayKey(): String = LocalDate.now().toString() // yyyy-MM-dd
 
     fun setControlEnabled(enabled: Boolean) {
         sp.edit().putBoolean("control_enabled", enabled).apply()
@@ -45,38 +42,5 @@ class RulesStore(context: Context) {
 
     fun getCycleLimitSeconds(): Int {
         return sp.getInt("cycle_limit_seconds", 20 * 60)
-    }
-
-    fun setDailyUnlockQuota(quota: Int) {
-        sp.edit().putInt("daily_unlock_quota", quota).apply()
-    }
-
-    fun getDailyUnlockQuota(): Int {
-        return sp.getInt("daily_unlock_quota", 3)
-    }
-
-    fun getUsedUnlockCountToday(): Int {
-        val key = "unlock_used_${todayKey()}"
-        return sp.getInt(key, 0)
-    }
-
-    fun getRemainingUnlocksToday(): Int {
-        val quota = getDailyUnlockQuota()
-        val used = getUsedUnlockCountToday()
-        return (quota - used).coerceAtLeast(0)
-    }
-
-    fun consumeOneUnlockToday(): Boolean {
-        val remaining = getRemainingUnlocksToday()
-        if (remaining <= 0) return false
-        val key = "unlock_used_${todayKey()}"
-        val used = sp.getInt(key, 0)
-        sp.edit().putInt(key, used + 1).apply()
-        return true
-    }
-
-    fun resetUnlockCountToday() {
-        val key = "unlock_used_${todayKey()}"
-        sp.edit().putInt(key, 0).apply()
     }
 }

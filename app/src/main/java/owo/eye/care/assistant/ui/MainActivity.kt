@@ -6,7 +6,10 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.text.InputType
+import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import owo.eye.care.assistant.data.DistanceStateStore
@@ -55,24 +58,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         vb.btnOpenOverlay.setOnClickListener {
-            if (hasOverlayPermission()) {
-                vb.tvStatus.text = "「顯示在其他應用程式上層」權限已啟用"
-            } else {
-                requestOverlayPermission()
-            }
-        }
-
-        vb.btnOpenManual.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/LeonOAO/OwO.Eye.Care.Assistant/blob/main/README.md")))
+            val intent = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:$packageName")
+            )
+            startActivity(intent)
         }
 
         vb.btnSetPin.setOnClickListener {
             val pin = vb.etPin.text?.toString() ?: ""
             if (pin.length >= 4) {
                 rules.setParentPin(pin)
-                vb.tvStatus.text = "家長 PIN 已儲存"
+                vb.tvStatus.text = "解除鎖定 PIN 已儲存"
             } else {
-                vb.tvStatus.text = "家長 PIN 必須至少 4 碼"
+                vb.tvStatus.text = "解除鎖定 PIN 必須至少 4 碼"
             }
             refreshUi()
         }
@@ -90,47 +89,42 @@ class MainActivity : AppCompatActivity() {
 
         vb.btnSaveRules.setOnClickListener {
             val limitMin = vb.etLimitMinutes.text?.toString()?.toIntOrNull()
-            val quota = vb.etDailyQuota.text?.toString()?.toIntOrNull()
             if (limitMin == null || limitMin !in 1..1440) {
                 vb.tvStatus.text = "使用時間必須是 1 到 1440 分鐘"
                 return@setOnClickListener
             }
-            if (quota == null || quota !in 0..100) {
-                vb.tvStatus.text = "每日解鎖次數必須是 0 到 100 次"
-                return@setOnClickListener
-            }
 
             rules.setCycleLimitSeconds(limitMin * 60)
-            rules.setDailyUnlockQuota(quota)
-
             vb.tvStatus.text = "時間設定已儲存"
             refreshUi()
         }
 
         vb.btnToggleControl.setOnClickListener {
             val enabled = rules.isControlEnabled()
-            if (!enabled && !rules.hasParentPin()) {
-                vb.tvStatus.text = "請先設定至少 4 碼的家長 PIN"
-                return@setOnClickListener
-            }
-            if (!enabled && !isAccessibilityEnabled()) {
-                vb.tvStatus.text = "請先啟用 OwO 護眼小助手的無障礙服務"
-                return@setOnClickListener
-            }
-            if (!enabled && !hasOverlayPermission()) {
-                vb.tvStatus.text = "請先授予「顯示在其他應用程式上層」權限"
-                requestOverlayPermission()
-                return@setOnClickListener
-            }
-            rules.setControlEnabled(!enabled)
-            vb.tvStatus.text = if (!enabled) "時間管控已開啟" else "時間管控已關閉"
-            refreshUi()
-        }
 
-        vb.btnResetTodayQuota.setOnClickListener {
-            rules.resetUnlockCountToday()
-            vb.tvStatus.text = "今日解鎖額度已恢復"
-            refreshUi()
+            if (!enabled) {
+                if (!rules.hasParentPin()) {
+                    vb.tvStatus.text = "請先設定至少 4 碼的解除鎖定 PIN"
+                    return@setOnClickListener
+                }
+                if (!isAccessibilityEnabled()) {
+                    vb.tvStatus.text = "請先啟用 OwO 護眼小助手的無障礙服務"
+                    return@setOnClickListener
+                }
+                if (!Settings.canDrawOverlays(this)) {
+                    vb.tvStatus.text = "請先授予「顯示在其他應用程式上層」權限"
+                    return@setOnClickListener
+                }
+                rules.setControlEnabled(true)
+                vb.tvStatus.text = "時間管控已開啟"
+                refreshUi()
+            } else {
+                if (rules.hasStopPin()) {
+                    showStopPinDialog()
+                } else {
+                    vb.tvStatus.text = "請先設定停止管控 PIN，才能停止管控"
+                }
+            }
         }
 
         vb.btnStartDistance.setOnClickListener {
@@ -155,7 +149,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         vb.etLimitMinutes.setText((rules.getCycleLimitSeconds() / 60).toString())
-        vb.etDailyQuota.setText(rules.getDailyUnlockQuota().toString())
 
         refreshUi()
     }
@@ -177,38 +170,44 @@ class MainActivity : AppCompatActivity() {
         vb.tvStatus.text = "距離守護已開啟"
     }
 
-    private fun hasOverlayPermission(): Boolean {
-        return Settings.canDrawOverlays(this)
-    }
+    private fun showStopPinDialog() {
+        val input = EditText(this)
+        input.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
+        val pad = (20 * resources.displayMetrics.density).toInt()
+        input.setPadding(pad, pad, pad, pad)
+        input.hint = "輸入停止管控 PIN"
 
-    private fun requestOverlayPermission() {
-        if (!hasOverlayPermission()) {
-            val intent = Intent(
-                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                Uri.parse("package:$packageName")
-            )
-            startActivity(intent)
-        }
+        AlertDialog.Builder(this)
+            .setTitle("停止管控")
+            .setView(input)
+            .setPositiveButton("確定") { _, _ ->
+                val pin = input.text.toString()
+                if (rules.verifyStopPin(pin)) {
+                    rules.setControlEnabled(false)
+                    vb.tvStatus.text = "時間管控已關閉"
+                    refreshUi()
+                } else {
+                    vb.tvStatus.text = "停止管控 PIN 錯誤，無法關閉"
+                }
+            }
+            .setNegativeButton("取消", null)
+            .show()
     }
 
     private fun refreshUi() {
         val accEnabled = isAccessibilityEnabled()
-        val overlayGranted = hasOverlayPermission()
+        val overlayGranted = Settings.canDrawOverlays(this)
 
         vb.tvAccStatus.text = "無障礙服務：${if (accEnabled) "已開啟" else "尚未開啟"}"
         vb.tvOverlayStatus.text = "上層顯示權限：${if (overlayGranted) "已開啟" else "尚未開啟"}"
-
-        vb.btnOpenOverlay.text = if (overlayGranted) "上層顯示權限已授權" else "開啟上層顯示權限"
-        vb.btnOpenOverlay.isEnabled = !overlayGranted
+        
+        vb.btnOpenOverlay.text = "授權顯示在其他應用程式上層"
+        vb.btnOpenOverlay.isEnabled = true
 
         vb.btnToggleControl.text = if (rules.isControlEnabled()) "停止管控" else "開始管控"
 
-        val remaining = rules.getRemainingUnlocksToday()
         val limitMin = rules.getCycleLimitSeconds() / 60
-        val quota = rules.getDailyUnlockQuota()
-
-        vb.tvStatus.text =
-            "單次時間：$limitMin 分鐘\n每日額度：$quota 次\n今日可解鎖：$remaining 次\n時間管控：${if (rules.isControlEnabled()) "已開啟" else "已關閉"}\n停止管控 PIN：${if (rules.hasStopPin()) "已設定" else "尚未設定"}"
+        vb.tvStatus.text = "單次時間：$limitMin 分鐘\n時間管控：${if (rules.isControlEnabled()) "已開啟" else "已關閉"}\n停止管控 PIN：${if (rules.hasStopPin()) "已設定" else "尚未設定"}"
     }
 
     private fun isAccessibilityEnabled(): Boolean {

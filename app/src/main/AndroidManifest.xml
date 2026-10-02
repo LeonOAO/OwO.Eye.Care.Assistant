@@ -22,7 +22,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Accessibility Service -->
         <service
             android:name=".service.GuardAccessibilityService"
             android:exported="false"
@@ -35,7 +34,6 @@
                 android:resource="@xml/guard_accessibility_config" />
         </service>
 
-        <!-- Distance Foreground Service (camera type) -->
         <service
             android:name=".service.DistanceForegroundService"
             android:exported="false"

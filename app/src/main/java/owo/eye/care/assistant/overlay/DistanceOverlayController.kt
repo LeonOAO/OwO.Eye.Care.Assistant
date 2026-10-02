@@ -24,6 +24,13 @@ class DistanceOverlayController(private val context: Context) {
                 val v = LayoutInflater.from(themedContext).inflate(R.layout.overlay_distance, null, false)
                 v.fitsSystemWindows = false
 
+                v.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION 
+                        or View.SYSTEM_UI_FLAG_FULLSCREEN      
+                        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+
                 val params = WindowManager.LayoutParams(
                     WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.MATCH_PARENT,
@@ -35,7 +42,6 @@ class DistanceOverlayController(private val context: Context) {
                 )
                 params.gravity = Gravity.FILL
 
-                // 解決頂部挖孔與瀏海屏留白
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     params.layoutInDisplayCutoutMode =
                         WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES

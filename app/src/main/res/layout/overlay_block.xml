@@ -1,27 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/blockRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/overlay_scrim"
     android:fillViewport="true"
-    android:padding="20dp">
+    android:background="@color/overlay_scrim">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="@drawable/bg_overlay_card"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:gravity="center"
+        android:padding="20dp">
 
-        <TextView android:id="@+id/blockTitle" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:includeFontPadding="true" android:lineSpacingExtra="4dp" android:text="使用時間已到" android:textColor="@color/text_primary" android:textSize="25sp" android:textStyle="bold" />
-        <TextView android:id="@+id/blockMsg" style="@style/BodyText" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:gravity="center" android:text="請輸入家長 PIN" />
-        <TextView android:id="@+id/blockRemaining" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:background="@drawable/bg_status" android:gravity="center" android:lineSpacingExtra="4dp" android:padding="12dp" android:text="今日可解鎖：0 次" android:textColor="@color/text_primary" android:textSize="15sp" android:textStyle="bold" />
-        <EditText android:id="@+id/pinInput" style="@style/AppField" android:layout_marginTop="16dp" android:hint="家長 PIN" android:inputType="numberPassword" android:maxLines="1" />
-        <Button android:id="@+id/unlockBtn" style="@style/AppButton" android:layout_marginTop="12dp" android:text="解鎖並繼續使用" />
-        <TextView android:id="@+id/stopHint" style="@style/BodyText" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="22dp" android:gravity="center" android:text="停止管控" />
-        <EditText android:id="@+id/stopPinInput" style="@style/AppField" android:layout_marginTop="12dp" android:hint="停止管控 PIN" android:inputType="numberPassword" android:maxLines="1" />
-        <Button android:id="@+id/stopBtn" style="@style/AppButton" android:layout_marginTop="12dp" android:text="停止管控" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_overlay_card"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <TextView
+                android:id="@+id/blockMsg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="請輸入解除鎖定 PIN"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary" />
+
+            <EditText
+                android:id="@+id/pinInput"
+                style="@style/AppField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="點擊輸入解除鎖定 PIN"
+                android:gravity="center"
+                android:focusable="true"
+                android:inputType="numberPassword" />
+
+            <Button
+                android:id="@+id/unlockBtn"
+                style="@style/AppButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="解鎖並開始下一輪" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <Button android:id="@+id/btn1" style="@style/AppButton" android:layout_width="0dp" android:layout_weight="1" android:layout_margin="4dp" android:backgroundTint="@color/surface_soft" android:textColor="@color/text_primary" android:textSize="22sp" android:text="1"/>
+                    <Button android:id="@+id/btn2" style="@style/AppButton" android:layout_width="0dp" android:layout_weight="1" android:layout_margin="4dp" android:backgroundTint="@color/surface_soft" android:textColor="@color/text_primary" android:textSize="22sp" android:text="2"/>
+                    <Button android:id="@+id/btn3" style="@style/AppButton" android:layout_width="0dp" android:layout_weight="1" android:layout_margin="4dp" android:backgroundTint="@color/surface_soft" android:textColor="@color/text_primary" android:textSize="22sp" android:text="3"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <Button android:id="@+id/btn4" style="@style/AppButton" android:layout_width="0dp" android:layout_weight="1" android:layout_margin="4dp" android:backgroundTint="@color/surface_soft" android:textColor="@color/text_primary" android:textSize="22sp" android:text="4"/>
+                    <Button android:id="@+id/btn5" style="@style/AppButton" android:layout_width="0dp" android:layout_weight="1" android:layout_margin="4dp" android:backgroundTint="@color/surface_soft" android:textColor="@color/text_primary" android:textSize="22sp" android:text="5"/>
+                    <Button android:id="@+id/btn6" style="@style/AppButton" android:layout_width="0dp" android:layout_weight="1" android:layout_margin="4dp" android:backgroundTint="@color/surface_soft" android:textColor="@color/text_primary" android:textSize="22sp" android:text="6"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <Button android:id="@+id/btn7" style="@style/AppButton" android:layout_width="0dp" android:layout_weight="1" android:layout_margin="4dp" android:backgroundTint="@color/surface_soft" android:textColor="@color/text_primary" android:textSize="22sp" android:text="7"/>
+                    <Button android:id="@+id/btn8" style="@style/AppButton" android:layout_width="0dp" android:layout_weight="1" android:layout_margin="4dp" android:backgroundTint="@color/surface_soft" android:textColor="@color/text_primary" android:textSize="22sp" android:text="8"/>
+                    <Button android:id="@+id/btn9" style="@style/AppButton" android:layout_width="0dp" android:layout_weight="1" android:layout_margin="4dp" android:backgroundTint="@color/surface_soft" android:textColor="@color/text_primary" android:textSize="22sp" android:text="9"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <Button android:id="@+id/btnClear" style="@style/AppButton" android:layout_width="0dp" android:layout_weight="1" android:layout_margin="4dp" android:backgroundTint="@color/surface_soft" android:textColor="@color/danger" android:textSize="16sp" android:text="清除"/>
+                    <Button android:id="@+id/btn0" style="@style/AppButton" android:layout_width="0dp" android:layout_weight="1" android:layout_margin="4dp" android:backgroundTint="@color/surface_soft" android:textColor="@color/text_primary" android:textSize="22sp" android:text="0"/>
+                    <Button android:id="@+id/btnDel" style="@style/AppButton" android:layout_width="0dp" android:layout_weight="1" android:layout_margin="4dp" android:backgroundTint="@color/surface_soft" android:textColor="@color/text_primary" android:textSize="16sp" android:text="刪除"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

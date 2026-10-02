@@ -17,8 +17,7 @@ import owo.eye.care.assistant.data.RulesStore
 class BlockOverlayController(
     private val context: Context,
     private val rules: RulesStore,
-    private val onUnlocked: () -> Unit,
-    private val onStopControl: () -> Unit
+    private val onUnlocked: () -> Unit
 ) {
     private val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private var view: View? = null
@@ -33,65 +32,66 @@ class BlockOverlayController(
             val v = LayoutInflater.from(themedContext).inflate(R.layout.overlay_block, null, false)
             v.fitsSystemWindows = false
 
+            v.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+
             val pinInput = v.findViewById<EditText>(R.id.pinInput)
             val unlockBtn = v.findViewById<Button>(R.id.unlockBtn)
             val msg = v.findViewById<TextView>(R.id.blockMsg)
-            val remainingTv = v.findViewById<TextView>(R.id.blockRemaining)
 
-            val stopPinInput = v.findViewById<EditText>(R.id.stopPinInput)
-            val stopBtn = v.findViewById<Button>(R.id.stopBtn)
-            val stopHint = v.findViewById<TextView>(R.id.stopHint)
+            pinInput.showSoftInputOnFocus = false
+            pinInput.requestFocus()
 
-            fun refreshRemaining() {
-                remainingTv.text = "今日可解鎖：${rules.getRemainingUnlocksToday()} 次"
+            val numButtons = mapOf(
+                R.id.btn0 to "0", R.id.btn1 to "1", R.id.btn2 to "2",
+                R.id.btn3 to "3", R.id.btn4 to "4", R.id.btn5 to "5",
+                R.id.btn6 to "6", R.id.btn7 to "7", R.id.btn8 to "8",
+                R.id.btn9 to "9"
+            )
+
+            for ((id, digit) in numButtons) {
+                v.findViewById<Button>(id).setOnClickListener {
+                    val start = pinInput.selectionStart
+                    val end = pinInput.selectionEnd
+                    if (start >= 0 && end >= 0) {
+                        pinInput.text.replace(start, end, digit)
+                    } else {
+                        pinInput.append(digit)
+                    }
+                }
             }
 
-            refreshRemaining()
-            msg.text = "請輸入家長 PIN"
+            v.findViewById<Button>(R.id.btnDel).setOnClickListener {
+                val start = pinInput.selectionStart
+                val end = pinInput.selectionEnd
+                if (start > 0 && start == end) {
+                    pinInput.text.delete(start - 1, start)
+                } else if (start != end) {
+                    pinInput.text.delete(start, end)
+                }
+            }
+
+            v.findViewById<Button>(R.id.btnClear).setOnClickListener {
+                pinInput.text.clear()
+            }
+
+            msg.text = "請輸入解除鎖定 PIN"
 
             unlockBtn.setOnClickListener {
                 val input = pinInput.text?.toString() ?: ""
-
+                
                 if (!rules.verifyParentPin(input)) {
-                    msg.text = "家長 PIN 不正確，請重新輸入"
+                    msg.text = "解除鎖定 PIN 不正確，請重新輸入"
                     pinInput.setText("")
                     return@setOnClickListener
                 }
-
-                val ok = rules.consumeOneUnlockToday()
-                if (!ok) {
-                    msg.text = "今日解鎖額度已用完"
-                    pinInput.setText("")
-                    refreshRemaining()
-                    return@setOnClickListener
-                }
-
+                
                 hide()
                 onUnlocked()
-            }
-
-            stopBtn.setOnClickListener {
-                if (rules.getRemainingUnlocksToday() > 0) {
-                    stopHint.text = "解鎖額度用完後才可停止管控"
-                    stopPinInput.setText("")
-                    return@setOnClickListener
-                }
-
-                val input = stopPinInput.text?.toString() ?: ""
-                if (!rules.hasStopPin()) {
-                    stopHint.text = "尚未設定停止管控 PIN"
-                    stopPinInput.setText("")
-                    return@setOnClickListener
-                }
-
-                if (!rules.verifyStopPin(input)) {
-                    stopHint.text = "停止管控 PIN 不正確，請重新輸入"
-                    stopPinInput.setText("")
-                    return@setOnClickListener
-                }
-
-                hide()
-                onStopControl()
             }
 
             val params = WindowManager.LayoutParams(
@@ -105,7 +105,6 @@ class BlockOverlayController(
             )
             params.gravity = Gravity.FILL
 
-            // 解決頂部挖孔與瀏海屏留白
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 params.layoutInDisplayCutoutMode =
                     WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES

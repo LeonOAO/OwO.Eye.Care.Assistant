@@ -54,18 +54,12 @@ class GuardAccessibilityService : AccessibilityService() {
         rules = RulesStore(applicationContext)
         distanceState = DistanceStateStore(applicationContext)
 
-        // 傳入 this 獲得合法的 Accessibility Window Token
         distanceOverlay = DistanceOverlayController(this)
 
         timeOverlay = BlockOverlayController(
             this,
             rules,
             onUnlocked = {
-                cycleUsedSec = 0
-                lastTickMs = System.currentTimeMillis()
-            },
-            onStopControl = {
-                rules.setControlEnabled(false)
                 cycleUsedSec = 0
                 lastTickMs = System.currentTimeMillis()
             }
@@ -92,7 +86,6 @@ class GuardAccessibilityService : AccessibilityService() {
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        // no-op
     }
 
     private fun tick() {
@@ -105,7 +98,6 @@ class GuardAccessibilityService : AccessibilityService() {
             return
         }
 
-        // 距離過近具備最高優先級
         if (distanceState.isBlocked()) {
             val cm = distanceState.getLastDistanceCm()
             if (timeOverlay.isShowing()) timeOverlay.hide()
