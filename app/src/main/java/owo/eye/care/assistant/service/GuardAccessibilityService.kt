@@ -19,23 +19,37 @@ class GuardAccessibilityService : AccessibilityService() {
     
     private val timerRunnable = object : Runnable {
         override fun run() {
-            if (rules.isControlEnabled() && !stateStore.isBlocked()) {
-                // 檢查螢幕是否開啟 (螢幕關閉時暫停計時)
-                val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
-                val isScreenOn = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-                    pm.isInteractive
-                } else {
-                    @Suppress("DEPRECATION")
-                    pm.isScreenOn
-                }
-                
-                if (isScreenOn) {
-                    val elapsed = stateStore.getElapsedSeconds() + 1
-                    stateStore.setElapsedSeconds(elapsed)
-                    val limit = rules.getCycleLimitSeconds()
-                    if (elapsed >= limit) {
-                        stateStore.setBlocked(true)
+            if (rules.isControlEnabled()) {
+                // 如果已經被設定為封鎖，確保遮罩顯示
+                if (stateStore.isBlocked()) {
+                    if (blockController?.isShowing() == false) {
+                        blockController?.show()
                     }
+                } else {
+                    // 檢查螢幕是否開啟 (螢幕關閉時暫停計時)
+                    val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+                    val isScreenOn = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+                        pm.isInteractive
+                    } else {
+                        @Suppress("DEPRECATION")
+                        pm.isScreenOn
+                    }
+                    
+                    if (isScreenOn) {
+                        val elapsed = stateStore.getElapsedSeconds() + 1
+                        stateStore.setElapsedSeconds(elapsed)
+                        val limit = rules.getCycleLimitSeconds()
+                        if (elapsed >= limit) {
+                            stateStore.setBlocked(true)
+                            if (blockController?.isShowing() == false) {
+                                blockController?.show()
+                            }
+                        }
+                    }
+                }
+            } else {
+                if (blockController?.isShowing() == true) {
+                    blockController?.hide()
                 }
             }
             handler.postDelayed(this, 1000L)
