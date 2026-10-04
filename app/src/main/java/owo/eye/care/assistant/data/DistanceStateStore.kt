@@ -1,5 +1,6 @@
 package owo.eye.care.assistant.data
 import android.content.Context
+
 class DistanceStateStore(context: Context) {
     private val prefs = context.getSharedPreferences("owo_distance", Context.MODE_PRIVATE)
     fun setBlocked(b: Boolean) = prefs.edit().putBoolean("blocked", b).apply()

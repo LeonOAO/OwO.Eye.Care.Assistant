@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
             if (newMode == 1) {
                 distanceState.setBlocked(false)
             }
-            showToast(if (newMode == 0) "已切換為：強制鎖定模式" else "已切換為：溫和語音提醒")
+            showToast(if (newMode == 0) "已切換為：全螢幕 PIN 鎖定" else "已切換為：語音及上橫幅")
             refreshUi()
         }
 
@@ -193,7 +193,7 @@ class MainActivity : AppCompatActivity() {
         vb.tvAccStatus.text = "無障礙服務：${if (isAccessibilityEnabled()) "已開啟" else "尚未開啟"}"
         vb.tvOverlayStatus.text = "顯示在其他應用程式上層：${if (Settings.canDrawOverlays(this)) "已允許" else "尚未允許"}"
         
-        vb.btnToggleMode.text = if (rules.getProtectionMode() == 0) "防護模式：強制鎖定 (點擊切換)" else "防護模式：溫和語音提醒 (點擊切換)\n(時間到僅彈出小視窗與語音)"
+        vb.btnToggleMode.text = if (rules.getProtectionMode() == 0) "提醒模式（點擊切換）：全螢幕 PIN 鎖定" else "提醒模式（點擊切換）：語音及上橫幅"
         
         if (rules.isControlEnabled()) {
             vb.btnToggleControl.text = "解除護眼魔法 (OwO)"

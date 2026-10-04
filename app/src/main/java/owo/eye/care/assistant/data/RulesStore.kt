@@ -1,5 +1,6 @@
 package owo.eye.care.assistant.data
 import android.content.Context
+
 class RulesStore(context: Context) {
     private val sp = context.getSharedPreferences("guardian_rules", Context.MODE_PRIVATE)
     fun setControlEnabled(enabled: Boolean) = sp.edit().putBoolean("control_enabled", enabled).apply()
