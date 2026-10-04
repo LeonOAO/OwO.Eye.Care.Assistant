@@ -1,8 +1,6 @@
 package owo.eye.care.assistant.data
 import android.content.Context
 class DistanceStateStore(context: Context) {
-    fun getElapsedSeconds(): Int = prefs.getInt("elapsed_seconds", 0)
-    fun setElapsedSeconds(sec: Int) = prefs.edit().putInt("elapsed_seconds", sec).apply()
     private val prefs = context.getSharedPreferences("owo_distance", Context.MODE_PRIVATE)
     fun setBlocked(b: Boolean) = prefs.edit().putBoolean("blocked", b).apply()
     fun isBlocked() = prefs.getBoolean("blocked", false)
@@ -14,4 +12,6 @@ class DistanceStateStore(context: Context) {
     fun getRefFaceWidthPxAt30cm() = prefs.getInt("ref_face_30", 0)
     fun setServiceRunning(b: Boolean) = prefs.edit().putBoolean("running", b).apply()
     fun isServiceRunning() = prefs.getBoolean("running", false)
+    fun getElapsedSeconds(): Int = prefs.getInt("elapsed_seconds", 0)
+    fun setElapsedSeconds(sec: Int) = prefs.edit().putInt("elapsed_seconds", sec).apply()
 }

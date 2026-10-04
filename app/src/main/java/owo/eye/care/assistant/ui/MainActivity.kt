@@ -54,7 +54,6 @@ class MainActivity : AppCompatActivity() {
         vb = ActivityMainBinding.inflate(layoutInflater)
         setContentView(vb.root)
 
-        // 點擊空白處自動取消焦點並收起鍵盤
         vb.root.setOnTouchListener { _, _ ->
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
             currentFocus?.windowToken?.let { imm.hideSoftInputFromWindow(it, 0) }
@@ -62,7 +61,6 @@ class MainActivity : AppCompatActivity() {
             false
         }
 
-        // 監聽輸入框的「打勾/完成」按鈕
         val imeListener = android.widget.TextView.OnEditorActionListener { v, actionId, _ ->
             if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE ||
                 actionId == android.view.inputmethod.EditorInfo.IME_ACTION_NEXT ||
@@ -78,6 +76,7 @@ class MainActivity : AppCompatActivity() {
         vb.etLimitMinutes.setOnEditorActionListener(imeListener)
         vb.etPin.setOnEditorActionListener(imeListener)
         vb.etStopPin.setOnEditorActionListener(imeListener)
+        
         rules = RulesStore(this)
         distanceState = DistanceStateStore(this)
 

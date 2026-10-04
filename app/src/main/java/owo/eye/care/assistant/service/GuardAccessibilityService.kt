@@ -6,27 +6,30 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
+import android.speech.tts.TextToSpeech
 import android.view.accessibility.AccessibilityEvent
 import owo.eye.care.assistant.data.DistanceStateStore
 import owo.eye.care.assistant.data.RulesStore
 import owo.eye.care.assistant.overlay.BlockOverlayController
+import owo.eye.care.assistant.overlay.ReminderOverlayController
+import java.util.Locale
 
 class GuardAccessibilityService : AccessibilityService() {
     private lateinit var rules: RulesStore
     private lateinit var stateStore: DistanceStateStore
     private var blockController: BlockOverlayController? = null
+    private var reminderController: ReminderOverlayController? = null
+    private var tts: TextToSpeech? = null
     private val handler = Handler(Looper.getMainLooper())
     
     private val timerRunnable = object : Runnable {
         override fun run() {
             if (rules.isControlEnabled()) {
-                // 如果已經被設定為封鎖，確保遮罩顯示
                 if (stateStore.isBlocked()) {
-                    if (blockController?.isShowing() == false) {
+                    if (rules.getProtectionMode() == 0 && blockController?.isShowing() == false) {
                         blockController?.show()
                     }
                 } else {
-                    // 檢查螢幕是否開啟 (螢幕關閉時暫停計時)
                     val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
                     val isScreenOn = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
                         pm.isInteractive
@@ -39,10 +42,15 @@ class GuardAccessibilityService : AccessibilityService() {
                         val elapsed = stateStore.getElapsedSeconds() + 1
                         stateStore.setElapsedSeconds(elapsed)
                         val limit = rules.getCycleLimitSeconds()
+                        
                         if (elapsed >= limit) {
-                            stateStore.setBlocked(true)
-                            if (blockController?.isShowing() == false) {
-                                blockController?.show()
+                            if (rules.getProtectionMode() == 0) {
+                                stateStore.setBlocked(true)
+                                if (blockController?.isShowing() == false) blockController?.show()
+                            } else {
+                                stateStore.setElapsedSeconds(0)
+                                reminderController?.show()
+                                tts?.speak("語音護眼小幫手提醒您，請休息一下。", TextToSpeech.QUEUE_FLUSH, null, null)
                             }
                         }
                     }
@@ -60,11 +68,19 @@ class GuardAccessibilityService : AccessibilityService() {
         super.onCreate()
         rules = RulesStore(this)
         stateStore = DistanceStateStore(this)
+        reminderController = ReminderOverlayController(this)
         blockController = BlockOverlayController(this, rules) {
             stateStore.setBlocked(false)
-            stateStore.setElapsedSeconds(0) // 解鎖後重置計時，進入下一輪
+            stateStore.setElapsedSeconds(0)
             blockController?.hide()
         }
+        
+        tts = TextToSpeech(this) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                tts?.language = Locale.TAIWAN
+            }
+        }
+        
         handler.postDelayed(timerRunnable, 1000L)
     }
 
@@ -73,7 +89,7 @@ class GuardAccessibilityService : AccessibilityService() {
             if (blockController?.isShowing() == true) blockController?.hide()
             return
         }
-        if (stateStore.isBlocked()) {
+        if (stateStore.isBlocked() && rules.getProtectionMode() == 0) {
             if (blockController?.isShowing() == false) blockController?.show()
         } else {
             if (blockController?.isShowing() == true) blockController?.hide()
@@ -82,12 +98,16 @@ class GuardAccessibilityService : AccessibilityService() {
 
     override fun onInterrupt() { 
         handler.removeCallbacks(timerRunnable)
-        blockController?.hide() 
+        blockController?.hide()
+        reminderController?.hide()
     }
     
     override fun onDestroy() { 
         handler.removeCallbacks(timerRunnable)
-        blockController?.hide() 
+        blockController?.hide()
+        reminderController?.hide()
+        tts?.stop()
+        tts?.shutdown()
         super.onDestroy() 
     }
 }

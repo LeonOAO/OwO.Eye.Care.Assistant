@@ -28,12 +28,14 @@ class DistanceForegroundService : LifecycleService() {
     private val detector = FaceDetection.getClient(
         FaceDetectorOptions.Builder()
             .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
+            .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_NONE)
             .build()
     )
     private val cameraExecutor = Executors.newSingleThreadExecutor()
     
     private var tooCloseFrames = 0
     private var normalFrames = 0
+    private var frameCounter = 0
 
     override fun onCreate() {
         super.onCreate()
@@ -74,6 +76,12 @@ class DistanceForegroundService : LifecycleService() {
                     .build()
 
                 imageAnalysis.setAnalyzer(cameraExecutor) { imageProxy ->
+                    frameCounter++
+                    if (frameCounter % 2 != 0) {
+                        imageProxy.close()
+                        return@setAnalyzer
+                    }
+
                     @SuppressLint("UnsafeOptInUsageError")
                     val mediaImage = imageProxy.image
                     if (mediaImage != null) {
@@ -90,7 +98,6 @@ class DistanceForegroundService : LifecycleService() {
                                         val currentCm = (ref * 30) / wPx
                                         stateStore.setLastDistanceCm(currentCm)
                                         
-                                        // 假設距離小於等於 25 公分 (即 wPx >= ref * 1.2) 即視為太近
                                         if (currentCm in 1..25) {
                                             tooCloseFrames++
                                             normalFrames = 0
@@ -141,7 +148,7 @@ class DistanceForegroundService : LifecycleService() {
             manager.createNotificationChannel(channel)
         }
         return NotificationCompat.Builder(this, channelId)
-            .setContentTitle("OwO 護眼距離守護中 (OwO) \uD83D\uDEE1\uFE0F")
+            .setContentTitle("OwO 護眼距離守護中 (OwO)")
             .setContentText("正在背景監測您的用眼距離")
             .setSmallIcon(android.R.drawable.ic_menu_camera)
             .build()
