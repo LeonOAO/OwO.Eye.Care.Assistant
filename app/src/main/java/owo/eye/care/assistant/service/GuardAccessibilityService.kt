@@ -2,6 +2,8 @@ package owo.eye.care.assistant.service
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Context
+import android.media.AudioAttributes
+import android.media.RingtoneManager
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -50,7 +52,24 @@ class GuardAccessibilityService : AccessibilityService() {
                             } else {
                                 stateStore.setElapsedSeconds(0)
                                 reminderController?.show()
-                                tts?.speak("語音護眼小幫手提醒您，請休息一下。", TextToSpeech.QUEUE_FLUSH, null, null)
+                                
+                                // 1. 播放系統提示音 (確保就算 TTS 壞掉也一定有聲音)
+                                try {
+                                    val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                                    val rt = RingtoneManager.getRingtone(applicationContext, uri)
+                                    rt.play()
+                                } catch (e: Exception) { e.printStackTrace() }
+                                
+                                // 2. 播放 TTS 語音
+                                try {
+                                    val text = "語音護眼小幫手提醒您，請休息一下。"
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                        tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "reminder_tts")
+                                    } else {
+                                        @Suppress("DEPRECATION")
+                                        tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null)
+                                    }
+                                } catch (e: Exception) { e.printStackTrace() }
                             }
                         }
                     }
@@ -80,6 +99,15 @@ class GuardAccessibilityService : AccessibilityService() {
                 val result = tts?.setLanguage(Locale.TAIWAN)
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                     tts?.setLanguage(Locale.CHINESE)
+                }
+                
+                // 將聲音通道設定為 Alarm (鬧鐘聲道)，確保在玩遊戲靜音時也能發出聲音
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    val audioAttributes = AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_ALARM)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                        .build()
+                    tts?.setAudioAttributes(audioAttributes)
                 }
             }
         }
