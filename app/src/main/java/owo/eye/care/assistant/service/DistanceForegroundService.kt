@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
+import android.util.Size
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -68,6 +69,7 @@ class DistanceForegroundService : LifecycleService() {
             try {
                 val cameraProvider = cameraProviderFuture.get()
                 val imageAnalysis = ImageAnalysis.Builder()
+                    .setTargetResolution(Size(480, 360))
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                     .build()
 
@@ -92,7 +94,7 @@ class DistanceForegroundService : LifecycleService() {
                                         if (currentCm in 1..25) {
                                             tooCloseFrames++
                                             normalFrames = 0
-                                            if (tooCloseFrames >= 3) {
+                                            if (tooCloseFrames >= 2) {
                                                 if (!distanceOverlay.isShowing()) {
                                                     distanceOverlay.show()
                                                 }
