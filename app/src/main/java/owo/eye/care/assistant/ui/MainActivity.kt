@@ -117,7 +117,13 @@ class MainActivity : AppCompatActivity() {
                 showToast("護眼魔法已啟動！")
                 refreshUi()
             } else {
-                if (rules.hasStopPin()) showStopPinDialog() else showToast("請先設定停止鎖定 PIN")
+                if (rules.hasStopPin()) {
+                    showVerifyStopPinDialog("解除護眼魔法 (OwO) \uD83E\uDE84") {
+                        rules.setControlEnabled(false)
+                        showToast("護眼魔法已解除")
+                        refreshUi()
+                    }
+                } else showToast("請先設定停止鎖定 PIN")
             }
         }
 
@@ -150,11 +156,15 @@ class MainActivity : AppCompatActivity() {
                 val hasCam = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
                 if (hasCam) startDistanceService() else requestCamera.launch(Manifest.permission.CAMERA)
             } else {
-                stopService(Intent(this, DistanceForegroundService::class.java))
-                distanceState.setServiceRunning(false)
-                distanceState.setBlocked(false)
-                showToast("距離偵測已解除")
-                refreshUi()
+                if (rules.hasStopPin()) {
+                    showVerifyStopPinDialog("解除距離偵測 (OwO) \uD83D\uDEE1\uFE0F") {
+                        stopService(Intent(this, DistanceForegroundService::class.java))
+                        distanceState.setServiceRunning(false)
+                        distanceState.setBlocked(false)
+                        showToast("距離偵測已解除")
+                        refreshUi()
+                    }
+                } else showToast("請先設定停止鎖定 PIN")
             }
         }
 
@@ -171,20 +181,18 @@ class MainActivity : AppCompatActivity() {
         refreshUi()
     }
 
-    private fun showStopPinDialog() {
+    private fun showVerifyStopPinDialog(title: String, onSuccess: () -> Unit) {
         val input = EditText(this).apply {
             inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
             setPadding(60, 60, 60, 60)
             hint = "請輸入密碼"
         }
         AlertDialog.Builder(this)
-            .setTitle("解除護眼魔法 (OwO) \uD83E\uDE84")
+            .setTitle(title)
             .setView(input)
             .setPositiveButton("確定") { _, _ ->
                 if (rules.verifyStopPin(input.text.toString())) {
-                    rules.setControlEnabled(false)
-                    showToast("護眼魔法已解除")
-                    refreshUi()
+                    onSuccess()
                 } else showToast("密碼錯誤，請重新輸入 (QwQ)")
             }.setNegativeButton("取消", null).show()
     }
