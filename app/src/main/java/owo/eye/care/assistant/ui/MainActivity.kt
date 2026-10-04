@@ -190,6 +190,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun refreshUi() {
+        vb.etPin.hint = if (rules.hasParentPin()) "******" else "（空白）"
+        vb.etStopPin.hint = if (rules.hasStopPin()) "******" else "（空白）"
         vb.tvAccStatus.text = "無障礙服務：${if (isAccessibilityEnabled()) "已開啟" else "尚未開啟"}"
         vb.tvOverlayStatus.text = "顯示在其他應用程式上層：${if (Settings.canDrawOverlays(this)) "已允許" else "尚未允許"}"
         
