@@ -84,6 +84,16 @@ class MainActivity : AppCompatActivity() {
         vb.btnOpenAccessibility.setOnClickListener { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
         vb.btnOpenOverlay.setOnClickListener { startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))) }
         
+        vb.btnToggleMode.setOnClickListener {
+            val newMode = if (rules.getProtectionMode() == 0) 1 else 0
+            rules.setProtectionMode(newMode)
+            if (newMode == 1) {
+                distanceState.setBlocked(false)
+            }
+            showToast(if (newMode == 0) "已切換為：強制鎖定模式" else "已切換為：溫和語音提醒")
+            refreshUi()
+        }
+
         vb.etLimitMinutes.setText((rules.getCycleLimitSeconds() / 60).toString())
 
         vb.btnSaveSettings.setOnClickListener {
@@ -183,6 +193,8 @@ class MainActivity : AppCompatActivity() {
     private fun refreshUi() {
         vb.tvAccStatus.text = "無障礙服務：${if (isAccessibilityEnabled()) "已開啟" else "尚未開啟"}"
         vb.tvOverlayStatus.text = "顯示在其他應用程式上層：${if (Settings.canDrawOverlays(this)) "已允許" else "尚未允許"}"
+        
+        vb.btnToggleMode.text = if (rules.getProtectionMode() == 0) "防護模式：強制鎖定 (點擊切換)" else "防護模式：溫和語音提醒 (點擊切換)\n(時間到僅彈出小視窗與語音)"
         
         if (rules.isControlEnabled()) {
             vb.btnToggleControl.text = "解除護眼魔法 (OwO)"
