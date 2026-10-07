@@ -65,7 +65,7 @@ class CalibrationActivity : AppCompatActivity() {
             }
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
         }
-        frame.addView(guide, FrameLayout.LayoutParams(dp(140), dp(190), Gravity.CENTER))
+        frame.addView(guide, FrameLayout.LayoutParams(dp(220), dp(290), Gravity.CENTER))
         content.addView(frame, LinearLayout.LayoutParams(-1, 0, 1f))
         status = label("等待相機啟動。", 16f)
         content.addView(status)
