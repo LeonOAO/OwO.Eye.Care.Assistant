@@ -30,21 +30,38 @@ class MainActivity : AppCompatActivity() {
     private val distanceUiRunnable = object : Runnable {
         override fun run() {
             val cm = distanceState.getLastDistanceCm()
-            val ref = distanceState.getRefFaceWidthPxAt30cm()
+            val profile = distanceState.getCurrentProfile()
+            val ref = distanceState.getProfile(profile)
             val isRun = distanceState.isServiceRunning()
+            val paused = distanceState.isDistancePaused()
+            val error = distanceState.getCameraError()
             val wPx = distanceState.getLastFaceWidthPx()
-            
+            val status = when {
+                !isRun -> "未啟動"
+                paused -> "待機暫停"
+                error.isNotEmpty() -> "相機異常：$error"
+                else -> distanceState.getDistanceStatus()
+            }
             vb.tvDistanceStatus.text = "守護距離狀態：\n" +
-                "服務狀態：${if (isRun) "偵測中" else "未啟動"}\n" +
-                "當前臉部：${if (wPx > 0) "已偵測 ($wPx px)" else "未偵測到"}\n" +
-                "估算距離：${if (cm > 0) "約 ${cm} 公分" else "尚未取得"}\n" +
-                "校正狀態：${if (ref > 0) "已完成 (基準: $ref px)" else "尚未完成"}"
+                "服務狀態：$status\n" +
+                "當前臉部：${if (isRun && !paused && wPx > 0) "已偵測 ($wPx px)" else "—"}\n" +
+                "估算距離：${if (isRun && !paused && error.isEmpty() && cm > 0) "約 $cm 公分" else "—"}\n" +
+                "目前方向校正：${if (ref > 0) "已完成 ($ref px)" else "尚未完成，請開啟引導校正"}\n" +
+                "影像基準：${profile.ifEmpty { "—" }}"
             uiHandler.postDelayed(this, 500L)
         }
     }
 
     private val requestCamera = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         if (granted) startDistanceService() else showToast("請先允許相機權限")
+    }
+
+    private val requestCalibrationCamera = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) openCalibration() else showToast("請先允許相機權限")
+    }
+
+    private fun openCalibration() {
+        startActivity(Intent(this, CalibrationActivity::class.java))
     }
 
     private fun showToast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
@@ -128,23 +145,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         vb.btnCalibrate30.setOnClickListener {
-            val wPx = distanceState.getLastFaceWidthPx()
-            if (wPx <= 0) {
-                if (!distanceState.isServiceRunning()) {
-                    val hasCam = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-                    if (hasCam) {
-                        startDistanceService()
-                        showToast("相機已啟動！請將臉部對準後『再按一次』本按鈕完成定位")
-                    } else {
-                        requestCamera.launch(Manifest.permission.CAMERA)
-                    }
-                } else {
-                    showToast("尚未偵測到臉部，請保持光線充足並正對前鏡頭")
-                }
-                return@setOnClickListener
-            }
-            distanceState.setRefFaceWidthPxAt30cm(wPx)
-            showToast("護眼基準線已設定完成！")
+            val hasCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+            if (hasCamera) openCalibration() else requestCalibrationCamera.launch(Manifest.permission.CAMERA)
         }
 
         vb.btnToggleDistance.setOnClickListener {
@@ -215,7 +217,7 @@ class MainActivity : AppCompatActivity() {
             vb.btnToggleControl.setTextColor(Color.WHITE)
         }
 
-        vb.btnCalibrate30.text = "設定護眼基準線 \uD83E\uDE84"
+        vb.btnCalibrate30.text = "30 公分引導校正（橫直向分別設定）"
         
         if (distanceState.isServiceRunning()) {
             vb.btnToggleDistance.text = "解除距離偵測"

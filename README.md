@@ -1,3 +1,10 @@
+## 1.0.2 更新重點
+
+新增連續兩次 25／30 公分距離狀態規則、十次中位數引導校正、方向與影像尺寸基準匹配。
+保留待機暫停；遊戲期間不新增預覽或提高分析頻率。
+更新後請重新校正橫直向。詳細限制、建置與實機測試清單請閱讀 VERSION_1.0.2.md。
+本版本未在交付環境完成 APK 編譯與實機驗證，詳見 ChangeAudit/Validation.txt。
+
 # 👁️✨ OwO Eye Care Assistant (OwO 護眼助手)
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)

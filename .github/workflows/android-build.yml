@@ -28,7 +28,7 @@ jobs:
       - name: Grant execute permission
         run: chmod +x gradlew
       - name: Build debug APK
-        run: ./gradlew --no-daemon --stacktrace clean assembleDebug
+        run: ./gradlew --no-daemon --stacktrace clean testDebugUnitTest assembleDebug
       - name: Upload debug APK
         uses: actions/upload-artifact@v7
         with:

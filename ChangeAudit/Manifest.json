@@ -1,0 +1,26 @@
+{
+  "baseline": "1.0.1",
+  "changed": [
+    ".github/workflows/android-build.yml",
+    "README.md",
+    "VERSION_1.0.2.md",
+    "app/build.gradle",
+    "app/src/main/AndroidManifest.xml",
+    "app/src/main/java/owo/eye/care/assistant/data/DistanceStateStore.kt",
+    "app/src/main/java/owo/eye/care/assistant/distance/CalibrationBridge.kt",
+    "app/src/main/java/owo/eye/care/assistant/distance/CalibrationSamples.kt",
+    "app/src/main/java/owo/eye/care/assistant/distance/DistanceGate.kt",
+    "app/src/main/java/owo/eye/care/assistant/service/DistanceForegroundService.kt",
+    "app/src/main/java/owo/eye/care/assistant/ui/CalibrationActivity.kt",
+    "app/src/main/java/owo/eye/care/assistant/ui/MainActivity.kt",
+    "app/src/test/java/owo/eye/care/assistant/distance/DistanceLogicTest.kt"
+  ],
+  "added": [
+    "VERSION_1.0.2.md",
+    "app/src/main/java/owo/eye/care/assistant/distance/CalibrationBridge.kt",
+    "app/src/main/java/owo/eye/care/assistant/distance/CalibrationSamples.kt",
+    "app/src/main/java/owo/eye/care/assistant/distance/DistanceGate.kt",
+    "app/src/main/java/owo/eye/care/assistant/ui/CalibrationActivity.kt",
+    "app/src/test/java/owo/eye/care/assistant/distance/DistanceLogicTest.kt"
+  ]
+}

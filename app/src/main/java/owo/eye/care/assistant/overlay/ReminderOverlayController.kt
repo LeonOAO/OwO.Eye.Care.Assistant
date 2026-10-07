@@ -13,6 +13,7 @@ class ReminderOverlayController(private val context: Context) {
     private var view: View? = null
     private val handler = Handler(Looper.getMainLooper())
 
+    private val hideRunnable = Runnable { hide() }
     fun show() {
         if (view != null) return
         try {
@@ -34,10 +35,11 @@ class ReminderOverlayController(private val context: Context) {
             params.windowAnimations = android.R.style.Animation_Dialog
             wm.addView(v, params)
             view = v
-            handler.postDelayed({ hide() }, 4000)
+            handler.postDelayed(hideRunnable, 4000)
         } catch (e: Exception) { e.printStackTrace(); view = null }
     }
     fun hide() {
+        handler.removeCallbacks(hideRunnable)
         val v = view ?: return
         try { wm.removeView(v) } catch (_: Exception) {}
         view = null

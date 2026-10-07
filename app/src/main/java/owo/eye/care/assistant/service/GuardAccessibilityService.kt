@@ -7,7 +7,7 @@ import android.media.MediaPlayer
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import android.os.PowerManager
+import owo.eye.care.assistant.util.DeviceUsageMonitor
 import android.view.accessibility.AccessibilityEvent
 import owo.eye.care.assistant.R
 import owo.eye.care.assistant.data.DistanceStateStore
@@ -21,51 +21,44 @@ class GuardAccessibilityService : AccessibilityService() {
     private var blockController: BlockOverlayController? = null
     private var reminderController: ReminderOverlayController? = null
     private var mediaPlayer: MediaPlayer? = null
+    private lateinit var usageMonitor: DeviceUsageMonitor
     private val handler = Handler(Looper.getMainLooper())
     
     private val timerRunnable = object : Runnable {
         override fun run() {
-            if (rules.isControlEnabled()) {
-                if (stateStore.isBlocked()) {
-                    if (rules.getProtectionMode() == 0 && blockController?.isShowing() == false) {
-                        blockController?.show()
-                    }
-                } else {
-                    val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
-                    val isScreenOn = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-                        pm.isInteractive
-                    } else {
-                        @Suppress("DEPRECATION")
-                        pm.isScreenOn
-                    }
-                    
-                    if (isScreenOn) {
-                        val elapsed = stateStore.getElapsedSeconds() + 1
-                        stateStore.setElapsedSeconds(elapsed)
-                        val limit = rules.getCycleLimitSeconds()
-                        
-                        if (elapsed >= limit) {
-                            if (rules.getProtectionMode() == 0) {
-                                stateStore.setBlocked(true)
-                                if (blockController?.isShowing() == false) blockController?.show()
-                            } else {
-                                stateStore.setElapsedSeconds(0)
-                                reminderController?.show()
-                                playLocalVoice()
-                            }
-                        }
-                    }
-                }
+            if (!usageMonitor.isActive() || !rules.isControlEnabled()) {
+                suspendReminders()
+            } else if (stateStore.isBlocked()) {
+                if (rules.getProtectionMode() == 0) blockController?.show()
+                else blockController?.hide()
             } else {
-                if (blockController?.isShowing() == true) {
-                    blockController?.hide()
+                val elapsed = stateStore.getElapsedSeconds() + 1
+                stateStore.setElapsedSeconds(elapsed)
+                if (elapsed >= rules.getCycleLimitSeconds()) {
+                    if (rules.getProtectionMode() == 0) {
+                        stateStore.setBlocked(true)
+                        blockController?.show()
+                    } else {
+                        stateStore.setElapsedSeconds(0)
+                        reminderController?.show()
+                        playLocalVoice()
+                    }
                 }
             }
             handler.postDelayed(this, 1000L)
         }
     }
 
+    /** 暫停輸出而非解除 PIN 鎖定；不清除已累計時間。 */
+    private fun suspendReminders() {
+        blockController?.hide()
+        reminderController?.hide()
+        try { mediaPlayer?.release() } catch (_: Exception) {}
+        mediaPlayer = null
+    }
+
     private fun playLocalVoice() {
+        if (!usageMonitor.isActive() || !rules.isControlEnabled()) return
         try {
             if (mediaPlayer == null) {
                 mediaPlayer = MediaPlayer.create(applicationContext, R.raw.voice_reminder)
@@ -99,12 +92,19 @@ class GuardAccessibilityService : AccessibilityService() {
             stateStore.setElapsedSeconds(0)
             blockController?.hide()
         }
+        usageMonitor = DeviceUsageMonitor(this) { available ->
+            if (!available) suspendReminders()
+            else if (rules.isControlEnabled() && stateStore.isBlocked() && rules.getProtectionMode() == 0) {
+                blockController?.show()
+            }
+        }
+        usageMonitor.start()
         handler.postDelayed(timerRunnable, 1000L)
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        if (!rules.isControlEnabled()) {
-            if (blockController?.isShowing() == true) blockController?.hide()
+        if (!usageMonitor.isActive() || !rules.isControlEnabled()) {
+            suspendReminders()
             return
         }
         if (stateStore.isBlocked() && rules.getProtectionMode() == 0) {
@@ -115,13 +115,14 @@ class GuardAccessibilityService : AccessibilityService() {
     }
 
     override fun onInterrupt() { 
-        handler.removeCallbacks(timerRunnable)
+        // 中斷輸出不永久停止計時迴圈；下次 tick 仍檢查裝置狀態。
         blockController?.hide()
         reminderController?.hide()
         try { mediaPlayer?.release(); mediaPlayer = null } catch (e: Exception) {}
     }
     
     override fun onDestroy() { 
+        usageMonitor.stop()
         handler.removeCallbacks(timerRunnable)
         blockController?.hide()
         reminderController?.hide()
