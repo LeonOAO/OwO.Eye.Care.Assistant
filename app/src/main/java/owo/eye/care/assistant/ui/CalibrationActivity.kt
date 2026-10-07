@@ -28,6 +28,7 @@ class CalibrationActivity : AppCompatActivity() {
     private lateinit var state: DistanceStateStore
     private var temporaryService = false
     private var attached = false
+    private var step = 0
 
     private fun dp(value: Int) = (value * resources.displayMetrics.density).toInt()
 
@@ -35,6 +36,7 @@ class CalibrationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         state = DistanceStateStore(this)
         temporaryService = savedInstanceState?.getBoolean("temporary") ?: !state.isServiceRunning()
+        step = savedInstanceState?.getInt("step") ?: 0
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(20), dp(20), dp(20), dp(20))
@@ -47,8 +49,8 @@ class CalibrationActivity : AppCompatActivity() {
             setPadding(0, dp(8), 0, dp(12))
             setLineSpacing(dp(5).toFloat(), 1f)
         }
-        content.addView(label("30 公分引導校正", 24f))
-        content.addView(label("請先用尺確認臉部與平板相距 30 公分。保持單一完整臉部置中、光線充足並正對鏡頭。定位框只作構圖引導，不是自動測距。橫放與直放請分別校正。", 16f))
+        content.addView(label("偵測護眼基準線設定", 24f))
+        content.addView(label("請先用尺確認臉部與平板相距 30 公分。保持單一完整臉部置中、光線充足並正對鏡頭。", 16f))
         val frame = FrameLayout(this)
         preview = PreviewView(this).apply {
             implementationMode = PreviewView.ImplementationMode.COMPATIBLE
@@ -65,10 +67,10 @@ class CalibrationActivity : AppCompatActivity() {
         }
         frame.addView(guide, FrameLayout.LayoutParams(dp(140), dp(190), Gravity.CENTER))
         content.addView(frame, LinearLayout.LayoutParams(-1, dp(260)))
-        status = label("等待相機啟動。校正期間不顯示距離警示。", 16f)
+        status = label("等待相機啟動。", 16f)
         content.addView(status)
         begin = Button(this).apply {
-            text = "開始收集 10 次有效讀值"
+            text = if (step == 0) "開始收集橫屏基準值" else "開始收集豎屏基準值"
             minHeight = dp(56)
             setPadding(dp(18), dp(12), dp(18), dp(12))
             setOnClickListener {
@@ -88,14 +90,22 @@ class CalibrationActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            status.text = "請先允許相機權限，再重新開啟校正。"
+            status.text = "請先允許相機權限，再重新設定護眼基準線。"
             begin.isEnabled = false
             return
         }
         begin.isEnabled = true
         CalibrationBridge.attach(preview.surfaceProvider) { message, count, done ->
             status.text = "$message\n有效讀值：$count / 10"
-            if (done) { begin.isEnabled = true; begin.text = "重新校正目前方向" }
+            if (done) {
+                if (step == 0) {
+                    step = 1
+                    begin.isEnabled = true
+                    begin.text = "開始收集豎屏基準值"
+                } else {
+                    finish()
+                }
+            }
         }
         attached = true
         try {
@@ -110,6 +120,7 @@ class CalibrationActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean("temporary", temporaryService)
+        outState.putInt("step", step)
         super.onSaveInstanceState(outState)
     }
 

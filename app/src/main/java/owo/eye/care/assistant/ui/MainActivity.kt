@@ -46,13 +46,18 @@ class MainActivity : AppCompatActivity() {
                 "服務狀態：$status\n" +
                 "當前臉部：${if (isRun && !paused && wPx > 0) "已偵測 ($wPx px)" else "—"}\n" +
                 "估算距離：${if (isRun && !paused && error.isEmpty() && cm > 0) "約 $cm 公分" else "—"}\n" +
-                "方向校正：${if (ref > 0) "已完成 ($ref px)" else "尚未完成，請開啟引導校正"}\n" +
+                "方向校正：${if (ref > 0) "已完成 ($ref px)" else "尚未完成，請開啟設定護眼基準線"}\n" +
                 "影像基準：${profile.ifEmpty { "—" }}"
             uiHandler.postDelayed(this, 500L)
         }
     }
 
-    private val requestCamera = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+    
+    private val requestUiCamera = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+        refreshUi()
+    }
+
+private val requestCamera = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         if (granted) startDistanceService() else showToast("請先允許相機權限")
     }
 
@@ -99,6 +104,11 @@ class MainActivity : AppCompatActivity() {
 
         vb.btnOpenAccessibility.setOnClickListener { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
         vb.btnOpenOverlay.setOnClickListener { startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))) }
+
+        vb.btnOpenCamera.setOnClickListener {
+            val hasCam = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+            if (!hasCam) requestUiCamera.launch(Manifest.permission.CAMERA) else showToast("相機權限已允許")
+        }
         
         vb.btnToggleMode.setOnClickListener {
             val newMode = if (rules.getProtectionMode() == 0) 1 else 0
@@ -146,17 +156,20 @@ class MainActivity : AppCompatActivity() {
 
         vb.btnCalibrate30.setOnClickListener {
             val hasCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-            if (hasCamera) openCalibration() else requestCalibrationCamera.launch(Manifest.permission.CAMERA)
+            if (!hasCamera) { showToast("請先至【系統權限】允許相機權限"); return@setOnClickListener }
+            openCalibration()
         }
 
         vb.btnToggleDistance.setOnClickListener {
             if (!distanceState.isServiceRunning()) {
+                val hasCam = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+                if (!hasCam) { showToast("請先至【系統權限】允許相機權限"); return@setOnClickListener }
+                
                 if (distanceState.getRefFaceWidthPxAt30cm() <= 0) {
                     showToast("請先設定護眼基準線哦！")
                     return@setOnClickListener
                 }
-                val hasCam = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-                if (hasCam) startDistanceService() else requestCamera.launch(Manifest.permission.CAMERA)
+                startDistanceService()
             } else {
                 if (rules.hasStopPin()) {
                     showVerifyStopPinDialog("解除距離偵測 (OwO) \uD83D\uDEE1\uFE0F") {
@@ -204,6 +217,9 @@ class MainActivity : AppCompatActivity() {
         vb.etStopPin.hint = if (rules.hasStopPin()) "******" else "（空白）"
         vb.tvAccStatus.text = "無障礙服務：${if (isAccessibilityEnabled()) "已開啟" else "尚未開啟"}"
         vb.tvOverlayStatus.text = "顯示在其他應用程式上層：${if (Settings.canDrawOverlays(this)) "已允許" else "尚未允許"}"
+
+        val hasCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+        vb.tvCameraStatus.text = "相機權限：${if (hasCamera) "已允許" else "尚未允許"}"
         
         vb.btnToggleMode.text = if (rules.getProtectionMode() == 0) "提醒模式（點擊切換）：全螢幕 PIN 鎖定" else "提醒模式（點擊切換）：語音及上橫幅"
         

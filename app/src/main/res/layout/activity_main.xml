@@ -12,6 +12,9 @@
             <Button android:id="@+id/btnOpenAccessibility" android:layout_marginTop="12dp" android:text="開啟無障礙服務" android:textAllCaps="false" style="@style/AppButton"/>
             <TextView android:background="@drawable/bg_status" android:id="@+id/tvOverlayStatus" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:layout_width="match_parent" android:padding="12dp" android:text="顯示在上層：檢查中" style="@style/BodyText"/>
             <Button android:id="@+id/btnOpenOverlay" android:layout_marginTop="12dp" android:text="允許顯示在其他應用程式上層" android:textAllCaps="false" style="@style/AppButton"/>
+            <TextView android:background="@drawable/bg_status" android:id="@+id/tvCameraStatus" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:layout_width="match_parent" android:padding="12dp" android:text="相機權限：檢查中" style="@style/BodyText"/>
+            <Button android:id="@+id/btnOpenCamera" android:layout_marginTop="12dp" android:text="允許相機權限" android:textAllCaps="false" style="@style/AppButton"/>
+
         </LinearLayout>
 
         <LinearLayout android:background="@drawable/bg_card" android:layout_height="wrap_content" android:layout_marginTop="@dimen/section_spacing" android:layout_width="match_parent" android:orientation="vertical" android:padding="@dimen/card_padding">
