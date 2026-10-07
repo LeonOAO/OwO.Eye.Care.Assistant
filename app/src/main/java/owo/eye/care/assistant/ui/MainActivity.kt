@@ -131,7 +131,7 @@ private val requestCamera = registerForActivityResult(ActivityResultContracts.Re
             rules.setCycleLimitSeconds(limitMin * 60)
             vb.etPin.text?.toString()?.takeIf { it.isNotBlank() }?.let { if (it.length < 4) showToast("解除鎖定 PIN 必須至少 4 碼") else { rules.setParentPin(it); vb.etPin.setText("") } }
             vb.etStopPin.text?.toString()?.takeIf { it.isNotBlank() }?.let { if (it.length < 4) showToast("停止鎖定 PIN 必須至少 4 碼") else { rules.setStopPin(it); vb.etStopPin.setText("") } }
-            showToast("保護設定已全部儲存！")
+            showToast("已儲存成功！")
             refreshUi()
         }
 
@@ -156,14 +156,14 @@ private val requestCamera = registerForActivityResult(ActivityResultContracts.Re
 
         vb.btnCalibrate30.setOnClickListener {
             val hasCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-            if (!hasCamera) { showToast("請先至【系統權限】允許相機權限"); return@setOnClickListener }
+            if (!hasCamera) { showToast("請先至上方允許相機權限"); return@setOnClickListener }
             openCalibration()
         }
 
         vb.btnToggleDistance.setOnClickListener {
             if (!distanceState.isServiceRunning()) {
                 val hasCam = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-                if (!hasCam) { showToast("請先至【系統權限】允許相機權限"); return@setOnClickListener }
+                if (!hasCam) { showToast("請先至上方允許相機權限"); return@setOnClickListener }
                 
                 if (distanceState.getRefFaceWidthPxAt30cm() <= 0) {
                     showToast("請先設定護眼基準線哦！")
