@@ -57,11 +57,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val requestCamera = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) startDistanceService() else showToast("\uD83D\uDCF7 請開相機喲")
+        if (granted) startDistanceService() else showToast("請開相機喲 \uD83D\uDCF7")
     }
 
     private val requestCalibrationCamera = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) openCalibration() else showToast("\uD83D\uDCF7 請開相機喲")
+        if (granted) openCalibration() else showToast("請開相機喲 \uD83D\uDCF7")
     }
 
     private fun openCalibration() {
@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity() {
 
         vb.btnOpenCamera.setOnClickListener {
             val hasCam = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-            if (!hasCam) requestUiCamera.launch(Manifest.permission.CAMERA) else showToast("\u2728 相機已就緒")
+            if (!hasCam) requestUiCamera.launch(Manifest.permission.CAMERA) else showToast("相機已就緒 \u2728")
         }
         
         vb.btnToggleMode.setOnClickListener {
@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity() {
             if (newMode == 1) {
                 distanceState.setBlocked(false)
             }
-            showToast(if (newMode == 0) "\u2728 全螢幕鎖定" else "\u2728 語音上橫幅")
+            showToast(if (newMode == 0) "全螢幕鎖定 \u2728" else "語音上橫幅 \u2728")
             refreshUi()
         }
 
@@ -126,46 +126,46 @@ class MainActivity : AppCompatActivity() {
             currentFocus?.windowToken?.let { imm.hideSoftInputFromWindow(it, 0) }
             currentFocus?.clearFocus()
             val limitMin = vb.etLimitMinutes.text?.toString()?.toIntOrNull()
-            if (limitMin == null || limitMin !in 1..1440) { showToast("\u23F1\uFE0F 須 1 ~ 1440 分"); return@setOnClickListener }
+            if (limitMin == null || limitMin !in 1..1440) { showToast("須 1 ~ 1440 分 \u23F1\uFE0F"); return@setOnClickListener }
             rules.setCycleLimitSeconds(limitMin * 60)
-            vb.etPin.text?.toString()?.takeIf { it.isNotBlank() }?.let { if (it.length < 4) showToast("\uD83D\uDD12 解除需 4 碼") else { rules.setParentPin(it); vb.etPin.setText("") } }
-            vb.etStopPin.text?.toString()?.takeIf { it.isNotBlank() }?.let { if (it.length < 4) showToast("\uD83D\uDEE1\uFE0F 停止需 4 碼") else { rules.setStopPin(it); vb.etStopPin.setText("") } }
-            showToast("\uD83C\uDF89 儲存成功囉")
+            vb.etPin.text?.toString()?.takeIf { it.isNotBlank() }?.let { if (it.length < 4) showToast("解除需 4 碼 \uD83D\uDD12") else { rules.setParentPin(it); vb.etPin.setText("") } }
+            vb.etStopPin.text?.toString()?.takeIf { it.isNotBlank() }?.let { if (it.length < 4) showToast("停止需 4 碼 \uD83D\uDEE1\uFE0F") else { rules.setStopPin(it); vb.etStopPin.setText("") } }
+            showToast("儲存成功囉 \uD83C\uDF89")
             refreshUi()
         }
 
         vb.btnToggleControl.setOnClickListener {
             if (!rules.isControlEnabled()) {
-                if (!rules.hasParentPin()) { showToast("\uD83D\uDD11 請設解除碼"); return@setOnClickListener }
-                if (!isAccessibilityEnabled()) { showToast("\uD83E\uDD16 請開無障礙"); return@setOnClickListener }
-                if (!Settings.canDrawOverlays(this)) { showToast("\uD83D\uDCF1 請開上層權限"); return@setOnClickListener }
+                if (!rules.hasParentPin()) { showToast("請設解除碼 \uD83D\uDD11"); return@setOnClickListener }
+                if (!isAccessibilityEnabled()) { showToast("請開無障礙 \uD83E\uDD16"); return@setOnClickListener }
+                if (!Settings.canDrawOverlays(this)) { showToast("請開上層權限 \uD83D\uDCF1"); return@setOnClickListener }
                 rules.setControlEnabled(true)
-                showToast("\u2728 護眼魔法啟動")
+                showToast("護眼魔法啟動 \u2728")
                 refreshUi()
             } else {
                 if (rules.hasStopPin()) {
                     showVerifyStopPinDialog("解除護眼魔法 (OwO) \uD83E\uDE84") {
                         rules.setControlEnabled(false)
-                        showToast("\uD83D\uDCA4 護眼魔法解除")
+                        showToast("護眼魔法解除 \uD83D\uDCA4")
                         refreshUi()
                     }
-                } else showToast("\uD83D\uDEE1\uFE0F 請設停止碼")
+                } else showToast("請設停止碼 \uD83D\uDEE1\uFE0F")
             }
         }
 
         vb.btnCalibrate30.setOnClickListener {
             val hasCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-            if (!hasCamera) { showToast("\uD83D\uDCF7 請開相機喲"); return@setOnClickListener }
+            if (!hasCamera) { showToast("請開相機喲 \uD83D\uDCF7"); return@setOnClickListener }
             openCalibration()
         }
 
         vb.btnToggleDistance.setOnClickListener {
             if (!distanceState.isServiceRunning()) {
                 val hasCam = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-                if (!hasCam) { showToast("\uD83D\uDCF7 請開相機喲"); return@setOnClickListener }
+                if (!hasCam) { showToast("請開相機喲 \uD83D\uDCF7"); return@setOnClickListener }
                 
                 if (distanceState.getRefFaceWidthPxAt30cm() <= 0) {
-                    showToast("\uD83D\uDCCF 請先設基準線")
+                    showToast("請先設基準線 \uD83D\uDCCF")
                     return@setOnClickListener
                 }
                 startDistanceService()
@@ -175,10 +175,10 @@ class MainActivity : AppCompatActivity() {
                         stopService(Intent(this, DistanceForegroundService::class.java))
                         distanceState.setServiceRunning(false)
                         distanceState.setBlocked(false)
-                        showToast("\uD83D\uDEE1\uFE0F 距離偵測解除")
+                        showToast("距離偵測解除 \uD83D\uDEE1\uFE0F")
                         refreshUi()
                     }
-                } else showToast("\uD83D\uDEE1\uFE0F 請設停止碼")
+                } else showToast("請設停止碼 \uD83D\uDEE1\uFE0F")
             }
         }
 
@@ -191,7 +191,7 @@ class MainActivity : AppCompatActivity() {
     private fun startDistanceService() {
         ContextCompat.startForegroundService(this, Intent(this, DistanceForegroundService::class.java))
         distanceState.setServiceRunning(true)
-        showToast("\uD83C\uDF1F 守護眼睛中")
+        showToast("守護眼睛中 \uD83C\uDF1F")
         refreshUi()
     }
 
@@ -207,7 +207,7 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton("確定") { _, _ ->
                 if (rules.verifyStopPin(input.text.toString())) {
                     onSuccess()
-                } else showToast("(QwQ) 密碼錯誤")
+                } else showToast("密碼錯誤 \uD83D\uDE3F")
             }.setNegativeButton("取消", null).show()
     }
 
