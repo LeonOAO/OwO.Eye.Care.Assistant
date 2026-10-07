@@ -8,6 +8,10 @@ base = root / "app/src/main/java/owo/eye/care/assistant"
 gate = (base / "distance/DistanceGate.kt").read_text(encoding="utf-8")
 camera = (base / "service/DistanceForegroundService.kt").read_text(encoding="utf-8")
 ui = (base / "ui/CalibrationActivity.kt").read_text(encoding="utf-8")
+assert "private val callbackExecutor by lazy" in camera
+assert "private val mainExecutor" not in camera
+assert "ContextCompat.getMainExecutor(this)" in camera
+assert camera.count("callbackExecutor") >= 5
 assert "cm < 25" in gate and "cm >= 30" in gate
 assert "coerceAtMost(2)" in gate
 assert "setTargetResolution(Size(480, 360))" in camera

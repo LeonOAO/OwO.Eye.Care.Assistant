@@ -1,827 +1,103 @@
---- Before/.github/workflows/android-build.yml
-+++ After/.github/workflows/android-build.yml
-@@ -28,7 +28,7 @@
-       - name: Grant execute permission
-         run: chmod +x gradlew
-       - name: Build debug APK
--        run: ./gradlew --no-daemon --stacktrace clean assembleDebug
-+        run: ./gradlew --no-daemon --stacktrace clean testDebugUnitTest assembleDebug
-       - name: Upload debug APK
-         uses: actions/upload-artifact@v7
-         with:
 --- Before/README.md
 +++ After/README.md
-@@ -1,3 +1,10 @@
-+## 1.0.2 更新重點
+@@ -1,3 +1,8 @@
++## 1.0.3 編譯修正
 +
-+新增連續兩次 25／30 公分距離狀態規則、十次中位數引導校正、方向與影像尺寸基準匹配。
-+保留待機暫停；遊戲期間不新增預覽或提高分析頻率。
-+更新後請重新校正橫直向。詳細限制、建置與實機測試清單請閱讀 VERSION_1.0.2.md。
-+本版本未在交付環境完成 APK 編譯與實機驗證，詳見 ChangeAudit/Validation.txt。
++修正 DistanceForegroundService 的 mainExecutor 私有屬性與 Android 繼承方法 JVM 簽章衝突。
++保留全部 1.0.2 功能與單元測試。詳見 VERSION_1.0.3.md。
 +
- # 👁️✨ OwO Eye Care Assistant (OwO 護眼助手)
+ ## 1.0.2 更新重點
  
- [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
---- Before/VERSION_1.0.2.md
-+++ After/VERSION_1.0.2.md
-@@ -0,0 +1,67 @@
-+# OwO 護眼小助手 1.0.2：距離穩定與引導校正
+ 新增連續兩次 25／30 公分距離狀態規則、十次中位數引導校正、方向與影像尺寸基準匹配。
+--- Before/VERSION_1.0.3.md
++++ After/VERSION_1.0.3.md
+@@ -0,0 +1,22 @@
++# 1.0.3 編譯命名衝突修正
 +
-+## 完整專案版本
-+以 1.0.1 待機暫停版延續，保留原始資源、時間控管、PIN、提醒模式及 GitHub Actions。
-+versionCode=3，versionName=1.0.2。
++## 原因與修正
++使用者 CI 日誌顯示 DistanceForegroundService.kt 的 mainExecutor 屬性 getter
++與繼承的 Context.getMainExecutor() 產生相同 JVM 簽章，造成 Accidental override。
++將私有屬性與全部引用重新命名為 callbackExecutor；保留 ContextCompat.getMainExecutor(this) 呼叫。
++versionCode=4，versionName=1.0.3。
 +
-+## 距離狀態規則
-+- 低於 25 公分：連續兩次有效結果才顯示警示。
-+- 30 公分以上：連續兩次有效結果才隱藏警示。
-+- 25 到未滿 30 公分：保留遮罩目前狀態，但清除兩側連續計數。
-+- 無臉、相機分析失敗、熄屏或系統鎖定：隱藏距離警示並清除計數與舊距離。
-+- 不加入 2 秒等待。兩次分析的實際間隔依裝置與處理速度而定。
-+- 判斷仍使用原有整數估算距離，不是醫療級精密測量。
++## 功能範圍
++不變更 1.0.2 的距離門檻、連續次數、十次校正、方向匹配、待機暫停、PIN 或影像分析頻率。
++本次沒有刪除單元測試或跳過 testDebugUnitTest。
 +
-+## 引導校正
-+1. 主畫面按「30 公分引導校正」。
-+2. 用尺確認臉部與平板相距實際 30 公分；鏡頭本身不會驗證物理距離。
-+3. 保持單一完整臉部置中，按「開始收集 10 次有效讀值」。
-+4. 收集十次有效且穩定的臉寬，取中位數保存。
-+5. 完成後按返回；橫放與直放各校正一次。
++## 驗證
++已執行來源回歸檢查、XML 解析、括號配對、參考模型、ZIP 完整性與獨立副本回滾。
++這些不是 Kotlin 型別檢查或 Android 編譯；本環境仍未完成 Gradle/APK 建置。
++使用者日誌已確認上一版在 CI 成功下載 Gradle，失敗點是 compileDebugKotlin 的命名衝突。
++本次修正移除該私有 getter 衝突，但完整編譯是否通過仍以 CI 實際結果為準。
++libface_detector_v2_jni.so 與 libimage_processing_util_jni.so 的 strip 提示不是日誌中導致失敗的錯誤。
 +
-+品質篩選使用既有臉框：單一臉部、至少 100x100 像素、完整位於影像內、中心位置及讀值穩定性。
-+相對目前樣本中位數偏差超過 15% 時重收；十次樣本全距超過中位數 20% 時重收。
-+不新增暗光、模糊或頭部角度模型，光線與正面角度由預覽及文字引導協助確認。
-+定位框是固定構圖引導，不是追蹤臉框，也不是距離尺。
-+
-+## 橫直向與舊基準
-+基準依螢幕方向與 ML Kit 正向影像實際寬高保存。尺寸／方向不吻合時不套用舊基準。
-+舊版單次校正值保留供回滾，但不直接當成新版本已驗證的方向基準。
-+更新後請重新完成引導校正。沒有匹配基準時距離警示暫停，時間控管不受影響。
-+預覽與純分析模式在部分裝置可能選到不同尺寸；若返回後仍提示未校正，請提供校正與背景的影像尺寸資訊，需進一步做裝置適配。
-+
-+## 低負載設計
-+- 維持 FAST、480x360 目標解析度、每兩個影格分析一次及 KEEP_ONLY_LATEST。
-+- CameraX 的目標尺寸不保證等於裝置實際輸出尺寸；實際尺寸用於基準匹配。
-+- 不增加輪廓、表情、五官分析，不提高分析頻率。
-+- 被跳過的影格在背景執行緒直接關閉，不再送往主執行緒。
-+- 遊戲期間只新增整數門檻與計數，沒有浮動距離數字或相機預覽。
-+- 校正時才啟用預覽；離開校正畫面就解除預覽。
-+- 校正前未啟用距離服務時，校正結束後停止暫時服務，請自行按啟動距離偵測。
-+- 相同即時讀值不重複寫入 SharedPreferences。
-+- 保留 1.0.1 熄屏／鎖定暫停與解鎖恢復。
-+
-+不能據此保證 FPS、耗電或發熱零影響；背景相機與臉部分析仍有成本，需在目標平板比較。
-+
-+## 驗證與建置
-+本環境執行 XML 解析、來源結構與規則檢查、Python 決策參考模型、ZIP 完整性及獨立副本回滾。
-+Python 參考模型不是 Kotlin 實際執行測試。
-+已加入五個 JUnit 測試與 CI 的 testDebugUnitTest 階段，但本環境未執行 JUnit。
-+實際建置嘗試在下載 Gradle 時遇到 HTTP 403，退出碼 22；未完成 Kotlin 編譯，未產生 APK。
-+沒有平板、相機、遊戲 FPS 或 Android 生命週期實測。
-+
-+將完整專案提交至原儲存庫，原 Build Android APK 工作流程會先執行單元測試再組建 APK。
-+不要把 ChangeAudit/Rollback.py 當成建置步驟，它僅用於回復原始碼。
-+
-+## 平板驗收
-+- 先校正直向，再校正橫向，確認返回後對應方向狀態為已校正。
-+- 兩次過近顯示；中間區間不閃動；兩次達 30 公分解除。
-+- 遮住鏡頭後顯示未偵測到臉且距離為 —。
-+- 熄屏時語音停止、相機指示消失；只亮屏不解鎖仍暫停；解鎖後恢復。
-+- 快速切換方向／熄屏，確認沒有舊結果重現。
-+- 同一遊戲、同一畫質、同一場景，比較關閉與啟用距離偵測的 FPS、卡頓與溫度。
-+
-+## 回滾
-+python ChangeAudit/Rollback.py
-+還原到 1.0.1 的變更檔案，移除新增程式；資料中的新校正基準不刪除。
-+回滾只處理原始碼，不直接更動平板上的 APK；較低 versionCode 的安裝需另行處理。
++## 使用
++以本完整專案覆蓋上一版後重新執行原建置工作流程。
++回滾原始碼：python ChangeAudit/Rollback.py，還原至 1.0.2。
 --- Before/app/build.gradle
 +++ After/app/build.gradle
 @@ -11,8 +11,8 @@
          applicationId "owo.eye.care.assistant"
          minSdk 26
          targetSdk 35
--        versionCode 2
--        versionName "1.0.1"
-+        versionCode 3
-+        versionName "1.0.2"
+-        versionCode 3
+-        versionName "1.0.2"
++        versionCode 4
++        versionName "1.0.3"
      }
  
      buildFeatures {
-@@ -29,6 +29,7 @@
- }
- 
- dependencies {
-+    testImplementation "junit:junit:4.13.2"
-     implementation "androidx.core:core-ktx:1.13.1"
-     implementation "androidx.appcompat:appcompat:1.7.0"
-     implementation "androidx.activity:activity-ktx:1.9.0"
-@@ -38,6 +39,7 @@
-     implementation "androidx.camera:camera-camera2:1.3.4"
-     implementation "androidx.camera:camera-lifecycle:1.3.4"
-     implementation "androidx.camera:camera-core:1.3.4"
-+    implementation "androidx.camera:camera-view:1.3.4"
- 
-     // LifecycleService (for CameraX bindToLifecycle)
-     implementation "androidx.lifecycle:lifecycle-service:2.8.3"
---- Before/app/src/main/AndroidManifest.xml
-+++ After/app/src/main/AndroidManifest.xml
-@@ -31,6 +31,7 @@
-             </intent-filter>
-         </activity>
- 
-+        <activity android:name=".ui.CalibrationActivity" android:exported="false" />
-         <service
-             android:name=".service.GuardAccessibilityService"
-             android:exported="false"
---- Before/app/src/main/java/owo/eye/care/assistant/data/DistanceStateStore.kt
-+++ After/app/src/main/java/owo/eye/care/assistant/data/DistanceStateStore.kt
-@@ -5,9 +5,13 @@
-     private val prefs = context.getSharedPreferences("owo_distance", Context.MODE_PRIVATE)
-     fun setBlocked(b: Boolean) = prefs.edit().putBoolean("blocked", b).apply()
-     fun isBlocked() = prefs.getBoolean("blocked", false)
--    fun setLastDistanceCm(cm: Int) = prefs.edit().putInt("last_cm", cm).apply()
-+    fun setLastDistanceCm(cm: Int) {
-+        if (getLastDistanceCm() != cm) prefs.edit().putInt("last_cm", cm).apply()
-+    }
-     fun getLastDistanceCm() = prefs.getInt("last_cm", 0)
--    fun setLastFaceWidthPx(px: Int) = prefs.edit().putInt("last_face_px", px).apply()
-+    fun setLastFaceWidthPx(px: Int) {
-+        if (getLastFaceWidthPx() != px) prefs.edit().putInt("last_face_px", px).apply()
-+    }
-     fun getLastFaceWidthPx() = prefs.getInt("last_face_px", 0)
-     fun setRefFaceWidthPxAt30cm(px: Int) = prefs.edit().putInt("ref_face_30", px).apply()
-     fun getRefFaceWidthPxAt30cm() = prefs.getInt("ref_face_30", 0)
-@@ -16,8 +20,23 @@
-     // running 表示服務仍啟用；paused 表示待機暫停，兩者不可混用。
-     fun setDistancePaused(paused: Boolean) = prefs.edit().putBoolean("distance_paused", paused).apply()
-     fun isDistancePaused() = prefs.getBoolean("distance_paused", false)
--    fun setCameraError(error: String) = prefs.edit().putString("camera_error", error).apply()
-+    fun setCameraError(error: String) {
-+        if (getCameraError() != error) prefs.edit().putString("camera_error", error).apply()
-+    }
-     fun getCameraError() = prefs.getString("camera_error", "") ?: ""
-     fun getElapsedSeconds(): Int = prefs.getInt("elapsed_seconds", 0)
-     fun setElapsedSeconds(sec: Int) = prefs.edit().putInt("elapsed_seconds", sec).apply()
-+    // 舊 ref_face_30 保留供回滾；新版本僅使用方向／實際影像尺寸吻合的基準。
-+    fun saveProfile(key: String, width: Int) {
-+        prefs.edit().putInt("profile_$key", width).putInt("ref_face_30", width).apply()
-+    }
-+    fun getProfile(key: String) = prefs.getInt("profile_$key", 0)
-+    fun setDistanceStatus(status: String) {
-+        if (getDistanceStatus() != status) prefs.edit().putString("distance_status", status).apply()
-+    }
-+    fun getDistanceStatus() = prefs.getString("distance_status", "尚未取得") ?: "尚未取得"
-+    fun setCurrentProfile(key: String) {
-+        if (getCurrentProfile() != key) prefs.edit().putString("current_profile", key).apply()
-+    }
-+    fun getCurrentProfile() = prefs.getString("current_profile", "") ?: ""
- }--- Before/app/src/main/java/owo/eye/care/assistant/distance/CalibrationBridge.kt
-+++ After/app/src/main/java/owo/eye/care/assistant/distance/CalibrationBridge.kt
-@@ -0,0 +1,47 @@
-+package owo.eye.care.assistant.distance
-+
-+import androidx.camera.core.Preview
-+
-+/** 所有存取皆在主執行緒；只傳遞預覽 surface 與進度，不保存影像。 */
-+object CalibrationBridge {
-+    var surface: Preview.SurfaceProvider? = null
-+        private set
-+    var completed = false
-+        private set
-+    var collecting = false
-+        private set
-+    var listener: ((String, Int, Boolean) -> Unit)? = null
-+    var onPreviewChanged: (() -> Unit)? = null
-+    val samples = CalibrationSamples()
-+
-+    fun attach(provider: Preview.SurfaceProvider, callback: (String, Int, Boolean) -> Unit) {
-+        surface = provider
-+        listener = callback
-+        collecting = false
-+        completed = false
-+        samples.reset()
-+        onPreviewChanged?.invoke()
-+    }
-+
-+    fun begin() {
-+        samples.reset()
-+        completed = false
-+        collecting = true
-+        report("請維持實際 30 公分距離，保持臉部穩定", 0, false)
-+    }
-+
-+    fun collectingFinished() { collecting = false; completed = true }
-+
-+    fun report(message: String, count: Int = samples.count, done: Boolean = false) {
-+        listener?.invoke(message, count, done)
-+    }
-+
-+    fun detach() {
-+        collecting = false
-+        completed = false
-+        samples.reset()
-+        listener = null
-+        surface = null
-+        onPreviewChanged?.invoke()
-+    }
-+}
---- Before/app/src/main/java/owo/eye/care/assistant/distance/CalibrationSamples.kt
-+++ After/app/src/main/java/owo/eye/care/assistant/distance/CalibrationSamples.kt
-@@ -0,0 +1,30 @@
-+package owo.eye.care.assistant.distance
-+
-+/** 只在校正時收集十次有效且穩定的讀值；畫面方向或影像尺寸改變就重收。 */
-+class CalibrationSamples {
-+    private val widths = ArrayList<Int>(10)
-+    var key = ""
-+        private set
-+    val count: Int get() = widths.size
-+
-+    fun reset() { widths.clear(); key = "" }
-+
-+    fun add(profile: String, width: Int): Int? {
-+        if (profile != key) { reset(); key = profile }
-+        if (width <= 0) { reset(); return null }
-+        if (widths.isNotEmpty()) {
-+            val baseline = widths.sorted()[widths.size / 2]
-+            if (kotlin.math.abs(width - baseline) > baseline * 0.15) widths.clear()
-+        }
-+        if (widths.size == 10) widths.clear()
-+        widths.add(width)
-+        if (widths.size < 10) return null
-+        val sorted = widths.sorted()
-+        val median = ((sorted[4].toLong() + sorted[5]) / 2).toInt()
-+        if (sorted.last() - sorted.first() > median * 0.20) {
-+            widths.clear()
-+            return null
-+        }
-+        return median
-+    }
-+}
---- Before/app/src/main/java/owo/eye/care/assistant/distance/DistanceGate.kt
-+++ After/app/src/main/java/owo/eye/care/assistant/distance/DistanceGate.kt
-@@ -0,0 +1,36 @@
-+package owo.eye.care.assistant.distance
-+
-+/** 純判斷邏輯：不使用計時延遲、不新增影像分析。 */
-+class DistanceGate {
-+    var showing = false
-+        private set
-+    private var closeCount = 0
-+    private var farCount = 0
-+
-+    fun update(cm: Int): Boolean {
-+        when {
-+            cm <= 0 -> reset()
-+            cm < 25 -> {
-+                farCount = 0
-+                closeCount = (closeCount + 1).coerceAtMost(2)
-+                if (closeCount == 2) showing = true
-+            }
-+            cm >= 30 -> {
-+                closeCount = 0
-+                farCount = (farCount + 1).coerceAtMost(2)
-+                if (farCount == 2) showing = false
-+            }
-+            else -> {
-+                closeCount = 0
-+                farCount = 0
-+            }
-+        }
-+        return showing
-+    }
-+
-+    fun reset() {
-+        showing = false
-+        closeCount = 0
-+        farCount = 0
-+    }
-+}
 --- Before/app/src/main/java/owo/eye/care/assistant/service/DistanceForegroundService.kt
 +++ After/app/src/main/java/owo/eye/care/assistant/service/DistanceForegroundService.kt
-@@ -6,6 +6,12 @@
- import android.app.NotificationManager
- import android.content.Context
- import android.content.Intent
-+import android.content.res.Configuration
-+import android.view.WindowManager
-+import androidx.camera.core.Preview
-+import com.google.mlkit.vision.face.Face
-+import owo.eye.care.assistant.distance.CalibrationBridge
-+import owo.eye.care.assistant.distance.DistanceGate
- import android.os.Handler
- import android.os.Looper
- import android.util.Size
-@@ -42,9 +48,10 @@
-     @Volatile private var active = false
-     @Volatile private var destroyed = false
-     @Volatile private var generation = 0
--    private var tooCloseFrames = 0
--    private var normalFrames = 0
--    private var frameCounter = 0
-+    private val distanceGate = DistanceGate()
-+    private var preview: Preview? = null
-+    private var lastProfile = ""
-+    private val frameCounter = java.util.concurrent.atomic.AtomicInteger(0)
-     private var processing = false
-     private val retry = Runnable {
-         if (!destroyed && usageMonitor.isActive() && active) startCamera()
-@@ -54,6 +61,14 @@
-         super.onCreate()
-         stateStore = DistanceStateStore(this)
-         distanceOverlay = DistanceOverlayController(this)
-+        CalibrationBridge.onPreviewChanged = {
-+            if (!destroyed) {
-+                val available = usageMonitor.isActive()
-+                pauseCamera()
-+                active = available
-+                if (available) { stateStore.setDistancePaused(false); startCamera() }
-+            }
-+        }
-         usageMonitor = DeviceUsageMonitor(this) { available ->
-             active = available
-             if (available) {
-@@ -84,10 +99,13 @@
-         analysis?.clearAnalyzer()
-         analysis?.let { cameraProvider?.unbind(it) }
-         analysis = null
-+        preview?.let { cameraProvider?.unbind(it) }
-+        preview = null
-         distanceOverlay.hide()
--        tooCloseFrames = 0
--        normalFrames = 0
--        frameCounter = 0
-+        distanceGate.reset()
-+        CalibrationBridge.samples.reset()
-+        stateStore.setDistanceStatus("待機暫停")
-+        frameCounter.set(0)
-         stateStore.setLastFaceWidthPx(0)
-         stateStore.setLastDistanceCm(0)
-         stateStore.setDistancePaused(true)
-@@ -104,16 +122,28 @@
-                 cameraProvider = provider
-                 val useCase = ImageAnalysis.Builder()
-                     .setTargetResolution(Size(480, 360))
-+                    .setTargetRotation(displayRotation())
-                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                     .build()
-                 useCase.setAnalyzer(cameraExecutor) { proxy ->
-+                    // 在背景執行緒直接丟棄跳過的影格，不把每個影格送到主執行緒。
-+                    if (destroyed || !active || session != generation || frameCounter.incrementAndGet() % 2 != 0) {
-+                        proxy.close()
-+                        return@setAnalyzer
-+                    }
+@@ -34,7 +34,7 @@
+     private lateinit var stateStore: DistanceStateStore
+     private lateinit var distanceOverlay: DistanceOverlayController
+     private lateinit var usageMonitor: DeviceUsageMonitor
+-    private val mainExecutor by lazy { ContextCompat.getMainExecutor(this) }
++    private val callbackExecutor by lazy { ContextCompat.getMainExecutor(this) }
+     private val handler = Handler(Looper.getMainLooper())
+     private val cameraExecutor = Executors.newSingleThreadExecutor()
+     private val detector = FaceDetection.getClient(
+@@ -132,7 +132,7 @@
+                         return@setAnalyzer
+                     }
                      // ML Kit 與遮罩更新統一回到主執行緒，避免暫停和結果更新競態。
-                     mainExecutor.execute {
--                        frameCounter++
+-                    mainExecutor.execute {
++                    callbackExecutor.execute {
                          if (destroyed || !active || session != generation ||
--                            !usageMonitor.isActive() || processing || frameCounter % 2 != 0) {
-+                            !usageMonitor.isActive() || processing) {
+                             !usageMonitor.isActive() || processing) {
                              proxy.close()
-                         } else {
-+                            if (useCase.targetRotation != displayRotation()) {
-+                                useCase.targetRotation = displayRotation()
-+                                preview?.targetRotation = displayRotation()
-+                                invalidateDistance("方向已改變，等待有效讀值")
-+                                proxy.close()
-+                                return@execute
-+                            }
-                             @SuppressLint("UnsafeOptInUsageError")
-                             val media = proxy.image
-                             if (media == null) {
-@@ -125,34 +155,16 @@
+@@ -153,7 +153,7 @@
+                                 try {
+                                     val image = InputImage.fromMediaImage(media, proxy.imageInfo.rotationDegrees)
                                      detector.process(image)
-                                         .addOnSuccessListener(mainExecutor) { faces ->
+-                                        .addOnSuccessListener(mainExecutor) { faces ->
++                                        .addOnSuccessListener(callbackExecutor) { faces ->
                                              if (!destroyed && active && session == generation && usageMonitor.isActive()) {
--                                                val width = faces.maxByOrNull { it.boundingBox.width() }?.boundingBox?.width() ?: 0
--                                                stateStore.setCameraError("")
--                                                stateStore.setLastFaceWidthPx(width)
--                                                val ref = stateStore.getRefFaceWidthPxAt30cm()
--                                                if (width > 0 && ref > 0) {
--                                                    val cm = (ref.toLong() * 30 / width).toInt()
--                                                    stateStore.setLastDistanceCm(cm)
--                                                    if (cm in 1..25) {
--                                                        tooCloseFrames++
--                                                        normalFrames = 0
--                                                        if (tooCloseFrames >= 2) distanceOverlay.show()
--                                                    } else {
--                                                        normalFrames++
--                                                        tooCloseFrames = 0
--                                                        if (normalFrames >= 2) distanceOverlay.hide()
--                                                    }
--                                                } else {
--                                                    stateStore.setLastDistanceCm(0)
--                                                    tooCloseFrames = 0
--                                                    normalFrames = 0
--                                                    distanceOverlay.hide()
--                                                }
-+                                                val rotated = proxy.imageInfo.rotationDegrees % 180 != 0
-+                                                val imageWidth = if (rotated) proxy.height else proxy.width
-+                                                val imageHeight = if (rotated) proxy.width else proxy.height
-+                                                handleFaces(faces, imageWidth, imageHeight)
+                                                 val rotated = proxy.imageInfo.rotationDegrees % 180 != 0
+                                                 val imageWidth = if (rotated) proxy.height else proxy.width
+@@ -161,13 +161,13 @@
+                                                 handleFaces(faces, imageWidth, imageHeight)
                                              }
                                          }
-                                         .addOnFailureListener(mainExecutor) { error ->
+-                                        .addOnFailureListener(mainExecutor) { error ->
++                                        .addOnFailureListener(callbackExecutor) { error ->
                                              if (!destroyed && session == generation) {
                                                  stateStore.setCameraError(error.message ?: "臉部分析失敗")
--                                                distanceOverlay.hide()
-+                                                invalidateDistance("相機異常")
+                                                 invalidateDistance("相機異常")
                                              }
                                          }
-                                         .addOnCompleteListener(mainExecutor) {
-@@ -163,21 +175,36 @@
-                                 } catch (error: Exception) {
-                                     processing = false
-                                     proxy.close()
--                                    if (!destroyed) stateStore.setCameraError(error.message ?: "影像分析失敗")
-+                                    if (!destroyed) {
-+                                        stateStore.setCameraError(error.message ?: "影像分析失敗")
-+                                        invalidateDistance("相機異常")
-+                                    }
-                                 }
-                             }
-                         }
-                     }
-                 }
-                 analysis = useCase
--                provider.bindToLifecycle(this, CameraSelector.DEFAULT_FRONT_CAMERA, useCase)
-+                val surface = CalibrationBridge.surface
-+                if (surface != null) {
-+                    val calibrationPreview = Preview.Builder().setTargetResolution(Size(480, 360)).setTargetRotation(displayRotation()).build()
-+                    calibrationPreview.setSurfaceProvider(surface)
-+                    preview = calibrationPreview
-+                    provider.bindToLifecycle(this, CameraSelector.DEFAULT_FRONT_CAMERA, useCase, calibrationPreview)
-+                } else {
-+                    provider.bindToLifecycle(this, CameraSelector.DEFAULT_FRONT_CAMERA, useCase)
-+                }
-                 stateStore.setCameraError("")
-                 updateNotification()
-             } catch (error: Exception) {
-                 analysis?.clearAnalyzer()
-                 analysis?.let { cameraProvider?.unbind(it) }
-                 analysis = null
-+                preview?.let { cameraProvider?.unbind(it) }
-+                preview = null
-+                invalidateDistance("相機異常")
-                 stateStore.setCameraError(error.message ?: "相機啟動失敗")
-+                CalibrationBridge.report("相機啟動失敗，請檢查權限或其他 App 是否占用相機", 0)
-                 updateNotification()
+-                                        .addOnCompleteListener(mainExecutor) {
++                                        .addOnCompleteListener(callbackExecutor) {
+                                             proxy.close()
+                                             processing = false
+                                             if (destroyed) detector.close()
+@@ -209,7 +209,7 @@
                  handler.removeCallbacks(retry)
                  handler.postDelayed(retry, 5000L)
-@@ -185,8 +212,89 @@
-         }, mainExecutor)
+             }
+-        }, mainExecutor)
++        }, callbackExecutor)
      }
  
-+    @Suppress("DEPRECATION")
-+    private fun displayRotation(): Int =
-+        (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
-+
-+    override fun onConfigurationChanged(newConfig: Configuration) {
-+        super.onConfigurationChanged(newConfig)
-+        // 重新建立 session，舊方向的在途影像結果不會套用到新方向基準。
-+        val available = usageMonitor.isActive()
-+        pauseCamera()
-+        lastProfile = ""
-+        active = available
-+        if (available) {
-+            stateStore.setDistancePaused(false)
-+            stateStore.setDistanceStatus("方向已改變，等待有效讀值")
-+            startCamera()
-+        }
-+    }
-+
-+    private fun invalidateDistance(status: String) {
-+        distanceGate.reset()
-+        distanceOverlay.hide()
-+        stateStore.setLastFaceWidthPx(0)
-+        stateStore.setLastDistanceCm(0)
-+        stateStore.setDistanceStatus(status)
-+    }
-+
-+    /** 遊戲期間只用既有臉框與整數比較；品質篩選僅在校正畫面收集時執行。 */
-+    private fun handleFaces(faces: List<Face>, imageWidth: Int, imageHeight: Int) {
-+        val profile = "${resources.configuration.orientation}:${imageWidth}x${imageHeight}"
-+        if (profile != lastProfile) {
-+            lastProfile = profile
-+            distanceGate.reset()
-+            distanceOverlay.hide()
-+        }
-+        stateStore.setCurrentProfile(profile)
-+        if (CalibrationBridge.surface != null) {
-+            invalidateDistance("校正畫面")
-+            if (CalibrationBridge.completed) return
-+            if (!CalibrationBridge.collecting) {
-+                CalibrationBridge.report("請將平板與臉部保持實際 30 公分，再按開始收集")
-+                return
-+            }
-+            val face = faces.singleOrNull()
-+            val box = face?.boundingBox
-+            val quality = box != null && box.width() >= 100 && box.height() >= 100 &&
-+                box.left >= 0 && box.top >= 0 && box.right <= imageWidth && box.bottom <= imageHeight &&
-+                kotlin.math.abs(box.centerX() - imageWidth / 2) <= imageWidth * 0.25 &&
-+                kotlin.math.abs(box.centerY() - imageHeight / 2) <= imageHeight * 0.30
-+            if (!quality || box == null) {
-+                CalibrationBridge.samples.reset()
-+                CalibrationBridge.report("請保持單一完整臉部置中、光線充足並正對鏡頭", 0)
-+                return
-+            }
-+            val median = CalibrationBridge.samples.add(profile, box.width())
-+            if (median != null) {
-+                stateStore.saveProfile(profile, median)
-+                CalibrationBridge.collectingFinished()
-+                CalibrationBridge.report("校正完成：已保存目前方向與影像尺寸的基準", 10, true)
-+            } else {
-+                CalibrationBridge.report("收集中，請保持實際 30 公分與臉部穩定")
-+            }
-+            return
-+        }
-+        val width = faces.maxByOrNull { it.boundingBox.width() }?.boundingBox?.width() ?: 0
-+        if (width <= 0) { invalidateDistance("未偵測到臉"); return }
-+        stateStore.setLastFaceWidthPx(width)
-+        val ref = stateStore.getProfile(profile)
-+        if (ref <= 0) {
-+            distanceGate.reset()
-+            distanceOverlay.hide()
-+            stateStore.setLastDistanceCm(0)
-+            stateStore.setDistanceStatus("目前方向／影像尺寸尚未校正")
-+            return
-+        }
-+        val cm = (ref.toLong() * 30 / width).toInt()
-+        stateStore.setLastDistanceCm(cm)
-+        if (distanceGate.update(cm)) distanceOverlay.show() else distanceOverlay.hide()
-+        stateStore.setDistanceStatus(if (distanceGate.showing) "距離過近" else if (cm < 25) "過近確認中" else "距離正常")
-+    }
-+
-     override fun onDestroy() {
-         destroyed = true
-+        CalibrationBridge.onPreviewChanged = null
-         usageMonitor.stop()
-         pauseCamera()
-         stateStore.setServiceRunning(false)
---- Before/app/src/main/java/owo/eye/care/assistant/ui/CalibrationActivity.kt
-+++ After/app/src/main/java/owo/eye/care/assistant/ui/CalibrationActivity.kt
-@@ -0,0 +1,127 @@
-+package owo.eye.care.assistant.ui
-+
-+import android.Manifest
-+import android.content.Intent
-+import android.content.pm.PackageManager
-+import android.graphics.Color
-+import android.graphics.drawable.GradientDrawable
-+import android.os.Bundle
-+import android.view.Gravity
-+import android.view.View
-+import android.widget.Button
-+import android.widget.FrameLayout
-+import android.widget.LinearLayout
-+import android.widget.ScrollView
-+import android.widget.TextView
-+import androidx.appcompat.app.AppCompatActivity
-+import androidx.camera.view.PreviewView
-+import androidx.core.content.ContextCompat
-+import owo.eye.care.assistant.data.DistanceStateStore
-+import owo.eye.care.assistant.distance.CalibrationBridge
-+import owo.eye.care.assistant.service.DistanceForegroundService
-+
-+/** 僅在可見校正畫面綁定預覽；返回遊戲或熄屏時立即解除。 */
-+class CalibrationActivity : AppCompatActivity() {
-+    private lateinit var preview: PreviewView
-+    private lateinit var status: TextView
-+    private lateinit var begin: Button
-+    private lateinit var state: DistanceStateStore
-+    private var temporaryService = false
-+    private var attached = false
-+
-+    private fun dp(value: Int) = (value * resources.displayMetrics.density).toInt()
-+
-+    override fun onCreate(savedInstanceState: Bundle?) {
-+        super.onCreate(savedInstanceState)
-+        state = DistanceStateStore(this)
-+        temporaryService = savedInstanceState?.getBoolean("temporary") ?: !state.isServiceRunning()
-+        val content = LinearLayout(this).apply {
-+            orientation = LinearLayout.VERTICAL
-+            setPadding(dp(20), dp(20), dp(20), dp(20))
-+            setBackgroundColor(Color.rgb(245, 247, 252))
-+        }
-+        fun label(text: String, size: Float): TextView = TextView(this).apply {
-+            this.text = text
-+            textSize = size
-+            setTextColor(Color.rgb(24, 32, 51))
-+            setPadding(0, dp(8), 0, dp(12))
-+            setLineSpacing(dp(5).toFloat(), 1f)
-+        }
-+        content.addView(label("30 公分引導校正", 24f))
-+        content.addView(label("請先用尺確認臉部與平板相距 30 公分。保持單一完整臉部置中、光線充足並正對鏡頭。定位框只作構圖引導，不是自動測距。橫放與直放請分別校正。", 16f))
-+        val frame = FrameLayout(this)
-+        preview = PreviewView(this).apply {
-+            implementationMode = PreviewView.ImplementationMode.COMPATIBLE
-+            scaleType = PreviewView.ScaleType.FIT_CENTER
-+        }
-+        frame.addView(preview, FrameLayout.LayoutParams(-1, -1))
-+        val guide = View(this).apply {
-+            background = GradientDrawable().apply {
-+                shape = GradientDrawable.OVAL
-+                setColor(Color.TRANSPARENT)
-+                setStroke(dp(2), Color.rgb(21, 163, 138))
-+            }
-+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-+        }
-+        frame.addView(guide, FrameLayout.LayoutParams(dp(140), dp(190), Gravity.CENTER))
-+        content.addView(frame, LinearLayout.LayoutParams(-1, dp(260)))
-+        status = label("等待相機啟動。校正期間不顯示距離警示。", 16f)
-+        content.addView(status)
-+        begin = Button(this).apply {
-+            text = "開始收集 10 次有效讀值"
-+            minHeight = dp(56)
-+            setPadding(dp(18), dp(12), dp(18), dp(12))
-+            setOnClickListener {
-+                isEnabled = false
-+                CalibrationBridge.begin()
-+            }
-+        }
-+        content.addView(begin, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(12) })
-+        content.addView(Button(this).apply {
-+            text = "完成／返回"
-+            minHeight = dp(56)
-+            setOnClickListener { finish() }
-+        }, LinearLayout.LayoutParams(-1, -2))
-+        setContentView(ScrollView(this).apply { addView(content) })
-+    }
-+
-+    override fun onStart() {
-+        super.onStart()
-+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-+            status.text = "請先允許相機權限，再重新開啟校正。"
-+            begin.isEnabled = false
-+            return
-+        }
-+        begin.isEnabled = true
-+        CalibrationBridge.attach(preview.surfaceProvider) { message, count, done ->
-+            status.text = "$message\n有效讀值：$count / 10"
-+            if (done) { begin.isEnabled = true; begin.text = "重新校正目前方向" }
-+        }
-+        attached = true
-+        try {
-+            ContextCompat.startForegroundService(this, Intent(this, DistanceForegroundService::class.java))
-+        } catch (error: Exception) {
-+            status.text = "相機服務啟動失敗：${error.message}"
-+            begin.isEnabled = false
-+            CalibrationBridge.detach()
-+            attached = false
-+        }
-+    }
-+
-+    override fun onSaveInstanceState(outState: Bundle) {
-+        outState.putBoolean("temporary", temporaryService)
-+        super.onSaveInstanceState(outState)
-+    }
-+
-+    override fun onStop() {
-+        if (attached) {
-+            CalibrationBridge.detach()
-+            attached = false
-+        }
-+        // 校正前未啟用偵測時，不讓校正操作永久開啟背景相機。
-+        if (temporaryService && !isChangingConfigurations) {
-+            stopService(Intent(this, DistanceForegroundService::class.java))
-+        }
-+        super.onStop()
-+    }
-+}
---- Before/app/src/main/java/owo/eye/care/assistant/ui/MainActivity.kt
-+++ After/app/src/main/java/owo/eye/care/assistant/ui/MainActivity.kt
-@@ -30,21 +30,38 @@
-     private val distanceUiRunnable = object : Runnable {
-         override fun run() {
-             val cm = distanceState.getLastDistanceCm()
--            val ref = distanceState.getRefFaceWidthPxAt30cm()
-+            val profile = distanceState.getCurrentProfile()
-+            val ref = distanceState.getProfile(profile)
-             val isRun = distanceState.isServiceRunning()
-+            val paused = distanceState.isDistancePaused()
-+            val error = distanceState.getCameraError()
-             val wPx = distanceState.getLastFaceWidthPx()
--            
-+            val status = when {
-+                !isRun -> "未啟動"
-+                paused -> "待機暫停"
-+                error.isNotEmpty() -> "相機異常：$error"
-+                else -> distanceState.getDistanceStatus()
-+            }
-             vb.tvDistanceStatus.text = "守護距離狀態：\n" +
--                "服務狀態：${if (!isRun) "未啟動" else if (distanceState.isDistancePaused()) "待機暫停" else if (distanceState.getCameraError().isNotEmpty()) "相機暫時不可用" else "偵測中"}\n" +
--                "當前臉部：${if (wPx > 0) "已偵測 ($wPx px)" else "未偵測到"}\n" +
--                "估算距離：${if (cm > 0) "約 ${cm} 公分" else "尚未取得"}\n" +
--                "校正狀態：${if (ref > 0) "已完成 (基準: $ref px)" else "尚未完成"}"
-+                "服務狀態：$status\n" +
-+                "當前臉部：${if (isRun && !paused && wPx > 0) "已偵測 ($wPx px)" else "—"}\n" +
-+                "估算距離：${if (isRun && !paused && error.isEmpty() && cm > 0) "約 $cm 公分" else "—"}\n" +
-+                "目前方向校正：${if (ref > 0) "已完成 ($ref px)" else "尚未完成，請開啟引導校正"}\n" +
-+                "影像基準：${profile.ifEmpty { "—" }}"
-             uiHandler.postDelayed(this, 500L)
-         }
-     }
- 
-     private val requestCamera = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-         if (granted) startDistanceService() else showToast("請先允許相機權限")
-+    }
-+
-+    private val requestCalibrationCamera = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-+        if (granted) openCalibration() else showToast("請先允許相機權限")
-+    }
-+
-+    private fun openCalibration() {
-+        startActivity(Intent(this, CalibrationActivity::class.java))
-     }
- 
-     private fun showToast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-@@ -128,23 +145,8 @@
-         }
- 
-         vb.btnCalibrate30.setOnClickListener {
--            val wPx = distanceState.getLastFaceWidthPx()
--            if (wPx <= 0) {
--                if (!distanceState.isServiceRunning()) {
--                    val hasCam = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
--                    if (hasCam) {
--                        startDistanceService()
--                        showToast("相機已啟動！請將臉部對準後『再按一次』本按鈕完成定位")
--                    } else {
--                        requestCamera.launch(Manifest.permission.CAMERA)
--                    }
--                } else {
--                    showToast("尚未偵測到臉部，請保持光線充足並正對前鏡頭")
--                }
--                return@setOnClickListener
--            }
--            distanceState.setRefFaceWidthPxAt30cm(wPx)
--            showToast("護眼基準線已設定完成！")
-+            val hasCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-+            if (hasCamera) openCalibration() else requestCalibrationCamera.launch(Manifest.permission.CAMERA)
-         }
- 
-         vb.btnToggleDistance.setOnClickListener {
-@@ -215,7 +217,7 @@
-             vb.btnToggleControl.setTextColor(Color.WHITE)
-         }
- 
--        vb.btnCalibrate30.text = "設定護眼基準線 \uD83E\uDE84"
-+        vb.btnCalibrate30.text = "30 公分引導校正（橫直向分別設定）"
-         
-         if (distanceState.isServiceRunning()) {
-             vb.btnToggleDistance.text = "解除距離偵測"
---- Before/app/src/test/java/owo/eye/care/assistant/distance/DistanceLogicTest.kt
-+++ After/app/src/test/java/owo/eye/care/assistant/distance/DistanceLogicTest.kt
-@@ -0,0 +1,54 @@
-+package owo.eye.care.assistant.distance
-+
-+import org.junit.Assert.*
-+import org.junit.Test
-+
-+class DistanceLogicTest {
-+    @Test fun closeNeedsTwoAndFarNeedsTwo() {
-+        val gate = DistanceGate()
-+        assertFalse(gate.update(24))
-+        assertTrue(gate.update(24))
-+        assertTrue(gate.update(30))
-+        assertFalse(gate.update(30))
-+    }
-+
-+    @Test fun middleBandKeepsStateButBreaksConsecutiveCounts() {
-+        val gate = DistanceGate()
-+        assertFalse(gate.update(24))
-+        assertFalse(gate.update(25))
-+        assertFalse(gate.update(24))
-+        assertTrue(gate.update(24))
-+        assertTrue(gate.update(30))
-+        assertTrue(gate.update(29))
-+        assertTrue(gate.update(30))
-+        assertFalse(gate.update(30))
-+    }
-+
-+    @Test fun lostFaceAndStandbyResetState() {
-+        val gate = DistanceGate()
-+        gate.update(20)
-+        assertTrue(gate.update(20))
-+        assertFalse(gate.update(0))
-+        assertFalse(gate.update(20))
-+        gate.reset()
-+        assertFalse(gate.update(20))
-+    }
-+
-+    @Test fun calibrationNeedsTenAndUsesMedian() {
-+        val samples = CalibrationSamples()
-+        for (width in 200..208) assertNull(samples.add("portrait", width))
-+        assertEquals(204, samples.add("portrait", 209) ?: -1)
-+        assertEquals(10, samples.count)
-+    }
-+
-+    @Test fun directionChangeAndLargeMovementRestartCollection() {
-+        val samples = CalibrationSamples()
-+        repeat(5) { samples.add("portrait", 200) }
-+        assertNull(samples.add("landscape", 200))
-+        assertEquals(1, samples.count)
-+        assertNull(samples.add("landscape", 300))
-+        assertEquals(1, samples.count)
-+        samples.reset()
-+        assertEquals(0, samples.count)
-+    }
-+}
+     @Suppress("DEPRECATION")

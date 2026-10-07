@@ -34,7 +34,7 @@ class DistanceForegroundService : LifecycleService() {
     private lateinit var stateStore: DistanceStateStore
     private lateinit var distanceOverlay: DistanceOverlayController
     private lateinit var usageMonitor: DeviceUsageMonitor
-    private val mainExecutor by lazy { ContextCompat.getMainExecutor(this) }
+    private val callbackExecutor by lazy { ContextCompat.getMainExecutor(this) }
     private val handler = Handler(Looper.getMainLooper())
     private val cameraExecutor = Executors.newSingleThreadExecutor()
     private val detector = FaceDetection.getClient(
@@ -132,7 +132,7 @@ class DistanceForegroundService : LifecycleService() {
                         return@setAnalyzer
                     }
                     // ML Kit 與遮罩更新統一回到主執行緒，避免暫停和結果更新競態。
-                    mainExecutor.execute {
+                    callbackExecutor.execute {
                         if (destroyed || !active || session != generation ||
                             !usageMonitor.isActive() || processing) {
                             proxy.close()
@@ -153,7 +153,7 @@ class DistanceForegroundService : LifecycleService() {
                                 try {
                                     val image = InputImage.fromMediaImage(media, proxy.imageInfo.rotationDegrees)
                                     detector.process(image)
-                                        .addOnSuccessListener(mainExecutor) { faces ->
+                                        .addOnSuccessListener(callbackExecutor) { faces ->
                                             if (!destroyed && active && session == generation && usageMonitor.isActive()) {
                                                 val rotated = proxy.imageInfo.rotationDegrees % 180 != 0
                                                 val imageWidth = if (rotated) proxy.height else proxy.width
@@ -161,13 +161,13 @@ class DistanceForegroundService : LifecycleService() {
                                                 handleFaces(faces, imageWidth, imageHeight)
                                             }
                                         }
-                                        .addOnFailureListener(mainExecutor) { error ->
+                                        .addOnFailureListener(callbackExecutor) { error ->
                                             if (!destroyed && session == generation) {
                                                 stateStore.setCameraError(error.message ?: "臉部分析失敗")
                                                 invalidateDistance("相機異常")
                                             }
                                         }
-                                        .addOnCompleteListener(mainExecutor) {
+                                        .addOnCompleteListener(callbackExecutor) {
                                             proxy.close()
                                             processing = false
                                             if (destroyed) detector.close()
@@ -209,7 +209,7 @@ class DistanceForegroundService : LifecycleService() {
                 handler.removeCallbacks(retry)
                 handler.postDelayed(retry, 5000L)
             }
-        }, mainExecutor)
+        }, callbackExecutor)
     }
 
     @Suppress("DEPRECATION")

@@ -1,3 +1,8 @@
+## 1.0.3 編譯修正
+
+修正 DistanceForegroundService 的 mainExecutor 私有屬性與 Android 繼承方法 JVM 簽章衝突。
+保留全部 1.0.2 功能與單元測試。詳見 VERSION_1.0.3.md。
+
 ## 1.0.2 更新重點
 
 新增連續兩次 25／30 公分距離狀態規則、十次中位數引導校正、方向與影像尺寸基準匹配。

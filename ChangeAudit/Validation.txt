@@ -1,3 +1,5 @@
+Input: user CI log, compileDebugKotlin Accidental override getMainExecutor()
+Changed private identifier references: 6
 Command: python ChangeAudit/Validate.py
 Exit code: 0
 PASS: XML parse and source invariants
@@ -10,17 +12,8 @@ PASS MODEL: [25, 25, 29, 29] -> [False, False, False, False]
 PASS MODEL: ten-value median = 204
 NOT RUN: Kotlin compilation, JUnit, Android camera/lifecycle tests, FPS/thermal tests
 
-Command: sh ./gradlew --no-daemon --stacktrace clean testDebugUnitTest assembleDebug
-Exit code: 22
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-curl: (22) The requested URL returned error: 403
-
 Command (independent copy): python ChangeAudit/Rollback.py
 Exit code: 0
-PASS: source restored to version 1.0.1
-PASS: byte-for-byte comparison against 1.0.1 baseline
+PASS: source restored to version 1.0.2
+PASS: byte-identical restoration of modified baseline files
+NOT RUN: full Android build / APK / device tests
