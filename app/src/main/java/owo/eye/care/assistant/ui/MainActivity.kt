@@ -217,7 +217,7 @@ class MainActivity : AppCompatActivity() {
             vb.btnToggleControl.setTextColor(Color.WHITE)
         }
 
-        vb.btnCalibrate30.text = "30 公分引導校正（橫直向分別設定）"
+        vb.btnCalibrate30.text = "設定護眼基準線 \uD83E\uDE84"
         
         if (distanceState.isServiceRunning()) {
             vb.btnToggleDistance.text = "解除距離偵測"
