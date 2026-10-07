@@ -20,18 +20,27 @@
 
         <LinearLayout android:background="@drawable/bg_card" android:layout_height="wrap_content" android:layout_marginTop="@dimen/section_spacing" android:layout_width="match_parent" android:orientation="vertical" android:padding="@dimen/card_padding">
             <TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="保護設定" style="@style/SectionTitle"/>
+    
+            <!-- 時間設定（分鐘） -->
             <LinearLayout android:gravity="center_vertical" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:layout_width="match_parent" android:orientation="horizontal">
-                <TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="時間設定（分鐘）" android:textColor="@color/text_primary" android:lines="1" android:layout_marginEnd="12dp"/>
+                <TextView android:layout_height="wrap_content" android:layout_width="135dp" android:text="時間設定（分鐘）" android:textColor="@color/text_primary" android:textSize="15sp" android:lines="1"/>
                 <EditText android:gravity="center" android:hint="1~1440" android:id="@+id/etLimitMinutes" android:inputType="number" android:layout_height="wrap_content" android:layout_weight="1" android:layout_width="0dp" android:padding="10dp" style="@style/AppField"/>
             </LinearLayout>
+
+            <!-- 解除鎖定 PIN -->
             <LinearLayout android:gravity="center_vertical" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:layout_width="match_parent" android:orientation="horizontal">
-                <TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="解除鎖定 PIN" android:textColor="@color/text_primary" android:lines="1" android:layout_marginEnd="12dp"/>
+                <TextView android:layout_height="wrap_content" android:layout_width="135dp" android:text="解除鎖定 PIN" android:textColor="@color/text_primary" android:textSize="15sp" android:lines="1"/>
                 <EditText android:gravity="center" android:hint="留空不修改" android:id="@+id/etPin" android:inputType="numberPassword" android:layout_height="wrap_content" android:layout_weight="1" android:layout_width="0dp" android:padding="10dp" style="@style/AppField"/>
             </LinearLayout>
+
+           <!-- 停止鎖定 PIN -->
             <LinearLayout android:gravity="center_vertical" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:layout_width="match_parent" android:orientation="horizontal">
-                <TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="停止鎖定 PIN" android:textColor="@color/text_primary" android:lines="1" android:layout_marginEnd="12dp"/>
+                <TextView android:layout_height="wrap_content" android:layout_width="135dp" android:text="停止鎖定 PIN" android:textColor="@color/text_primary" android:textSize="15sp" android:lines="1"/>
                 <EditText android:gravity="center" android:hint="留空不修改" android:id="@+id/etStopPin" android:inputType="numberPassword" android:layout_height="wrap_content" android:layout_weight="1" android:layout_width="0dp" android:padding="10dp" style="@style/AppField"/>
             </LinearLayout>
+
+            <Button android:id="@+id/btnSaveSettings" android:layout_marginTop="20dp" android:text="儲存保護設定" style="@style/AppButton"/>
+        </LinearLayout>
             
             <Button android:backgroundTint="@color/surface_soft" android:id="@+id/btnToggleMode" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:layout_width="match_parent" android:text="提醒模式（點擊切換）：全螢幕 PIN 鎖定" android:textAllCaps="false" android:textColor="@color/text_primary" style="@style/AppButton"/>
             
