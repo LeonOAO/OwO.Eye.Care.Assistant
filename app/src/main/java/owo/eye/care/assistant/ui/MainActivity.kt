@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
                 "服務狀態：$status\n" +
                 "當前臉部：${if (isRun && !paused && wPx > 0) "已偵測 ($wPx px)" else "—"}\n" +
                 "估算距離：${if (isRun && !paused && error.isEmpty() && cm > 0) "約 $cm 公分" else "—"}\n" +
-                "目前方向校正：${if (ref > 0) "已完成 ($ref px)" else "尚未完成，請開啟引導校正"}\n" +
+                "方向校正：${if (ref > 0) "已完成 ($ref px)" else "尚未完成，請開啟引導校正"}\n" +
                 "影像基準：${profile.ifEmpty { "—" }}"
             uiHandler.postDelayed(this, 500L)
         }
