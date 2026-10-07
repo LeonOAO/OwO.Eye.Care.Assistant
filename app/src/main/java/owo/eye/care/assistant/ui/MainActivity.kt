@@ -136,7 +136,7 @@ class MainActivity : AppCompatActivity() {
 
         vb.btnToggleControl.setOnClickListener {
             if (!rules.isControlEnabled()) {
-                if (!rules.hasParentPin()) { showToast("請設解除碼 \uD83D\uDD11"); return@setOnClickListener }
+                if (!rules.hasParentPin()) { showToast("請設 PIN 碼 \uD83D\uDD11"); return@setOnClickListener }
                 if (!isAccessibilityEnabled()) { showToast("請開無障礙 \uD83E\uDD16"); return@setOnClickListener }
                 if (!Settings.canDrawOverlays(this)) { showToast("請開上層權限 \uD83D\uDCF1"); return@setOnClickListener }
                 rules.setControlEnabled(true)
