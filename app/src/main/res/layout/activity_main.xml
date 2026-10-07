@@ -118,89 +118,84 @@
                 android:layout_height="wrap_content"
                 android:text="保護設定" />
 
-            <!-- 時間設定（分鐘） -->
-            <LinearLayout
+            <!-- 表格排版：第一欄自動依最寬的字串對齊，第二欄輸入框同長延伸 -->
+            <TableLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:stretchColumns="1">
 
-                <TextView
-                    android:layout_width="135dp"
-                    android:layout_height="wrap_content"
-                    android:lines="1"
-                    android:text="時間設定（分鐘）"
-                    android:textColor="@color/text_primary"
-                    android:textSize="15sp" />
+                <!-- 時間設定（分鐘） -->
+                <TableRow
+                    android:gravity="center_vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="時間設定（分鐘）"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
+                        android:lines="1"
+                        android:layout_marginEnd="12dp" />
 
-                <EditText
-                    android:id="@+id/etLimitMinutes"
-                    style="@style/AppField"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:hint="1~1440"
-                    android:inputType="number"
-                    android:padding="10dp" />
-            </LinearLayout>
+                    <EditText
+                        android:id="@+id/etLimitMinutes"
+                        style="@style/AppField"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:hint="1~1440"
+                        android:inputType="number"
+                        android:padding="10dp" />
+                </TableRow>
 
-            <!-- 解除鎖定 PIN -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                <!-- 解除鎖定 PIN -->
+                <TableRow
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="解除鎖定 PIN"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
+                        android:lines="1"
+                        android:layout_marginEnd="12dp" />
 
-                <TextView
-                    android:layout_width="135dp"
-                    android:layout_height="wrap_content"
-                    android:lines="1"
-                    android:text="解除鎖定 PIN"
-                    android:textColor="@color/text_primary"
-                    android:textSize="15sp" />
+                    <EditText
+                        android:id="@+id/etPin"
+                        style="@style/AppField"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:hint="留空不修改"
+                        android:inputType="numberPassword"
+                        android:padding="10dp" />
+                </TableRow>
 
-                <EditText
-                    android:id="@+id/etPin"
-                    style="@style/AppField"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:hint="留空不修改"
-                    android:inputType="numberPassword"
-                    android:padding="10dp" />
-            </LinearLayout>
+                <!-- 停止鎖定 PIN -->
+                <TableRow
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="停止鎖定 PIN"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
+                        android:lines="1"
+                        android:layout_marginEnd="12dp" />
 
-            <!-- 停止鎖定 PIN -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="135dp"
-                    android:layout_height="wrap_content"
-                    android:lines="1"
-                    android:text="停止鎖定 PIN"
-                    android:textColor="@color/text_primary"
-                    android:textSize="15sp" />
-
-                <EditText
-                    android:id="@+id/etStopPin"
-                    style="@style/AppField"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:hint="留空不修改"
-                    android:inputType="numberPassword"
-                    android:padding="10dp" />
-            </LinearLayout>
+                    <EditText
+                        android:id="@+id/etStopPin"
+                        style="@style/AppField"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:hint="留空不修改"
+                        android:inputType="numberPassword"
+                        android:padding="10dp" />
+                </TableRow>
+            </TableLayout>
 
             <Button
                 android:id="@+id/btnToggleMode"

@@ -57,11 +57,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val requestCamera = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) startDistanceService() else showToast("\uD83D\uDCF7 需要相機權限\n請至上方開啟喲")
+        if (granted) startDistanceService() else showToast("\uD83D\uDCF7 請開相機喲")
     }
 
     private val requestCalibrationCamera = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) openCalibration() else showToast("\uD83D\uDCF7 需要相機權限\n請至上方開啟喲")
+        if (granted) openCalibration() else showToast("\uD83D\uDCF7 請開相機喲")
     }
 
     private fun openCalibration() {
@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity() {
 
         vb.btnOpenCamera.setOnClickListener {
             val hasCam = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-            if (!hasCam) requestUiCamera.launch(Manifest.permission.CAMERA) else showToast("\u2728 相機已就緒\n可以開始使用囉")
+            if (!hasCam) requestUiCamera.launch(Manifest.permission.CAMERA) else showToast("\u2728 相機已就緒")
         }
         
         vb.btnToggleMode.setOnClickListener {
@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity() {
             if (newMode == 1) {
                 distanceState.setBlocked(false)
             }
-            showToast(if (newMode == 0) "\u2728 模式切換成功\n已選擇：全螢幕 PIN 鎖定" else "\u2728 模式切換成功\n已選擇：語音及上橫幅")
+            showToast(if (newMode == 0) "\u2728 全螢幕鎖定" else "\u2728 語音上橫幅")
             refreshUi()
         }
 
@@ -126,46 +126,46 @@ class MainActivity : AppCompatActivity() {
             currentFocus?.windowToken?.let { imm.hideSoftInputFromWindow(it, 0) }
             currentFocus?.clearFocus()
             val limitMin = vb.etLimitMinutes.text?.toString()?.toIntOrNull()
-            if (limitMin == null || limitMin !in 1..1440) { showToast("\u23F1\uFE0F 時間設定提醒\n須介於 1-1440 分"); return@setOnClickListener }
+            if (limitMin == null || limitMin !in 1..1440) { showToast("\u23F1\uFE0F 須 1 ~ 1440 分"); return@setOnClickListener }
             rules.setCycleLimitSeconds(limitMin * 60)
-            vb.etPin.text?.toString()?.takeIf { it.isNotBlank() }?.let { if (it.length < 4) showToast("\uD83D\uDD12 解除 PIN 提醒\n密碼須至少 4 碼") else { rules.setParentPin(it); vb.etPin.setText("") } }
-            vb.etStopPin.text?.toString()?.takeIf { it.isNotBlank() }?.let { if (it.length < 4) showToast("\uD83D\uDEE1\uFE0F 停止 PIN 提醒\n密碼須至少 4 碼") else { rules.setStopPin(it); vb.etStopPin.setText("") } }
-            showToast("\uD83C\uDF89 設定已儲存\n保護設定更新囉")
+            vb.etPin.text?.toString()?.takeIf { it.isNotBlank() }?.let { if (it.length < 4) showToast("\uD83D\uDD12 解除需 4 碼") else { rules.setParentPin(it); vb.etPin.setText("") } }
+            vb.etStopPin.text?.toString()?.takeIf { it.isNotBlank() }?.let { if (it.length < 4) showToast("\uD83D\uDEE1\uFE0F 停止需 4 碼") else { rules.setStopPin(it); vb.etStopPin.setText("") } }
+            showToast("\uD83C\uDF89 儲存成功囉")
             refreshUi()
         }
 
         vb.btnToggleControl.setOnClickListener {
             if (!rules.isControlEnabled()) {
-                if (!rules.hasParentPin()) { showToast("\uD83D\uDD11 缺少安全密碼\n請先設定解除 PIN"); return@setOnClickListener }
-                if (!isAccessibilityEnabled()) { showToast("\uD83E\uDD16 需要無障礙\n請先開啟無障礙服務"); return@setOnClickListener }
-                if (!Settings.canDrawOverlays(this)) { showToast("\uD83D\uDCF1 需要上層顯示\n請先允許顯示權限"); return@setOnClickListener }
+                if (!rules.hasParentPin()) { showToast("\uD83D\uDD11 請設解除碼"); return@setOnClickListener }
+                if (!isAccessibilityEnabled()) { showToast("\uD83E\uDD16 請開無障礙"); return@setOnClickListener }
+                if (!Settings.canDrawOverlays(this)) { showToast("\uD83D\uDCF1 請開上層權限"); return@setOnClickListener }
                 rules.setControlEnabled(true)
-                showToast("\u2728 護眼魔法啟動\n(OwO) 守護雙眼健康")
+                showToast("\u2728 護眼魔法啟動")
                 refreshUi()
             } else {
                 if (rules.hasStopPin()) {
                     showVerifyStopPinDialog("解除護眼魔法 (OwO) \uD83E\uDE84") {
                         rules.setControlEnabled(false)
-                        showToast("\uD83D\uDCA4 護眼魔法解除\n下次見囉 (QAQ)")
+                        showToast("\uD83D\uDCA4 護眼魔法解除")
                         refreshUi()
                     }
-                } else showToast("\uD83D\uDEE1\uFE0F 缺少防護密碼\n請先設定停止 PIN")
+                } else showToast("\uD83D\uDEE1\uFE0F 請設停止碼")
             }
         }
 
         vb.btnCalibrate30.setOnClickListener {
             val hasCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-            if (!hasCamera) { showToast("\uD83D\uDCF7 找不到相機權限\n請至上方允許權限"); return@setOnClickListener }
+            if (!hasCamera) { showToast("\uD83D\uDCF7 請開相機喲"); return@setOnClickListener }
             openCalibration()
         }
 
         vb.btnToggleDistance.setOnClickListener {
             if (!distanceState.isServiceRunning()) {
                 val hasCam = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-                if (!hasCam) { showToast("\uD83D\uDCF7 找不到相機權限\n請至上方允許權限"); return@setOnClickListener }
+                if (!hasCam) { showToast("\uD83D\uDCF7 請開相機喲"); return@setOnClickListener }
                 
                 if (distanceState.getRefFaceWidthPxAt30cm() <= 0) {
-                    showToast("\uD83D\uDCCF 尚未設基準線\n請先設定基準線喲")
+                    showToast("\uD83D\uDCCF 請先設基準線")
                     return@setOnClickListener
                 }
                 startDistanceService()
@@ -175,10 +175,10 @@ class MainActivity : AppCompatActivity() {
                         stopService(Intent(this, DistanceForegroundService::class.java))
                         distanceState.setServiceRunning(false)
                         distanceState.setBlocked(false)
-                        showToast("\uD83D\uDEE1\uFE0F 距離偵測解除\n辛苦囉多休息喲")
+                        showToast("\uD83D\uDEE1\uFE0F 距離偵測解除")
                         refreshUi()
                     }
-                } else showToast("\uD83D\uDEE1\uFE0F 缺少防護密碼\n請先設定停止 PIN")
+                } else showToast("\uD83D\uDEE1\uFE0F 請設停止碼")
             }
         }
 
@@ -191,7 +191,7 @@ class MainActivity : AppCompatActivity() {
     private fun startDistanceService() {
         ContextCompat.startForegroundService(this, Intent(this, DistanceForegroundService::class.java))
         distanceState.setServiceRunning(true)
-        showToast("\uD83C\uDF1F 距離偵測啟動\n(OwO) 守護眼睛中")
+        showToast("\uD83C\uDF1F 守護眼睛中")
         refreshUi()
     }
 
@@ -207,7 +207,7 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton("確定") { _, _ ->
                 if (rules.verifyStopPin(input.text.toString())) {
                     onSuccess()
-                } else showToast("\u274C 密碼輸入錯誤\n請重新輸入喲 (QwQ)")
+                } else showToast("(QwQ) 密碼錯誤")
             }.setNegativeButton("取消", null).show()
     }
 
