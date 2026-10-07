@@ -116,7 +116,7 @@ private val requestCamera = registerForActivityResult(ActivityResultContracts.Re
             if (newMode == 1) {
                 distanceState.setBlocked(false)
             }
-            showToast(if (newMode == 0) "已切換為：全螢幕 PIN 鎖定" else "已切換為：語音及上橫幅")
+            showToast("已成功切換模式！")
             refreshUi()
         }
 

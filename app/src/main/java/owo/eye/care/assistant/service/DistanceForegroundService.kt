@@ -79,7 +79,7 @@ class DistanceForegroundService : LifecycleService() {
             }
             updateNotification()
         }
-        stateStore.setServiceRunning(true)
+        // stateStore.setServiceRunning(true) removed for calibration check
         stateStore.setCameraError("")
         startForeground(2002, createNotification())
         usageMonitor.start()
@@ -87,7 +87,10 @@ class DistanceForegroundService : LifecycleService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        stateStore.setServiceRunning(true)
+        val isCalib = intent?.getBooleanExtra("is_calibration_only", false) ?: false
+        if (!isCalib) {
+            stateStore.setServiceRunning(true)
+        }
         return START_STICKY
     }
 

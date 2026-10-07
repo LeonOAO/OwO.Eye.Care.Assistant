@@ -66,7 +66,7 @@ class CalibrationActivity : AppCompatActivity() {
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
         }
         frame.addView(guide, FrameLayout.LayoutParams(dp(140), dp(190), Gravity.CENTER))
-        content.addView(frame, LinearLayout.LayoutParams(-1, dp(260)))
+        content.addView(frame, LinearLayout.LayoutParams(-1, 0, 1f))
         status = label("等待相機啟動。", 16f)
         content.addView(status)
         begin = Button(this).apply {
@@ -84,7 +84,8 @@ class CalibrationActivity : AppCompatActivity() {
             minHeight = dp(56)
             setOnClickListener { finish() }
         }, LinearLayout.LayoutParams(-1, -2))
-        setContentView(ScrollView(this).apply { addView(content) })
+        content.layoutParams = FrameLayout.LayoutParams(-1, -1)
+        setContentView(ScrollView(this).apply { isFillViewport = true; addView(content) })
     }
 
     override fun onStart() {
@@ -109,7 +110,7 @@ class CalibrationActivity : AppCompatActivity() {
         }
         attached = true
         try {
-            ContextCompat.startForegroundService(this, Intent(this, DistanceForegroundService::class.java))
+            ContextCompat.startForegroundService(this, Intent(this, DistanceForegroundService::class.java).apply { putExtra("is_calibration_only", true) })
         } catch (error: Exception) {
             status.text = "相機服務啟動失敗：${error.message}"
             begin.isEnabled = false
@@ -131,7 +132,7 @@ class CalibrationActivity : AppCompatActivity() {
         }
         // 校正前未啟用偵測時，不讓校正操作永久開啟背景相機。
         if (temporaryService && !isChangingConfigurations) {
-            stopService(Intent(this, DistanceForegroundService::class.java))
+            stopService(Intent(this, DistanceForegroundService::class.java).apply { putExtra("is_calibration_only", true) })
         }
         super.onStop()
     }
