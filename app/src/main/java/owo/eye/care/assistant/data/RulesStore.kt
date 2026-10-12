@@ -13,6 +13,6 @@ class RulesStore(context: Context) {
     fun verifyStopPin(input: String): Boolean = sp.getString("stop_pin", null) == input
     fun setCycleLimitSeconds(seconds: Int) = sp.edit().putInt("cycle_limit_seconds", seconds).apply()
     fun getCycleLimitSeconds(): Int = sp.getInt("cycle_limit_seconds", 20 * 60)
-    fun setProtectionMode(mode: Int) = sp.edit().putInt("protection_mode", mode).apply()
-    fun getProtectionMode(): Int = sp.getInt("protection_mode", 0)
+    fun setProtectionMode(mode: Int) = sp.edit().putInt("protection_mode", ReminderMode.normalize(mode)).apply()
+    fun getProtectionMode(): Int = ReminderMode.normalize(sp.getInt("protection_mode", ReminderMode.PIN_LOCK))
 }

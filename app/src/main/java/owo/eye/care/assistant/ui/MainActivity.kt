@@ -23,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import owo.eye.care.assistant.data.DistanceStateStore
 import owo.eye.care.assistant.data.RulesStore
+import owo.eye.care.assistant.data.ReminderMode
 import owo.eye.care.assistant.databinding.ActivityMainBinding
 import owo.eye.care.assistant.service.DistanceForegroundService
 
@@ -180,14 +181,24 @@ class MainActivity : AppCompatActivity() {
         }
         
         vb.btnToggleMode.setOnClickListener {
-            val newMode = if (rules.getProtectionMode() == 0) 1 else 0
-            rules.setProtectionMode(newMode)
-            ExecutionLogStore.event("設定", if (newMode == 0) "切換全螢幕 PIN 模式" else "切換語音上橫幅模式")
-            if (newMode == 1) {
-                distanceState.setBlocked(false)
-            }
-            showToast(if (newMode == 0) "全螢幕鎖定 \u2728" else "語音上橫幅 \u2728")
-            refreshUi()
+            val modes = ReminderMode.selectionOrder()
+            val labels = modes.map { ReminderMode.label(it) }.toTypedArray()
+            val selected = modes.indexOf(rules.getProtectionMode())
+            AlertDialog.Builder(this)
+                .setTitle("提醒模式")
+                .setSingleChoiceItems(labels, selected) { dialog, which ->
+                    val newMode = modes[which]
+                    if (newMode != rules.getProtectionMode()) {
+                        rules.setProtectionMode(newMode)
+                        if (!ReminderMode.usesPin(newMode)) distanceState.setBlocked(false)
+                        ExecutionLogStore.event("設定", "提醒模式：${ReminderMode.label(newMode)}")
+                        showToast("${ReminderMode.label(newMode)} \u2728")
+                        refreshUi()
+                    }
+                    dialog.dismiss()
+                }
+                .setNegativeButton("取消", null)
+                .show()
         }
 
         vb.etLimitMinutes.setText((rules.getCycleLimitSeconds() / 60).toString())
@@ -308,7 +319,7 @@ class MainActivity : AppCompatActivity() {
         val hasCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
         vb.tvCameraStatus.text = "相機權限：${if (hasCamera) "已允許" else "尚未允許"}"
         
-        vb.btnToggleMode.text = if (rules.getProtectionMode() == 0) "提醒模式（點擊切換）：全螢幕 PIN 鎖定" else "提醒模式（點擊切換）：語音及上橫幅"
+        vb.btnToggleMode.text = "提醒模式（點擊切換）：${ReminderMode.label(rules.getProtectionMode())}"
         
         if (rules.isControlEnabled()) {
             vb.btnToggleControl.text = "解除護眼魔法 (OwO)"

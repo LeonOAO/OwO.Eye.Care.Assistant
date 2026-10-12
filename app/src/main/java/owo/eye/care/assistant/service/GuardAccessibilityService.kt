@@ -14,6 +14,7 @@ import android.view.accessibility.AccessibilityEvent
 import owo.eye.care.assistant.R
 import owo.eye.care.assistant.data.DistanceStateStore
 import owo.eye.care.assistant.data.RulesStore
+import owo.eye.care.assistant.data.ReminderMode
 import owo.eye.care.assistant.overlay.BlockOverlayController
 import owo.eye.care.assistant.overlay.ReminderOverlayController
 
@@ -24,32 +25,51 @@ class GuardAccessibilityService : AccessibilityService() {
     private var reminderController: ReminderOverlayController? = null
     private var mediaPlayer: MediaPlayer? = null
     private lateinit var usageMonitor: DeviceUsageMonitor
+    private var appliedMode = -1
     private val handler = Handler(Looper.getMainLooper())
     
     private val timerRunnable = object : Runnable {
         override fun run() {
+            syncReminderMode()
             if (!usageMonitor.isActive() || !rules.isControlEnabled()) {
                 suspendReminders()
             } else if (stateStore.isBlocked()) {
-                if (rules.getProtectionMode() == 0) blockController?.show()
+                if (ReminderMode.usesPin(rules.getProtectionMode())) blockController?.show()
                 else blockController?.hide()
             } else {
                 val elapsed = stateStore.getElapsedSeconds() + 1
                 stateStore.setElapsedSeconds(elapsed)
                 if (elapsed >= rules.getCycleLimitSeconds()) {
-                    if (rules.getProtectionMode() == 0) {
+                    if (ReminderMode.usesPin(rules.getProtectionMode())) {
                         stateStore.setBlocked(true)
                         ExecutionLogStore.event("提醒", "使用時間達上限，進入 PIN 鎖定")
                         blockController?.show()
                     } else {
                         stateStore.setElapsedSeconds(0)
-                        ExecutionLogStore.event("提醒", "使用時間達上限，語音與橫幅提醒")
-                        reminderController?.show()
-                        playLocalVoice()
+                        val mode = rules.getProtectionMode()
+                        ExecutionLogStore.event("提醒", "使用時間達上限，${ReminderMode.label(mode)}提醒")
+                        if (ReminderMode.usesBanner(mode)) reminderController?.show()
+                        if (ReminderMode.usesVoice(mode)) playLocalVoice()
                     }
                 }
             }
             handler.postDelayed(this, 1000L)
+        }
+    }
+
+    /** 切換模式後，於下一次事件或計時 tick 清理不再需要的輸出，不重設累計時間。 */
+    private fun syncReminderMode() {
+        val mode = rules.getProtectionMode()
+        if (mode == appliedMode) return
+        appliedMode = mode
+        if (!ReminderMode.usesVoice(mode)) {
+            try { mediaPlayer?.release() } catch (_: Exception) { }
+            mediaPlayer = null
+        }
+        if (!ReminderMode.usesBanner(mode)) reminderController?.hide()
+        if (!ReminderMode.usesPin(mode)) {
+            blockController?.hide()
+            if (stateStore.isBlocked()) stateStore.setBlocked(false)
         }
     }
 
@@ -62,7 +82,8 @@ class GuardAccessibilityService : AccessibilityService() {
     }
 
     private fun playLocalVoice() {
-        if (!usageMonitor.isActive() || !rules.isControlEnabled()) return
+        if (!usageMonitor.isActive() || !rules.isControlEnabled() ||
+            !ReminderMode.usesVoice(rules.getProtectionMode())) return
         try {
             if (mediaPlayer == null) {
                 mediaPlayer = MediaPlayer.create(applicationContext, R.raw.voice_reminder)
@@ -101,7 +122,7 @@ class GuardAccessibilityService : AccessibilityService() {
         usageMonitor = DeviceUsageMonitor(this) { available ->
             ExecutionLogStore.transition("guard_usage", "控管", if (available) "裝置亮屏且解鎖，控管依原設定運作" else "裝置待機／鎖定，控管提醒暫停")
             if (!available) suspendReminders()
-            else if (rules.isControlEnabled() && stateStore.isBlocked() && rules.getProtectionMode() == 0) {
+            else if (rules.isControlEnabled() && stateStore.isBlocked() && ReminderMode.usesPin(rules.getProtectionMode())) {
                 blockController?.show()
             }
         }
@@ -120,11 +141,12 @@ class GuardAccessibilityService : AccessibilityService() {
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+        syncReminderMode()
         if (!usageMonitor.isActive() || !rules.isControlEnabled()) {
             suspendReminders()
             return
         }
-        if (stateStore.isBlocked() && rules.getProtectionMode() == 0) {
+        if (stateStore.isBlocked() && ReminderMode.usesPin(rules.getProtectionMode())) {
             if (blockController?.isShowing() == false) blockController?.show()
         } else {
             if (blockController?.isShowing() == true) blockController?.hide()
