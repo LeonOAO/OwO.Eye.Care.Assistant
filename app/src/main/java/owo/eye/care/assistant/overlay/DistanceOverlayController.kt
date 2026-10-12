@@ -1,5 +1,6 @@
 package owo.eye.care.assistant.overlay
 import android.content.Context
+import owo.eye.care.assistant.diagnostics.ExecutionLogStore
 import android.graphics.PixelFormat
 import android.os.Build
 import android.view.*
@@ -40,10 +41,12 @@ class DistanceOverlayController(private val context: Context) {
             }
             wm.addView(v, params)
             view = v
-        } catch (e: Exception) { e.printStackTrace(); view = null }
+            ExecutionLogStore.event("遮罩", "距離警示已顯示")
+        } catch (e: Exception) { ExecutionLogStore.error("距離警示", e); e.printStackTrace(); view = null }
     }
     fun hide() {
         val v = view ?: return
+        ExecutionLogStore.event("遮罩", "距離警示隱藏請求")
         try { wm.removeView(v) } catch (_: Exception) {}
         view = null
     }

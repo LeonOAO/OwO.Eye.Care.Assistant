@@ -1,5 +1,6 @@
 package owo.eye.care.assistant.overlay
 import android.content.Context
+import owo.eye.care.assistant.diagnostics.ExecutionLogStore
 import android.graphics.PixelFormat
 import android.os.Build
 import android.view.*
@@ -57,10 +58,12 @@ class BlockOverlayController(private val context: Context, private val rules: Ru
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { params.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES }
             wm.addView(v, params)
             view = v
-        } catch (e: Exception) { e.printStackTrace(); view = null }
+            ExecutionLogStore.event("遮罩", "PIN 鎖定遮罩已顯示")
+        } catch (e: Exception) { ExecutionLogStore.error("PIN 鎖定遮罩", e); e.printStackTrace(); view = null }
     }
     fun hide() {
         val v = view ?: return
+        ExecutionLogStore.event("遮罩", "PIN 鎖定遮罩隱藏請求")
         try { wm.removeView(v) } catch (_: Exception) {}
         view = null
     }

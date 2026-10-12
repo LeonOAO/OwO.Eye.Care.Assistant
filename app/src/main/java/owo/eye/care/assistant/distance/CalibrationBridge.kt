@@ -1,6 +1,7 @@
 package owo.eye.care.assistant.distance
 
 import androidx.camera.core.Preview
+import owo.eye.care.assistant.diagnostics.ExecutionLogStore
 
 /** 所有存取皆在主執行緒；只傳遞預覽 surface 與進度，不保存影像。 */
 object CalibrationBridge {
@@ -24,6 +25,7 @@ object CalibrationBridge {
     }
 
     fun begin() {
+        ExecutionLogStore.event("校正", "開始收集有效基準讀值")
         samples.reset()
         completed = false
         collecting = true

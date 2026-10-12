@@ -1,6 +1,7 @@
 package owo.eye.care.assistant.overlay
 
 import android.content.Context
+import owo.eye.care.assistant.diagnostics.ExecutionLogStore
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.Handler
@@ -35,12 +36,14 @@ class ReminderOverlayController(private val context: Context) {
             params.windowAnimations = android.R.style.Animation_Dialog
             wm.addView(v, params)
             view = v
+            ExecutionLogStore.event("遮罩", "提醒橫幅已顯示")
             handler.postDelayed(hideRunnable, 4000)
-        } catch (e: Exception) { e.printStackTrace(); view = null }
+        } catch (e: Exception) { ExecutionLogStore.error("提醒橫幅", e); e.printStackTrace(); view = null }
     }
     fun hide() {
         handler.removeCallbacks(hideRunnable)
         val v = view ?: return
+        ExecutionLogStore.event("遮罩", "提醒橫幅隱藏請求")
         try { wm.removeView(v) } catch (_: Exception) {}
         view = null
     }

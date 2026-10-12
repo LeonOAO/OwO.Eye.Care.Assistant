@@ -1,6 +1,7 @@
 package owo.eye.care.assistant.service
 
 import android.annotation.SuppressLint
+import owo.eye.care.assistant.diagnostics.ExecutionLogStore
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -59,6 +60,7 @@ class DistanceForegroundService : LifecycleService() {
 
     override fun onCreate() {
         super.onCreate()
+        ExecutionLogStore.event("距離", "相機前景服務建立")
         stateStore = DistanceStateStore(this)
         distanceOverlay = DistanceOverlayController(this)
         CalibrationBridge.onPreviewChanged = {
@@ -70,6 +72,7 @@ class DistanceForegroundService : LifecycleService() {
             }
         }
         usageMonitor = DeviceUsageMonitor(this) { available ->
+            ExecutionLogStore.transition("distance_usage", "距離", if (available) "裝置可互動，嘗試恢復相機" else "待機／鎖定，解除相機綁定")
             active = available
             if (available) {
                 stateStore.setDistancePaused(false)
@@ -88,6 +91,7 @@ class DistanceForegroundService : LifecycleService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         val isCalib = intent?.getBooleanExtra("is_calibration_only", false) ?: false
+        ExecutionLogStore.event("距離", if (isCalib) "收到校正用啟動請求" else "收到距離偵測啟動請求")
         if (!isCalib) {
             stateStore.setServiceRunning(true)
         }
@@ -166,6 +170,7 @@ class DistanceForegroundService : LifecycleService() {
                                         }
                                         .addOnFailureListener(callbackExecutor) { error ->
                                             if (!destroyed && session == generation) {
+                                                ExecutionLogStore.error("臉部分析", error)
                                                 stateStore.setCameraError(error.message ?: "臉部分析失敗")
                                                 invalidateDistance("相機異常")
                                             }
@@ -179,6 +184,7 @@ class DistanceForegroundService : LifecycleService() {
                                     processing = false
                                     proxy.close()
                                     if (!destroyed) {
+                                        ExecutionLogStore.error("影像分析", error)
                                         stateStore.setCameraError(error.message ?: "影像分析失敗")
                                         invalidateDistance("相機異常")
                                     }
@@ -197,9 +203,11 @@ class DistanceForegroundService : LifecycleService() {
                 } else {
                     provider.bindToLifecycle(this, CameraSelector.DEFAULT_FRONT_CAMERA, useCase)
                 }
+                ExecutionLogStore.event("相機", if (surface != null) "相機已綁定，校正預覽開啟" else "相機已綁定，僅背景分析")
                 stateStore.setCameraError("")
                 updateNotification()
             } catch (error: Exception) {
+                ExecutionLogStore.error("相機啟動", error)
                 analysis?.clearAnalyzer()
                 analysis?.let { cameraProvider?.unbind(it) }
                 analysis = null
@@ -271,6 +279,7 @@ class DistanceForegroundService : LifecycleService() {
             val median = CalibrationBridge.samples.add(profile, box.width())
             if (median != null) {
                 stateStore.saveProfile(profile, median)
+                ExecutionLogStore.event("校正", "完成 10 次有效讀值；方向／影像基準=$profile")
                 CalibrationBridge.collectingFinished()
                 CalibrationBridge.report("校正完成：已保存目前方向與影像尺寸的基準", 10, true)
             } else {
@@ -296,6 +305,7 @@ class DistanceForegroundService : LifecycleService() {
     }
 
     override fun onDestroy() {
+        ExecutionLogStore.event("距離", "收到相機服務銷毀回呼")
         destroyed = true
         CalibrationBridge.onPreviewChanged = null
         usageMonitor.stop()

@@ -1,6 +1,11 @@
 package owo.eye.care.assistant.ui
 
 import android.Manifest
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.text.method.ScrollingMovementMethod
+import android.view.MotionEvent
+import owo.eye.care.assistant.diagnostics.ExecutionLogStore
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -25,6 +30,70 @@ class MainActivity : AppCompatActivity() {
     private lateinit var vb: ActivityMainBinding
     private lateinit var rules: RulesStore
     private lateinit var distanceState: DistanceStateStore
+    private var executionLogVisible = false
+    private var executionLogReadPending = false
+    private var executionLogDirty = false
+    private var lastLogTouchY = 0f
+    private val executionLogListener: () -> Unit = { refreshExecutionLog() }
+
+    private fun refreshExecutionLog() {
+        if (!executionLogVisible) return
+        if (executionLogReadPending) { executionLogDirty = true; return }
+        executionLogReadPending = true
+        ExecutionLogStore.read { text ->
+            executionLogReadPending = false
+            if (executionLogVisible) {
+                vb.tvExecutionLog.text = text.ifEmpty { "尚無執行紀錄" }
+                vb.tvExecutionLog.scrollTo(0, 0)
+                if (executionLogDirty) {
+                    executionLogDirty = false
+                    refreshExecutionLog()
+                }
+            }
+        }
+    }
+
+    private fun setupExecutionLog() {
+        vb.tvExecutionLog.movementMethod = ScrollingMovementMethod()
+        vb.tvExecutionLog.setOnTouchListener { view, event ->
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> lastLogTouchY = event.y
+                MotionEvent.ACTION_MOVE -> {
+                    val direction = if (event.y < lastLogTouchY) 1 else -1
+                    view.parent.requestDisallowInterceptTouchEvent(view.canScrollVertically(direction))
+                    lastLogTouchY = event.y
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> view.parent.requestDisallowInterceptTouchEvent(false)
+            }
+            false
+        }
+        vb.btnCopyExecutionLog.setOnClickListener {
+            ExecutionLogStore.read(newestFirst = false) { text ->
+                if (!executionLogVisible) return@read
+                if (text.isEmpty()) { showToast("尚無執行紀錄"); return@read }
+                try {
+                    val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    clipboard.setPrimaryClip(ClipData.newPlainText("OwO 執行紀錄", text))
+                    showToast("執行紀錄已複製")
+                } catch (error: Exception) { showToast("複製失敗"); ExecutionLogStore.error("複製紀錄", error) }
+            }
+        }
+        vb.btnClearExecutionLog.setOnClickListener {
+            AlertDialog.Builder(this)
+                .setTitle("清除執行紀錄")
+                .setMessage("只清除 APP 的本機紀錄，不影響 PIN、校正、計時或系統歷史紀錄。")
+                .setPositiveButton("確定") { _, _ ->
+                    ExecutionLogStore.clear { success ->
+                        if (executionLogVisible) {
+                            refreshExecutionLog()
+                            showToast(if (success) "執行紀錄已清除" else "清除紀錄失敗，請重試")
+                        }
+                    }
+                }
+                .setNegativeButton("取消", null).show()
+        }
+    }
+
     private val uiHandler = android.os.Handler(android.os.Looper.getMainLooper())
     
     private val distanceUiRunnable = object : Runnable {
@@ -74,6 +143,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         vb = ActivityMainBinding.inflate(layoutInflater)
         setContentView(vb.root)
+        setupExecutionLog()
 
         vb.root.setOnTouchListener { _, _ ->
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
@@ -112,6 +182,7 @@ class MainActivity : AppCompatActivity() {
         vb.btnToggleMode.setOnClickListener {
             val newMode = if (rules.getProtectionMode() == 0) 1 else 0
             rules.setProtectionMode(newMode)
+            ExecutionLogStore.event("設定", if (newMode == 0) "切換全螢幕 PIN 模式" else "切換語音上橫幅模式")
             if (newMode == 1) {
                 distanceState.setBlocked(false)
             }
@@ -130,6 +201,7 @@ class MainActivity : AppCompatActivity() {
             rules.setCycleLimitSeconds(limitMin * 60)
             vb.etPin.text?.toString()?.takeIf { it.isNotBlank() }?.let { if (it.length < 4) showToast("解除需 4 碼 \uD83D\uDD12") else { rules.setParentPin(it); vb.etPin.setText("") } }
             vb.etStopPin.text?.toString()?.takeIf { it.isNotBlank() }?.let { if (it.length < 4) showToast("停止需 4 碼 \uD83D\uDEE1\uFE0F") else { rules.setStopPin(it); vb.etStopPin.setText("") } }
+            ExecutionLogStore.event("設定", "儲存設定操作完成（不記錄 PIN）")
             showToast("儲存成功囉 \uD83C\uDF89")
             refreshUi()
         }
@@ -140,12 +212,14 @@ class MainActivity : AppCompatActivity() {
                 if (!isAccessibilityEnabled()) { showToast("請開無障礙 \uD83E\uDD16"); return@setOnClickListener }
                 if (!Settings.canDrawOverlays(this)) { showToast("請開上層權限 \uD83D\uDCF1"); return@setOnClickListener }
                 rules.setControlEnabled(true)
+                ExecutionLogStore.event("控管", "護眼控管啟動")
                 showToast("護眼魔法啟動 \u2728")
                 refreshUi()
             } else {
                 if (rules.hasStopPin()) {
                     showVerifyStopPinDialog("解除護眼魔法 (OwO) \uD83E\uDE84") {
                         rules.setControlEnabled(false)
+                        ExecutionLogStore.event("控管", "護眼控管停止")
                         showToast("護眼魔法解除 \uD83D\uDCA4")
                         refreshUi()
                     }
@@ -185,8 +259,21 @@ class MainActivity : AppCompatActivity() {
         refreshUi()
     }
 
-    override fun onResume() { super.onResume(); refreshUi(); uiHandler.post(distanceUiRunnable) }
-    override fun onPause() { uiHandler.removeCallbacksAndMessages(null); super.onPause() }
+    override fun onResume() {
+        super.onResume()
+        executionLogVisible = true
+        ExecutionLogStore.addListener(executionLogListener)
+        ExecutionLogStore.importExitReasons()
+        refreshExecutionLog()
+        refreshUi()
+        uiHandler.post(distanceUiRunnable)
+    }
+    override fun onPause() {
+        executionLogVisible = false
+        ExecutionLogStore.removeListener(executionLogListener)
+        uiHandler.removeCallbacksAndMessages(null)
+        super.onPause()
+    }
 
     private fun startDistanceService() {
         ContextCompat.startForegroundService(this, Intent(this, DistanceForegroundService::class.java))
@@ -214,6 +301,7 @@ class MainActivity : AppCompatActivity() {
     private fun refreshUi() {
         vb.etPin.hint = if (rules.hasParentPin()) "******" else "（空白）"
         vb.etStopPin.hint = if (rules.hasStopPin()) "******" else "（空白）"
+        ExecutionLogStore.transition("accessibility_setting", "權限", if (isAccessibilityEnabled()) "無障礙設定已開啟（不代表服務已連線）" else "無障礙設定尚未開啟")
         vb.tvAccStatus.text = "無障礙服務：${if (isAccessibilityEnabled()) "已開啟" else "尚未開啟"}"
         vb.tvOverlayStatus.text = "顯示在其他應用程式上層：${if (Settings.canDrawOverlays(this)) "已允許" else "尚未允許"}"
 

@@ -280,5 +280,62 @@
                 android:text="啟動距離偵測"
                 android:textAllCaps="false" />
         </LinearLayout>
+        <!-- 執行紀錄：新增區塊，不更動原有卡片與按鈕文字。 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_spacing"
+            android:background="@drawable/bg_execution_log"
+            android:orientation="vertical"
+            android:padding="@dimen/card_padding">
+            <TextView
+                style="@style/SectionTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="執行紀錄" />
+            <TextView
+                style="@style/BodyText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="最新紀錄在上方；系統退出原因於再次開啟 APP 時讀取。" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/btnCopyExecutionLog"
+                    style="@style/AppButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:text="複製紀錄"
+                    android:textAllCaps="false" />
+                <Button
+                    android:id="@+id/btnClearExecutionLog"
+                    style="@style/AppButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:text="清除紀錄"
+                    android:textAllCaps="false" />
+            </LinearLayout>
+            <TextView
+                android:id="@+id/tvExecutionLog"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_status"
+                android:padding="12dp"
+                android:fontFamily="monospace"
+                android:textColor="@color/text_primary"
+                android:textSize="12sp"
+                android:gravity="top|start"
+                android:scrollbars="vertical"
+                android:text="讀取執行紀錄中…" />
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>
