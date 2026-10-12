@@ -4,28 +4,34 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class DistanceLogicTest {
-    @Test fun closeNeedsTwoAndFarNeedsTwo() {
+    @Test fun closeNeedsThreeAndThirtyNeedsThreeToClear() {
         val gate = DistanceGate()
-        assertFalse(gate.update(24))
-        assertTrue(gate.update(24))
+        assertFalse(gate.update(29))
+        assertFalse(gate.update(29))
+        assertTrue(gate.update(29))
+        assertTrue(gate.update(30))
         assertTrue(gate.update(30))
         assertFalse(gate.update(30))
     }
 
-    @Test fun middleBandKeepsStateButBreaksConsecutiveCounts() {
+    @Test fun crossingThresholdResetsPendingCount() {
         val gate = DistanceGate()
-        assertFalse(gate.update(24))
-        assertFalse(gate.update(25))
-        assertFalse(gate.update(24))
-        assertTrue(gate.update(24))
+        assertFalse(gate.update(29))
+        assertFalse(gate.update(29))
+        assertFalse(gate.update(30))
+        assertFalse(gate.update(29))
+        assertFalse(gate.update(29))
+        assertTrue(gate.update(29))
         assertTrue(gate.update(30))
         assertTrue(gate.update(29))
+        assertTrue(gate.update(30))
         assertTrue(gate.update(30))
         assertFalse(gate.update(30))
     }
 
     @Test fun lostFaceAndStandbyResetState() {
         val gate = DistanceGate()
+        gate.update(20)
         gate.update(20)
         assertTrue(gate.update(20))
         assertFalse(gate.update(0))

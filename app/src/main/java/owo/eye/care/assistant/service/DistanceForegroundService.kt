@@ -301,7 +301,7 @@ class DistanceForegroundService : LifecycleService() {
         val cm = (ref.toLong() * 30 / width).toInt()
         stateStore.setLastDistanceCm(cm)
         if (distanceGate.update(cm)) distanceOverlay.show() else distanceOverlay.hide()
-        stateStore.setDistanceStatus(if (distanceGate.showing) "距離過近" else if (cm < 25) "過近確認中" else "距離正常")
+        stateStore.setDistanceStatus(if (distanceGate.showing) "距離過近" else if (cm < 30) "過近確認中" else "距離正常")
     }
 
     override fun onDestroy() {
