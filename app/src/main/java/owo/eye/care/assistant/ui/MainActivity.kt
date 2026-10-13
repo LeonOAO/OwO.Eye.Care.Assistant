@@ -113,19 +113,19 @@ class MainActivity : AppCompatActivity() {
         vb.btnCopyExecutionLog.setOnClickListener {
             ExecutionLogStore.read(newestFirst = false) { text ->
                 if (!executionLogVisible) return@read
-                if (text.isEmpty()) { showToast("尚無執行紀錄"); return@read }
+                if (text.isEmpty()) { showToast("沒有紀錄喲 📝"); return@read }
                 try {
                     val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     clipboard.setPrimaryClip(ClipData.newPlainText("OwO 執行紀錄", text))
-                    showToast("執行紀錄已複製")
-                } catch (error: Exception) { showToast("複製失敗"); ExecutionLogStore.error("複製紀錄", error) }
+                    showToast("複製完成囉 📋")
+                } catch (error: Exception) { showToast("複製失敗 😿"); ExecutionLogStore.error("複製紀錄", error) }
             }
         }
         vb.btnClearExecutionLog.setOnClickListener {
             ExecutionLogStore.clear { success ->
                 if (executionLogVisible) {
                     refreshExecutionLog()
-                    showToast(if (success) "執行紀錄已清除" else "清除紀錄失敗，請重試")
+                    showToast(if (success) "清除完成囉 ✨" else "清除失敗 😿")
                 }
             }
         }
