@@ -96,6 +96,35 @@ class MainActivity : AppCompatActivity() {
         return result
     }
 
+    /** Only the visual panels collapse; service settings and input values are unchanged. */
+    private fun setupPanelSections(saved: Bundle?) {
+        val panels = listOf(
+            vb.togglePermissions to vb.contentPermissions,
+            vb.toggleProtection to vb.contentProtection,
+            vb.toggleDistance to vb.contentDistance,
+            vb.toggleLogs to vb.contentLogs
+        )
+        for ((toggle, content) in panels) {
+            if (toggle.visibility == android.view.View.GONE) continue
+            val key = "panel_${content.id}"
+            val expanded = saved?.getBoolean(key) ?: (content.visibility == android.view.View.VISIBLE)
+            content.visibility = if (expanded) android.view.View.VISIBLE else android.view.View.GONE
+            toggle.text = if (expanded) "⌃" else "⌄"
+            toggle.setOnClickListener {
+                val open = content.visibility != android.view.View.VISIBLE
+                content.visibility = if (open) android.view.View.VISIBLE else android.view.View.GONE
+                toggle.text = if (open) "⌃" else "⌄"
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        for (content in listOf(vb.contentPermissions, vb.contentProtection, vb.contentDistance, vb.contentLogs)) {
+            outState.putBoolean("panel_${content.id}", content.visibility == android.view.View.VISIBLE)
+        }
+        super.onSaveInstanceState(outState)
+    }
+
     private fun setupExecutionLog() {
         vb.tvExecutionLog.movementMethod = ScrollingMovementMethod()
         vb.tvExecutionLog.setOnTouchListener { view, event ->
@@ -180,6 +209,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         vb = ActivityMainBinding.inflate(layoutInflater)
         setContentView(vb.root)
+        setupPanelSections(savedInstanceState)
         setupExecutionLog()
 
         vb.root.setOnTouchListener { _, _ ->
@@ -349,24 +379,24 @@ class MainActivity : AppCompatActivity() {
         
         if (rules.isControlEnabled()) {
             vb.btnToggleControl.text = "解除護眼魔法 (OwO)"
-            vb.btnToggleControl.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#E53935"))
-            vb.btnToggleControl.setTextColor(Color.WHITE)
+            vb.btnToggleControl.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#F9DDE8"))
+            vb.btnToggleControl.setTextColor(Color.parseColor(if (rules.isControlEnabled()) "#A53261" else "#246D58"))
         } else {
             vb.btnToggleControl.text = "啟動護眼魔法 (OwO) \uD83E\uDE84"
-            vb.btnToggleControl.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#4CAF50"))
-            vb.btnToggleControl.setTextColor(Color.WHITE)
+            vb.btnToggleControl.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#D7F2E7"))
+            vb.btnToggleControl.setTextColor(Color.parseColor(if (rules.isControlEnabled()) "#A53261" else "#246D58"))
         }
 
         vb.btnCalibrate30.text = "設定護眼基準線 \uD83E\uDE84"
         
         if (distanceState.isServiceRunning()) {
             vb.btnToggleDistance.text = "解除距離偵測"
-            vb.btnToggleDistance.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#E53935"))
-            vb.btnToggleDistance.setTextColor(Color.WHITE)
+            vb.btnToggleDistance.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#F9DDE8"))
+            vb.btnToggleDistance.setTextColor(Color.parseColor(if (distanceState.isServiceRunning()) "#A53261" else "#246D58"))
         } else {
             vb.btnToggleDistance.text = "啟動距離偵測 (OwO) \uD83D\uDEE1\uFE0F"
-            vb.btnToggleDistance.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#4CAF50"))
-            vb.btnToggleDistance.setTextColor(Color.WHITE)
+            vb.btnToggleDistance.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#D7F2E7"))
+            vb.btnToggleDistance.setTextColor(Color.parseColor(if (distanceState.isServiceRunning()) "#A53261" else "#246D58"))
         }
 
         vb.tvProtectionStatus.text = "循環時間：${rules.getCycleLimitSeconds() / 60} 分鐘\n保護控管：${if (rules.isControlEnabled()) "已啟動" else "未啟動"}"
