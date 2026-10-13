@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 提示標籤：燈泡圖示 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp"
+    android:height="16dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <path
+        android:fillColor="#FFD84D"
+        android:strokeColor="#E0A800"
+        android:strokeWidth="1"
+        android:pathData="M12,3a6,6 0,0 0,-3.5 10.9V17h7v-3.1A6,6 0,0 0,12 3z" />
+    <path
+        android:fillColor="#C9A06A"
+        android:pathData="M9,18h6v2.5h-6z" />
+</vector>

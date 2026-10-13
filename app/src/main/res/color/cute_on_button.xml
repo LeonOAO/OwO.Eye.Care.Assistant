@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 立體按鈕文字色：一般白色；停用時奶茶灰 -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="false" android:color="#B7A79A" />
+    <item android:color="#FFFFFF" />
+</selector>

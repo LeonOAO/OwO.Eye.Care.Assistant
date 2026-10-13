@@ -3,106 +3,75 @@ package owo.eye.care.assistant.ui
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.view.Gravity
-import android.view.View
-import android.widget.Button
-import android.widget.FrameLayout
-import android.widget.LinearLayout
-import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
+import owo.eye.care.assistant.R
 import owo.eye.care.assistant.data.DistanceStateStore
+import owo.eye.care.assistant.databinding.ActivityCalibrationBinding
 import owo.eye.care.assistant.distance.CalibrationBridge
 import owo.eye.care.assistant.service.DistanceForegroundService
 
 /** 僅在可見校正畫面綁定預覽；返回遊戲或熄屏時立即解除。 */
 class CalibrationActivity : AppCompatActivity() {
-    private lateinit var preview: PreviewView
-    private lateinit var status: TextView
-    private lateinit var begin: Button
+
+    private lateinit var vb: ActivityCalibrationBinding
     private lateinit var state: DistanceStateStore
     private var temporaryService = false
     private var attached = false
-    private var step = 0
 
-    private fun dp(value: Int) = (value * resources.displayMetrics.density).toInt()
+    /** 0＝收集橫屏基準值；1＝收集豎屏基準值。 */
+    private var step = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         state = DistanceStateStore(this)
         temporaryService = savedInstanceState?.getBoolean("temporary") ?: !state.isServiceRunning()
         step = savedInstanceState?.getInt("step") ?: 0
-        val content = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(20), dp(20), dp(20), dp(20))
-            setBackgroundColor(Color.rgb(245, 247, 252))
+
+        // 直向／橫向各自載入 layout 與 layout-land 的排版，元件 ID 一致
+        vb = ActivityCalibrationBinding.inflate(layoutInflater)
+        setContentView(vb.root)
+
+        // 相機預覽：維持原本的相容模式與等比例完整顯示
+        vb.previewView.implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+        vb.previewView.scaleType = PreviewView.ScaleType.FIT_CENTER
+
+        // 內層依背景圓角裁切，讓預覽畫面也呈現圓角
+        vb.cameraInner.clipToOutline = true
+
+        vb.btnBegin.text = if (step == 0) "開始收集橫屏基準值" else "開始收集豎屏基準值"
+        vb.btnBegin.setOnClickListener {
+            it.isEnabled = false
+            CalibrationBridge.begin()
         }
-        fun label(text: String, size: Float): TextView = TextView(this).apply {
-            this.text = text
-            textSize = size
-            setTextColor(Color.rgb(24, 32, 51))
-            setPadding(0, dp(8), 0, dp(12))
-            setLineSpacing(dp(5).toFloat(), 1f)
-        }
-        content.addView(label("偵測護眼基準線設定", 24f))
-        content.addView(label("請先用尺確認臉部與平板相距 30 公分。保持單一完整臉部置中、光線充足並正對鏡頭。", 16f))
-        val frame = FrameLayout(this)
-        preview = PreviewView(this).apply {
-            implementationMode = PreviewView.ImplementationMode.COMPATIBLE
-            scaleType = PreviewView.ScaleType.FIT_CENTER
-        }
-        frame.addView(preview, FrameLayout.LayoutParams(-1, -1))
-        val guide = View(this).apply {
-            background = GradientDrawable().apply {
-                shape = GradientDrawable.OVAL
-                setColor(Color.TRANSPARENT)
-                setStroke(dp(2), Color.rgb(21, 163, 138))
-            }
-            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-        }
-        frame.addView(guide, FrameLayout.LayoutParams(dp(220), dp(290), Gravity.CENTER))
-        content.addView(frame, LinearLayout.LayoutParams(-1, 0, 1f))
-        status = label("等待相機啟動。", 16f)
-        content.addView(status)
-        begin = Button(this).apply {
-            text = if (step == 0) "開始收集橫屏基準值" else "開始收集豎屏基準值"
-            minHeight = dp(56)
-            setPadding(dp(18), dp(12), dp(18), dp(12))
-            setOnClickListener {
-                isEnabled = false
-                CalibrationBridge.begin()
-            }
-        }
-        content.addView(begin, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(12) })
-        content.addView(Button(this).apply {
-            text = "完成／返回"
-            minHeight = dp(56)
-            setOnClickListener { finish() }
-        }, LinearLayout.LayoutParams(-1, -2))
-        content.layoutParams = FrameLayout.LayoutParams(-1, -1)
-        setContentView(ScrollView(this).apply { isFillViewport = true; addView(content) })
+        vb.btnBack.setOnClickListener { finish() }
+
+        renderSteps()
+        updateProgress(0)
     }
 
     override fun onStart() {
         super.onStart()
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            status.text = "請先允許相機權限，再重新設定護眼基準線。"
-            begin.isEnabled = false
+            vb.tvStatus.text = "請先允許相機權限，再重新設定護眼基準線。"
+            vb.btnBegin.isEnabled = false
             return
         }
-        begin.isEnabled = true
-        CalibrationBridge.attach(preview.surfaceProvider) { message, count, done ->
-            status.text = "$message\n有效讀值：$count / 10"
+        vb.btnBegin.isEnabled = true
+        CalibrationBridge.attach(vb.previewView.surfaceProvider) { message, count, done ->
+            vb.tvStatus.text = "$message\n有效讀值：$count / 10"
+            updateProgress(count)
             if (done) {
                 if (step == 0) {
                     step = 1
-                    begin.isEnabled = true
-                    begin.text = "開始收集豎屏基準值"
+                    vb.btnBegin.isEnabled = true
+                    vb.btnBegin.text = "開始收集豎屏基準值"
+                    renderSteps()
                 } else {
                     finish()
                 }
@@ -112,8 +81,8 @@ class CalibrationActivity : AppCompatActivity() {
         try {
             ContextCompat.startForegroundService(this, Intent(this, DistanceForegroundService::class.java).apply { putExtra("is_calibration_only", true) })
         } catch (error: Exception) {
-            status.text = "相機服務啟動失敗：${error.message}"
-            begin.isEnabled = false
+            vb.tvStatus.text = "相機服務啟動失敗：${error.message}"
+            vb.btnBegin.isEnabled = false
             CalibrationBridge.detach()
             attached = false
         }
@@ -135,5 +104,39 @@ class CalibrationActivity : AppCompatActivity() {
             stopService(Intent(this, DistanceForegroundService::class.java).apply { putExtra("is_calibration_only", true) })
         }
         super.onStop()
+    }
+
+    // ===== 畫面呈現（只影響外觀，不改變校正流程） =====
+
+    /** 步驟標籤的三種外觀。 */
+    private enum class StepLook { ACTIVE, DONE, PENDING }
+
+    /** 依目前步驟更新「1 橫屏」「2 豎屏」標籤。 */
+    private fun renderSteps() {
+        if (step == 0) {
+            applyStep(vb.tvStepLandscape, "1 橫屏", StepLook.ACTIVE)
+            applyStep(vb.tvStepPortrait, "2 豎屏", StepLook.PENDING)
+        } else {
+            applyStep(vb.tvStepLandscape, "1 橫屏 ✓", StepLook.DONE)
+            applyStep(vb.tvStepPortrait, "2 豎屏", StepLook.ACTIVE)
+        }
+    }
+
+    private fun applyStep(view: TextView, label: String, look: StepLook) {
+        val (background, color) = when (look) {
+            StepLook.ACTIVE -> R.drawable.bg_step_on to Color.parseColor("#D16A8A")
+            StepLook.DONE -> R.drawable.bg_step_done to Color.parseColor("#137A4E")
+            StepLook.PENDING -> R.drawable.bg_step_off to Color.parseColor("#B07A6A")
+        }
+        view.text = label
+        view.setBackgroundResource(background)
+        view.setTextColor(color)
+        // 左側橫屏／豎屏小圖示跟著文字同色
+        view.compoundDrawableTintList = ColorStateList.valueOf(color)
+    }
+
+    /** 有效讀值進度條：0～10。 */
+    private fun updateProgress(count: Int) {
+        vb.progressReadings.progress = count.coerceIn(0, 10)
     }
 }

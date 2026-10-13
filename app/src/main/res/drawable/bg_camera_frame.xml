@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 鏡頭預覽外框：薰衣草外光暈 + 白邊 + 底部立體陰影 -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 底部立體陰影 -->
+    <item android:top="5dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#CDB8F5" />
+            <corners android:radius="26dp" />
+        </shape>
+    </item>
+
+    <!-- 白色外框 -->
+    <item android:bottom="5dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF" />
+            <stroke android:width="2.5dp" android:color="#E4D8FF" />
+            <corners android:radius="26dp" />
+        </shape>
+    </item>
+</layer-list>

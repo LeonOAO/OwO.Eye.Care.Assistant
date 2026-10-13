@@ -190,7 +190,9 @@
         <item name="android:paddingEnd">14dp</item>
         <item name="android:paddingTop">0dp</item>
         <item name="android:paddingBottom">0dp</item>
-        <item name="android:gravity">center_vertical|start</item>
+        <!-- 輸入文字與提示文字：水平＋垂直置中 -->
+        <item name="android:gravity">center</item>
+        <item name="android:textAlignment">center</item>
         <item name="android:textSize">15sp</item>
         <item name="android:maxLines">1</item>
         <item name="android:textColor">@color/cute_text</item>
@@ -210,5 +212,39 @@
         <item name="android:textSize">14sp</item>
         <item name="android:lineSpacingExtra">5dp</item>
         <item name="android:textColor">@color/cute_body</item>
+    </style>
+
+    <!-- ===== 校正畫面樣式 ===== -->
+
+    <!-- 步驟標籤（顏色由程式依狀態切換） -->
+    <style name="CuteStepTag">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:drawablePadding">4dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingTop">3dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingBottom">3dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- 設定說明下方的提示標籤：三個平分寬度 -->
+    <style name="CuteHintChip">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">30dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:drawablePadding">3dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:autoSizeTextType">uniform</item>
+        <item name="android:autoSizeMinTextSize">9sp</item>
+        <item name="android:autoSizeMaxTextSize">12.5sp</item>
+        <item name="android:autoSizeStepGranularity">0.5sp</item>
     </style>
 </resources>

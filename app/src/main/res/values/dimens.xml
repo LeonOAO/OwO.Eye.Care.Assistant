@@ -14,4 +14,9 @@
     <dimen name="column_gap">16dp</dimen>
     <dimen name="log_text_size">10.5sp</dimen>
     <dimen name="log_box_height">230dp</dimen>
+
+    <!-- 校正畫面：直向鏡頭預覽高度 -->
+    <dimen name="cal_camera_height">340dp</dimen>
+    <!-- 校正畫面：橫向鏡頭預覽最小高度 -->
+    <dimen name="cal_camera_min_height">280dp</dimen>
 </resources>

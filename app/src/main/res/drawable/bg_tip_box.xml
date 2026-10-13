@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 設定說明文字框：奶油底 + 虛線描邊 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="#FFF8F1" />
+    <stroke
+        android:width="1.5dp"
+        android:color="#F2D4BC"
+        android:dashWidth="5dp"
+        android:dashGap="4dp" />
+    <corners android:radius="16dp" />
+</shape>

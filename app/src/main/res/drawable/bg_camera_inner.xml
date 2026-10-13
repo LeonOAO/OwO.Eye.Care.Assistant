@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 鏡頭預覽內層：深色漸層；搭配 clipToOutline 切出圓角 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <gradient
+        android:type="radial"
+        android:gradientRadius="420dp"
+        android:centerX="0.5"
+        android:centerY="0.4"
+        android:startColor="#6E6A78"
+        android:endColor="#2F2B36" />
+    <corners android:radius="22dp" />
+</shape>
