@@ -1,6 +1,7 @@
 package owo.eye.care.assistant.ui
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.DashPathEffect
@@ -15,7 +16,7 @@ import android.view.View
  *
  * 繪製內容：
  * 1. 橢圓框外的半透明暗化遮罩，讓視線集中在框內。
- * 2. 會發光的薄荷綠虛線橢圓。
+ * 2. 會發光的薄荷綠虛線橢圓：大小依相機畫面換算，臉部對齊時約 30 公分。
  * 3. 左下、右下兩個白色圓角角框。
  */
 class FaceGuideView @JvmOverloads constructor(
@@ -70,11 +71,30 @@ class FaceGuideView @JvmOverloads constructor(
         super.onSizeChanged(w, h, oldw, oldh)
         if (w <= 0 || h <= 0) return
 
-        // 橢圓：高寬比約 1.31，依可用空間取較小者，確保完整顯示
-        val maxHeight = h * 0.78f
-        val maxWidth = w * 0.62f
-        val ovalHeight = minOf(maxHeight, maxWidth * 1.31f)
-        val ovalWidth = ovalHeight / 1.31f
+        // ===== 橢圓大小：對齊臉部時約為 30 公分 =====
+        // 1. 先找出相機畫面實際顯示的區域：
+        //    PreviewView 採 FIT_CENTER，直向畫面為 3:4、橫向畫面為 4:3，置中顯示。
+        val portrait = resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE
+        val imageAspect = if (portrait) 3f / 4f else 4f / 3f   // 寬 ÷ 高
+        val imageWidth: Float
+        val imageHeight: Float
+        if (w.toFloat() / h > imageAspect) {
+            imageHeight = h.toFloat()
+            imageWidth = imageHeight * imageAspect
+        } else {
+            imageWidth = w.toFloat()
+            imageHeight = imageWidth / imageAspect
+        }
+        val imageLongSide = maxOf(imageWidth, imageHeight)
+
+        // 2. 一般前鏡頭在 30 公分時，畫面長邊約可拍到 40 公分；
+        //    成人頭部（下巴到頭頂）約 22 公分 → 橢圓高度約為畫面長邊的 55%。
+        //    直向時長邊是高度（約佔 55%）；橫向時長邊是寬度（約佔畫面高度 73%）。
+        var ovalHeight = imageLongSide * FACE_HEIGHT_RATIO_AT_30CM
+
+        // 3. 保護：不可超出相機畫面高度的 90%，也不可超出畫面寬度的 90%
+        ovalHeight = minOf(ovalHeight, imageHeight * 0.90f, imageWidth * 0.90f * OVAL_ASPECT)
+        val ovalWidth = ovalHeight / OVAL_ASPECT
         val cx = w / 2f
         val cy = h / 2f
         ovalRect.set(cx - ovalWidth / 2f, cy - ovalHeight / 2f, cx + ovalWidth / 2f, cy + ovalHeight / 2f)
@@ -110,5 +130,13 @@ class FaceGuideView @JvmOverloads constructor(
         canvas.drawPath(dimPath, dimPaint)
         canvas.drawOval(ovalRect, ovalPaint)
         canvas.drawPath(cornerPath, cornerPaint)
+    }
+
+    private companion object {
+        /** 30 公分時，臉部（頭部）高度約佔相機畫面長邊的比例。 */
+        const val FACE_HEIGHT_RATIO_AT_30CM = 0.55f
+
+        /** 橢圓高寬比（高 ÷ 寬），接近臉部輪廓。 */
+        const val OVAL_ASPECT = 1.31f
     }
 }
