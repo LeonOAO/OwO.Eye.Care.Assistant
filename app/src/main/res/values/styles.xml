@@ -113,7 +113,7 @@
         <item name="android:gravity">center_vertical|start</item>
         <item name="android:maxLines">1</item>
         <item name="android:autoSizeTextType">uniform</item>
-        <item name="android:autoSizeMinTextSize">9sp</item>
+        <item name="android:autoSizeMinTextSize">12sp</item>
         <item name="android:autoSizeMaxTextSize">14sp</item>
         <item name="android:autoSizeStepGranularity">0.5sp</item>
     </style>
@@ -169,12 +169,16 @@
 
     <!-- 欄位標題 -->
     <style name="CuteFieldLabel">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">22dp</item>
         <item name="android:textSize">13.5sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/cute_label</item>
         <item name="android:maxLines">1</item>
+        <item name="android:autoSizeTextType">uniform</item>
+        <item name="android:autoSizeMinTextSize">11sp</item>
+        <item name="android:autoSizeMaxTextSize">13.5sp</item>
+        <item name="android:ellipsize">none</item>
     </style>
 
     <!-- 輸入框 -->

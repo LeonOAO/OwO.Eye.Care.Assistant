@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- OwO 護眼小助手 主畫面（寬螢幕 ≥ 600dp／平板橫向）：雙欄可愛風排版 -->
+<!-- OwO 護眼小助手 主畫面（中寬 600～839dp／平板直向）：單欄，權限列橫排、三欄位並排 -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -68,329 +68,305 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- ===== 雙欄：左＝權限＋保護設定；右＝守護距離＋執行紀錄 ===== -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:baselineAligned="false"
-            android:orientation="horizontal">
+        <!-- ===== 系統權限卡片 ===== -->
+        <LinearLayout style="@style/CuteCard">
 
-            <!-- 左欄 -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/column_gap"
-                android:layout_weight="1"
-                android:orientation="vertical">
+            <LinearLayout style="@style/CuteHeaderRow">
 
-                <!-- ===== 系統權限卡片 ===== -->
-                <LinearLayout style="@style/CuteCard">
+                <TextView
+                    style="@style/CuteHeaderIcon"
+                    android:background="@drawable/bg_icon_blue"
+                    android:text="🔑" />
 
-                    <LinearLayout style="@style/CuteHeaderRow">
-
-                        <TextView
-                            style="@style/CuteHeaderIcon"
-                            android:background="@drawable/bg_icon_blue"
-                            android:text="🔑" />
-
-                        <TextView
-                            style="@style/CuteSectionTitle"
-                            android:text="系統權限" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_perm_row"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:padding="8dp">
-
-                        <TextView
-                            android:id="@+id/tvAccStatus"
-                            style="@style/CutePermStatus"
-                            android:layout_width="0dp"
-                            android:layout_height="36dp"
-                            android:layout_marginStart="4dp"
-                            android:layout_marginEnd="8dp"
-                            android:layout_weight="1"
-                            android:text="無障礙服務：檢查中" />
-
-                        <Button
-                            android:id="@+id/btnOpenAccessibility"
-                            style="@style/CutePill"
-                            android:layout_width="wrap_content"
-                            android:autoSizeTextType="none"
-                            android:background="@drawable/bg_pill_blue"
-                            android:paddingStart="14dp"
-                            android:paddingEnd="14dp"
-                            android:text="開啟無障礙服務"
-                            android:textSize="13sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/bg_perm_row"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:padding="8dp">
-
-                        <TextView
-                            android:id="@+id/tvOverlayStatus"
-                            style="@style/CutePermStatus"
-                            android:layout_width="0dp"
-                            android:layout_height="36dp"
-                            android:layout_marginStart="4dp"
-                            android:layout_marginEnd="8dp"
-                            android:layout_weight="1"
-                            android:text="顯示在上層：檢查中" />
-
-                        <Button
-                            android:id="@+id/btnOpenOverlay"
-                            style="@style/CutePill"
-                            android:layout_width="wrap_content"
-                            android:autoSizeTextType="none"
-                            android:background="@drawable/bg_pill_purple"
-                            android:paddingStart="14dp"
-                            android:paddingEnd="14dp"
-                            android:text="允許顯示在其他應用程式上層"
-                            android:textSize="13sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/bg_perm_row"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:padding="8dp">
-
-                        <TextView
-                            android:id="@+id/tvCameraStatus"
-                            style="@style/CutePermStatus"
-                            android:layout_width="0dp"
-                            android:layout_height="36dp"
-                            android:layout_marginStart="4dp"
-                            android:layout_marginEnd="8dp"
-                            android:layout_weight="1"
-                            android:text="相機權限：檢查中" />
-
-                        <Button
-                            android:id="@+id/btnOpenCamera"
-                            style="@style/CutePill"
-                            android:layout_width="wrap_content"
-                            android:autoSizeTextType="none"
-                            android:background="@drawable/bg_pill_pink"
-                            android:paddingStart="14dp"
-                            android:paddingEnd="14dp"
-                            android:text="允許相機權限"
-                            android:textSize="13sp" />
-                    </LinearLayout>
-                </LinearLayout>
-
-                <!-- ===== 保護設定卡片 ===== -->
-                <LinearLayout style="@style/CuteCard">
-
-                    <LinearLayout style="@style/CuteHeaderRow">
-
-                        <TextView
-                            style="@style/CuteHeaderIcon"
-                            android:background="@drawable/bg_icon_peach"
-                            android:text="⏰" />
-
-                        <TextView
-                            style="@style/CuteSectionTitle"
-                            android:text="保護設定" />
-                    </LinearLayout>
-
-                    <!-- 寬螢幕：三個欄位並排 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                style="@style/CuteFieldLabel"
-                                android:text="時間設定（分鐘）" />
-
-                            <EditText
-                                android:id="@+id/etLimitMinutes"
-                                style="@style/CuteField"
-                                android:hint="1~1440"
-                                android:imeOptions="actionDone"
-                                android:inputType="number" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginStart="8dp"
-                            android:orientation="vertical">
-
-                            <TextView
-                                style="@style/CuteFieldLabel"
-                                android:text="解除自訂 PIN" />
-
-                            <EditText
-                                android:id="@+id/etPin"
-                                style="@style/CuteField"
-                                android:hint="留空不修改"
-                                android:imeOptions="actionDone"
-                                android:inputType="numberPassword" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginStart="8dp"
-                            android:orientation="vertical">
-
-                            <TextView
-                                style="@style/CuteFieldLabel"
-                                android:text="停止自訂 PIN" />
-
-                            <EditText
-                                android:id="@+id/etStopPin"
-                                style="@style/CuteField"
-                                android:hint="留空不修改"
-                                android:imeOptions="actionDone"
-                                android:inputType="numberPassword" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <Button
-                        android:id="@+id/btnToggleMode"
-                        style="@style/CuteButton"
-                        android:layout_marginTop="14dp"
-                        android:background="@drawable/bg_btn_mode"
-                        android:text="提醒模式（點擊切換）：全螢幕 PIN 鎖定"
-                        android:textColor="@color/cute_mode_text" />
-
-                    <Button
-                        android:id="@+id/btnSaveSettings"
-                        style="@style/CuteButton"
-                        android:background="@drawable/bg_btn_save"
-                        android:text="儲存設定"
-                        android:textColor="@color/cute_save_text" />
-
-                    <Button
-                        android:id="@+id/btnToggleControl"
-                        style="@style/CuteButton"
-                        android:background="@drawable/bg_btn_go"
-                        android:text="啟動護眼魔法" />
-
-                    <TextView
-                        android:id="@+id/tvProtectionStatus"
-                        style="@style/CuteStatusBox"
-                        android:layout_marginTop="12dp"
-                        android:text="循環時間：檢查中&#10;保護控管：檢查中" />
-                </LinearLayout>
+                <TextView
+                    style="@style/CuteSectionTitle"
+                    android:text="系統權限" />
             </LinearLayout>
 
-            <!-- 右欄 -->
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:background="@drawable/bg_perm_row"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="8dp">
 
-                <!-- ===== 守護距離卡片 ===== -->
-                <LinearLayout style="@style/CuteCard">
+                <TextView
+                    android:id="@+id/tvAccStatus"
+                    style="@style/CutePermStatus"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="1"
+                    android:text="無障礙服務：檢查中" />
 
-                    <LinearLayout style="@style/CuteHeaderRow">
+                <Button
+                    android:id="@+id/btnOpenAccessibility"
+                    style="@style/CutePill"
+                    android:layout_width="wrap_content"
+                    android:autoSizeTextType="none"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:textSize="13.5sp"
+                    android:background="@drawable/bg_pill_blue"
+                    android:text="開啟無障礙服務" />
+            </LinearLayout>
 
-                        <TextView
-                            style="@style/CuteHeaderIcon"
-                            android:background="@drawable/bg_icon_mint"
-                            android:text="📏" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_perm_row"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="8dp">
 
-                        <TextView
-                            style="@style/CuteSectionTitle"
-                            android:text="守護距離" />
-                    </LinearLayout>
+                <TextView
+                    android:id="@+id/tvOverlayStatus"
+                    style="@style/CutePermStatus"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="1"
+                    android:text="顯示在上層：檢查中" />
 
-                    <TextView
-                        android:id="@+id/tvDistanceStatus"
-                        style="@style/CuteStatusBox"
-                        android:text="守護距離：等待偵測" />
+                <Button
+                    android:id="@+id/btnOpenOverlay"
+                    style="@style/CutePill"
+                    android:layout_width="wrap_content"
+                    android:autoSizeTextType="none"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:textSize="13.5sp"
+                    android:background="@drawable/bg_pill_purple"
+                    android:text="允許顯示在其他應用程式上層" />
+            </LinearLayout>
 
-                    <Button
-                        android:id="@+id/btnCalibrate30"
-                        style="@style/CuteButton"
-                        android:layout_marginTop="14dp"
-                        android:background="@drawable/bg_btn_cal"
-                        android:text="設定護眼基準線" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_perm_row"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="8dp">
 
-                    <Button
-                        android:id="@+id/btnToggleDistance"
-                        style="@style/CuteButton"
-                        android:background="@drawable/bg_btn_go"
-                        android:text="啟動距離偵測" />
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/tvCameraStatus"
+                    style="@style/CutePermStatus"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="1"
+                    android:text="相機權限：檢查中" />
 
-                <!-- ===== 執行紀錄卡片 ===== -->
+                <Button
+                    android:id="@+id/btnOpenCamera"
+                    style="@style/CutePill"
+                    android:layout_width="wrap_content"
+                    android:autoSizeTextType="none"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:textSize="13.5sp"
+                    android:background="@drawable/bg_pill_pink"
+                    android:text="允許相機權限" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ===== 保護設定卡片 ===== -->
+        <LinearLayout style="@style/CuteCard">
+
+            <LinearLayout style="@style/CuteHeaderRow">
+
+                <TextView
+                    style="@style/CuteHeaderIcon"
+                    android:background="@drawable/bg_icon_peach"
+                    android:text="⏰" />
+
+                <TextView
+                    style="@style/CuteSectionTitle"
+                    android:text="保護設定" />
+            </LinearLayout>
+
+            <!-- 中寬：三個欄位並排 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
                 <LinearLayout
-                    style="@style/CuteCard"
-                    android:background="@drawable/bg_execution_log">
-
-                    <LinearLayout style="@style/CuteHeaderRow">
-
-                        <TextView
-                            style="@style/CuteHeaderIcon"
-                            android:background="@drawable/bg_icon_pink"
-                            android:text="📋" />
-
-                        <TextView
-                            style="@style/CuteSectionTitle"
-                            android:text="執行紀錄" />
-
-                        <!-- 彈性空白，把兩個膠囊按鈕推到右側 -->
-                        <Space
-                            android:layout_width="0dp"
-                            android:layout_height="1dp"
-                            android:layout_weight="1" />
-
-                        <Button
-                            android:id="@+id/btnCopyExecutionLog"
-                            style="@style/CuteChip"
-                            android:background="@drawable/bg_chip_copy"
-                            android:text="複製紀錄"
-                            android:textColor="@color/cute_copy_text" />
-
-                        <Button
-                            android:id="@+id/btnClearExecutionLog"
-                            style="@style/CuteChip"
-                            android:layout_marginStart="8dp"
-                            android:background="@drawable/bg_chip_clear"
-                            android:text="清除紀錄"
-                            android:textColor="@color/cute_clear_text" />
-                    </LinearLayout>
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/tvExecutionLog"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/log_box_height"
-                        android:background="@drawable/bg_log_box"
-                        android:gravity="top|start"
-                        android:lineSpacingExtra="6dp"
-                        android:padding="12dp"
-                        android:scrollbars="vertical"
-                        android:text="讀取執行紀錄中…"
-                        android:textColor="@color/cute_text"
-                        android:textSize="@dimen/log_text_size" />
+                        style="@style/CuteFieldLabel"
+                        android:text="時間設定（分鐘）" />
+
+                    <EditText
+                        android:id="@+id/etLimitMinutes"
+                        style="@style/CuteField"
+                        android:hint="1~1440"
+                        android:imeOptions="actionDone"
+                        android:inputType="number" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/CuteFieldLabel"
+                        android:text="解除自訂 PIN" />
+
+                    <EditText
+                        android:id="@+id/etPin"
+                        style="@style/CuteField"
+                        android:hint="留空不修改"
+                        android:imeOptions="actionDone"
+                        android:inputType="numberPassword" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/CuteFieldLabel"
+                        android:text="停止自訂 PIN" />
+
+                    <EditText
+                        android:id="@+id/etStopPin"
+                        style="@style/CuteField"
+                        android:hint="留空不修改"
+                        android:imeOptions="actionDone"
+                        android:inputType="numberPassword" />
                 </LinearLayout>
             </LinearLayout>
+
+            <Button
+                android:id="@+id/btnToggleMode"
+                style="@style/CuteButton"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_btn_mode"
+                android:text="提醒模式（點擊切換）：全螢幕 PIN 鎖定"
+                android:textColor="@color/cute_mode_text" />
+
+            <Button
+                android:id="@+id/btnSaveSettings"
+                style="@style/CuteButton"
+                android:background="@drawable/bg_btn_save"
+                android:text="儲存設定"
+                android:textColor="@color/cute_save_text" />
+
+            <Button
+                android:id="@+id/btnToggleControl"
+                style="@style/CuteButton"
+                android:background="@drawable/bg_btn_go"
+                android:text="啟動護眼魔法" />
+
+            <TextView
+                android:id="@+id/tvProtectionStatus"
+                style="@style/CuteStatusBox"
+                android:layout_marginTop="12dp"
+                android:text="循環時間：檢查中&#10;保護控管：檢查中" />
+        </LinearLayout>
+
+        <!-- ===== 守護距離卡片 ===== -->
+        <LinearLayout style="@style/CuteCard">
+
+            <LinearLayout style="@style/CuteHeaderRow">
+
+                <TextView
+                    style="@style/CuteHeaderIcon"
+                    android:background="@drawable/bg_icon_mint"
+                    android:text="📏" />
+
+                <TextView
+                    style="@style/CuteSectionTitle"
+                    android:text="守護距離" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvDistanceStatus"
+                style="@style/CuteStatusBox"
+                android:text="守護距離：等待偵測" />
+
+            <Button
+                android:id="@+id/btnCalibrate30"
+                style="@style/CuteButton"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_btn_cal"
+                android:text="設定護眼基準線" />
+
+            <Button
+                android:id="@+id/btnToggleDistance"
+                style="@style/CuteButton"
+                android:background="@drawable/bg_btn_go"
+                android:text="啟動距離偵測" />
+        </LinearLayout>
+
+        <!-- ===== 執行紀錄卡片 ===== -->
+        <LinearLayout
+            style="@style/CuteCard"
+            android:background="@drawable/bg_execution_log">
+
+            <LinearLayout style="@style/CuteHeaderRow">
+
+                <TextView
+                    style="@style/CuteHeaderIcon"
+                    android:background="@drawable/bg_icon_pink"
+                    android:text="📋" />
+
+                <TextView
+                    style="@style/CuteSectionTitle"
+                    android:text="執行紀錄" />
+
+                <!-- 彈性空白，把兩個膠囊按鈕推到右側 -->
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:id="@+id/btnCopyExecutionLog"
+                    style="@style/CuteChip"
+                    android:background="@drawable/bg_chip_copy"
+                    android:text="複製紀錄"
+                    android:textColor="@color/cute_copy_text" />
+
+                <Button
+                    android:id="@+id/btnClearExecutionLog"
+                    style="@style/CuteChip"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_chip_clear"
+                    android:text="清除紀錄"
+                    android:textColor="@color/cute_clear_text" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvExecutionLog"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/log_box_height"
+                android:background="@drawable/bg_log_box"
+                android:gravity="top|start"
+                android:lineSpacingExtra="6dp"
+                android:padding="12dp"
+                android:scrollbars="vertical"
+                android:text="讀取執行紀錄中…"
+                android:textColor="@color/cute_text"
+                android:textSize="@dimen/log_text_size" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
