@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ===== 寬螢幕（≥ 600dp）：留白加大、紀錄字體放大 ===== -->
+    <dimen name="screen_padding">24dp</dimen>
+    <dimen name="section_spacing">18dp</dimen>
+    <dimen name="card_padding">18dp</dimen>
+    <dimen name="cute_button_height">56dp</dimen>
+    <dimen name="column_gap">20dp</dimen>
+    <dimen name="log_text_size">12sp</dimen>
+    <dimen name="log_box_height">260dp</dimen>
+</resources>

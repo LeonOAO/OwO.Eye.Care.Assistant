@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 頂部標題橫幅：蜜桃漸層 + 白邊 + 立體陰影 -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 底部立體陰影 -->
+    <item android:top="5dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#F2B48F" />
+            <corners android:radius="26dp" />
+        </shape>
+    </item>
+
+    <!-- 卡片主體 -->
+    <item android:bottom="5dp">
+        <shape android:shape="rectangle">
+            <gradient android:angle="0" android:startColor="#FFD9A8" android:endColor="#FFC1CC" />
+            <stroke android:width="3dp" android:color="#FFFFFF" />
+            <corners android:radius="26dp" />
+        </shape>
+    </item>
+</layer-list>

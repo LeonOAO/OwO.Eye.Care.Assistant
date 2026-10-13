@@ -1,4 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 狀態資訊框：薄荷底 -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
-    <solid android:color="@color/surface_blue" />
-    <corners android:radius="14dp" />
+    <solid android:color="#F2FBF7" />
+    <stroke android:width="1.5dp" android:color="#D3EEE2" />
+    <corners android:radius="16dp" />
 </shape>

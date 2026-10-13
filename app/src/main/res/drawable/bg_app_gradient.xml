@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 主畫面背景：奶油蜜桃 × 粉嫩 × 薄荷 三段漸層 -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
     <gradient
-        android:angle="315"
-        android:startColor="#F2EEFF"
-        android:centerColor="#F8FBFF"
-        android:endColor="#EAF7FF" />
+        android:angle="290"
+        android:startColor="#FFF6EC"
+        android:centerColor="#FDEFF3"
+        android:endColor="#EAF7F1"
+        android:type="linear" />
 </shape>

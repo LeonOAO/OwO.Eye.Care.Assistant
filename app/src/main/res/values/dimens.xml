@@ -1,8 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="screen_padding">20dp</dimen>
-    <dimen name="section_spacing">20dp</dimen>
+    <!-- ===== 窄螢幕（預設） ===== -->
+    <dimen name="screen_padding">16dp</dimen>
+    <dimen name="section_spacing">16dp</dimen>
     <dimen name="item_spacing">12dp</dimen>
-    <dimen name="card_padding">18dp</dimen>
+    <dimen name="card_padding">16dp</dimen>
     <dimen name="button_min_height">56dp</dimen>
     <dimen name="field_min_height">56dp</dimen>
+
+    <!-- 可愛風元件尺寸 -->
+    <dimen name="cute_button_height">54dp</dimen>
+    <dimen name="cute_pill_height">40dp</dimen>
+    <dimen name="column_gap">16dp</dimen>
+    <dimen name="log_text_size">10.5sp</dimen>
+    <dimen name="log_box_height">230dp</dimen>
 </resources>

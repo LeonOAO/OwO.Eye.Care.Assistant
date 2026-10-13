@@ -14,7 +14,6 @@ import owo.eye.care.assistant.diagnostics.ExecutionLogStore
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -26,6 +25,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import owo.eye.care.assistant.R
 import owo.eye.care.assistant.data.DistanceStateStore
 import owo.eye.care.assistant.data.RulesStore
 import owo.eye.care.assistant.data.ReminderMode
@@ -77,7 +77,11 @@ class MainActivity : AppCompatActivity() {
             } else {
                 val (time, rawCategory, message) = match.destructured
                 val category = logCategory(rawCategory)
-                result.append(time).append("  ")
+                // 時間以奶茶灰淡化，讓類別與內容更醒目
+                val timeStart = result.length
+                result.append(time)
+                result.setSpan(ForegroundColorSpan(Color.parseColor("#A08B7C")), timeStart, result.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                result.append("  ")
                 val start = result.length
                 result.append(" $category ")
                 val end = result.length
@@ -94,38 +98,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return result
-    }
-
-    /** Only the visual panels collapse; service settings and input values are unchanged. */
-    private fun setupPanelSections(saved: Bundle?) {
-        val panels = listOf(
-            vb.togglePermissions to vb.contentPermissions,
-            vb.toggleProtection to vb.contentProtection,
-            vb.toggleDistance to vb.contentDistance,
-            vb.toggleLogs to vb.contentLogs
-        )
-        for ((optionalToggle, optionalContent) in panels) {
-            // Binding references can be nullable across resource configurations.
-            val toggle = optionalToggle ?: continue
-            val content = optionalContent ?: continue
-            if (toggle.visibility == android.view.View.GONE) continue
-            val key = "panel_${content.id}"
-            val expanded = saved?.getBoolean(key) ?: (content.visibility == android.view.View.VISIBLE)
-            content.visibility = if (expanded) android.view.View.VISIBLE else android.view.View.GONE
-            toggle.text = if (expanded) "⌃" else "⌄"
-            toggle.setOnClickListener {
-                val open = content.visibility != android.view.View.VISIBLE
-                content.visibility = if (open) android.view.View.VISIBLE else android.view.View.GONE
-                toggle.text = if (open) "⌃" else "⌄"
-            }
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        for (content in listOfNotNull(vb.contentPermissions, vb.contentProtection, vb.contentDistance, vb.contentLogs)) {
-            outState.putBoolean("panel_${content.id}", content.visibility == android.view.View.VISIBLE)
-        }
-        super.onSaveInstanceState(outState)
     }
 
     private fun setupExecutionLog() {
@@ -212,7 +184,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         vb = ActivityMainBinding.inflate(layoutInflater)
         setContentView(vb.root)
-        setupPanelSections(savedInstanceState)
         setupExecutionLog()
 
         vb.root.setOnTouchListener { _, _ ->
@@ -372,38 +343,44 @@ class MainActivity : AppCompatActivity() {
         vb.etPin.hint = if (rules.hasParentPin()) "******" else "（空白）"
         vb.etStopPin.hint = if (rules.hasStopPin()) "******" else "（空白）"
         ExecutionLogStore.transition("accessibility_setting", "權限", if (isAccessibilityEnabled()) "無障礙設定已開啟（不代表服務已連線）" else "無障礙設定尚未開啟")
-        vb.tvAccStatus.text = "無障礙服務：${if (isAccessibilityEnabled()) "已開啟" else "尚未開啟"}"
-        vb.tvOverlayStatus.text = "顯示在其他應用程式上層：${if (Settings.canDrawOverlays(this)) "已允許" else "尚未允許"}"
-
+        // 權限狀態：已開啟／已允許顯示薄荷綠，尚未開啟／尚未允許顯示草莓粉
+        val accEnabled = isAccessibilityEnabled()
+        val overlayAllowed = Settings.canDrawOverlays(this)
         val hasCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+        vb.tvAccStatus.text = "無障礙服務：${if (accEnabled) "已開啟" else "尚未開啟"}"
+        vb.tvAccStatus.setTextColor(statusColor(accEnabled))
+        vb.tvOverlayStatus.text = "顯示在其他應用程式上層：${if (overlayAllowed) "已允許" else "尚未允許"}"
+        vb.tvOverlayStatus.setTextColor(statusColor(overlayAllowed))
         vb.tvCameraStatus.text = "相機權限：${if (hasCamera) "已允許" else "尚未允許"}"
-        
+        vb.tvCameraStatus.setTextColor(statusColor(hasCamera))
         vb.btnToggleMode.text = "提醒模式（點擊切換）：${ReminderMode.label(rules.getProtectionMode())}"
-        
+
+        // 護眼魔法：啟動＝薄荷綠立體按鈕；解除＝珊瑚紅立體按鈕
         if (rules.isControlEnabled()) {
             vb.btnToggleControl.text = "解除護眼魔法 (OwO)"
-            vb.btnToggleControl.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#F9DDE8"))
-            vb.btnToggleControl.setTextColor(Color.parseColor(if (rules.isControlEnabled()) "#A53261" else "#246D58"))
+            vb.btnToggleControl.setBackgroundResource(R.drawable.bg_btn_stop)
         } else {
             vb.btnToggleControl.text = "啟動護眼魔法 (OwO) \uD83E\uDE84"
-            vb.btnToggleControl.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#D7F2E7"))
-            vb.btnToggleControl.setTextColor(Color.parseColor(if (rules.isControlEnabled()) "#A53261" else "#246D58"))
+            vb.btnToggleControl.setBackgroundResource(R.drawable.bg_btn_go)
         }
-
+        vb.btnToggleControl.setTextColor(Color.WHITE)
         vb.btnCalibrate30.text = "設定護眼基準線 \uD83E\uDE84"
-        
+
+        // 距離偵測：啟動＝薄荷綠立體按鈕；解除＝珊瑚紅立體按鈕
         if (distanceState.isServiceRunning()) {
             vb.btnToggleDistance.text = "解除距離偵測"
-            vb.btnToggleDistance.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#F9DDE8"))
-            vb.btnToggleDistance.setTextColor(Color.parseColor(if (distanceState.isServiceRunning()) "#A53261" else "#246D58"))
+            vb.btnToggleDistance.setBackgroundResource(R.drawable.bg_btn_stop)
         } else {
             vb.btnToggleDistance.text = "啟動距離偵測 (OwO) \uD83D\uDEE1\uFE0F"
-            vb.btnToggleDistance.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#D7F2E7"))
-            vb.btnToggleDistance.setTextColor(Color.parseColor(if (distanceState.isServiceRunning()) "#A53261" else "#246D58"))
+            vb.btnToggleDistance.setBackgroundResource(R.drawable.bg_btn_go)
         }
-
+        vb.btnToggleDistance.setTextColor(Color.WHITE)
         vb.tvProtectionStatus.text = "循環時間：${rules.getCycleLimitSeconds() / 60} 分鐘\n保護控管：${if (rules.isControlEnabled()) "已啟動" else "未啟動"}"
     }
+
+    /** 權限狀態文字色：通過＝薄荷綠，未通過＝草莓粉。 */
+    private fun statusColor(ok: Boolean): Int =
+        ContextCompat.getColor(this, if (ok) R.color.cute_ok else R.color.cute_warn)
 
     private fun isAccessibilityEnabled(): Boolean {
         if (Settings.Secure.getInt(contentResolver, Settings.Secure.ACCESSIBILITY_ENABLED, 0) != 1) return false
