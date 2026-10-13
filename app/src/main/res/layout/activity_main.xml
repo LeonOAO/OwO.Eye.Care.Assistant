@@ -1,335 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_app_gradient"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:clipToPadding="false">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="@dimen/screen_padding">
+        android:padding="16dp">
 
-        <!-- 標題與圖示 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_header"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
-
+            android:minHeight="92dp"
+            android:orientation="horizontal"
+            android:padding="16dp">
             <ImageView
-                android:layout_width="56dp"
-                android:layout_height="56dp"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:contentDescription="@string/app_name"
                 android:src="@mipmap/ic_launcher_round" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:text="@string/app_name"
-                android:textColor="@color/text_primary"
-                android:textSize="26sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- 系統權限卡片 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_card"
-            android:orientation="vertical"
-            android:padding="@dimen/card_padding">
-
-            <TextView
-                style="@style/SectionTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="系統權限" />
-
-            <TextView
-                android:id="@+id/tvAccStatus"
-                style="@style/BodyText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_status"
-                android:padding="12dp"
-                android:text="無障礙服務：檢查中" />
-
-            <Button
-                android:id="@+id/btnOpenAccessibility"
-                style="@style/AppButton"
-                android:layout_marginTop="12dp"
-                android:text="開啟無障礙服務"
-                android:textAllCaps="false" />
-
-            <TextView
-                android:id="@+id/tvOverlayStatus"
-                style="@style/BodyText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_status"
-                android:padding="12dp"
-                android:text="顯示在上層：檢查中" />
-
-            <Button
-                android:id="@+id/btnOpenOverlay"
-                style="@style/AppButton"
-                android:layout_marginTop="12dp"
-                android:text="允許顯示在其他應用程式上層"
-                android:textAllCaps="false" />
-
-            <TextView
-                android:id="@+id/tvCameraStatus"
-                style="@style/BodyText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_status"
-                android:padding="12dp"
-                android:text="相機權限：檢查中" />
-
-            <Button
-                android:id="@+id/btnOpenCamera"
-                style="@style/AppButton"
-                android:layout_marginTop="12dp"
-                android:text="允許相機權限"
-                android:textAllCaps="false" />
-        </LinearLayout>
-
-        <!-- 保護設定卡片 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/section_spacing"
-            android:background="@drawable/bg_card"
-            android:orientation="vertical"
-            android:padding="@dimen/card_padding">
-
-            <TextView
-                style="@style/SectionTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="保護設定" />
-
-            <!-- 表格排版：第一欄自動依最寬的字串對齊，第二欄輸入框同長延伸 -->
-            <TableLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:stretchColumns="1">
-
-                <!-- 時間設定（分鐘） -->
-                <TableRow
-                    android:gravity="center_vertical">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="時間設定（分鐘）"
-                        android:textColor="@color/text_primary"
-                        android:textSize="15sp"
-                        android:lines="1"
-                        android:layout_marginEnd="12dp" />
-
-                    <EditText
-                        android:id="@+id/etLimitMinutes"
-                        style="@style/AppField"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:hint="1~1440"
-                        android:inputType="number"
-                        android:padding="10dp" />
-                </TableRow>
-
-                <!-- 解除自訂 PIN -->
-                <TableRow
-                    android:layout_marginTop="12dp"
-                    android:gravity="center_vertical">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="解除自訂 PIN"
-                        android:textColor="@color/text_primary"
-                        android:textSize="15sp"
-                        android:lines="1"
-                        android:layout_marginEnd="12dp" />
-
-                    <EditText
-                        android:id="@+id/etPin"
-                        style="@style/AppField"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:hint="留空不修改"
-                        android:inputType="numberPassword"
-                        android:padding="10dp" />
-                </TableRow>
-
-                <!-- 停止自訂 PIN -->
-                <TableRow
-                    android:layout_marginTop="12dp"
-                    android:gravity="center_vertical">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="停止自訂 PIN"
-                        android:textColor="@color/text_primary"
-                        android:textSize="15sp"
-                        android:lines="1"
-                        android:layout_marginEnd="12dp" />
-
-                    <EditText
-                        android:id="@+id/etStopPin"
-                        style="@style/AppField"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:hint="留空不修改"
-                        android:inputType="numberPassword"
-                        android:padding="10dp" />
-                </TableRow>
-            </TableLayout>
-
-            <Button
-                android:id="@+id/btnToggleMode"
-                style="@style/AppButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:backgroundTint="@color/surface_soft"
-                android:text="提醒模式（點擊切換）：全螢幕 PIN 鎖定"
-                android:textAllCaps="false"
-                android:textColor="@color/text_primary" />
-
-            <Button
-                android:id="@+id/btnSaveSettings"
-                style="@style/AppButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:backgroundTint="@color/surface_soft"
-                android:text="儲存設定"
-                android:textAllCaps="false"
-                android:textColor="@color/text_primary" />
-
-            <Button
-                android:id="@+id/btnToggleControl"
-                style="@style/AppButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="啟動護眼魔法"
-                android:textAllCaps="false" />
-
-            <TextView
-                android:id="@+id/tvProtectionStatus"
-                style="@style/BodyText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_status"
-                android:padding="12dp"
-                android:text="循環時間：檢查中&#10;保護控管：檢查中" />
-        </LinearLayout>
-
-        <!-- 守護距離卡片 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/section_spacing"
-            android:background="@drawable/bg_card"
-            android:orientation="vertical"
-            android:padding="@dimen/card_padding">
-
-            <TextView
-                style="@style/SectionTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="守護距離" />
-
-            <TextView
-                android:id="@+id/tvDistanceStatus"
-                style="@style/BodyText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_status"
-                android:padding="12dp"
-                android:text="守護距離：等待偵測" />
-
-            <Button
-                android:id="@+id/btnCalibrate30"
-                style="@style/AppButton"
-                android:layout_marginTop="12dp"
-                android:backgroundTint="@color/surface_soft"
-                android:text="設定護眼基準線"
-                android:textAllCaps="false"
-                android:textColor="@color/text_primary" />
-
-            <Button
-                android:id="@+id/btnToggleDistance"
-                style="@style/AppButton"
-                android:layout_marginTop="10dp"
-                android:text="啟動距離偵測"
-                android:textAllCaps="false" />
-        </LinearLayout>
-        <!-- 執行紀錄：新增區塊，不更動原有卡片與按鈕文字。 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/section_spacing"
-            android:background="@drawable/bg_execution_log"
-            android:orientation="vertical"
-            android:padding="@dimen/card_padding">
-            <TextView
-                style="@style/SectionTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="執行紀錄" />
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal">
-                <Button
-                    android:id="@+id/btnCopyExecutionLog"
-                    style="@style/AppButton"
-                    android:layout_width="0dp"
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
-                    android:text="複製紀錄"
-                    android:textAllCaps="false" />
-                <Button
-                    android:id="@+id/btnClearExecutionLog"
-                    style="@style/AppButton"
-                    android:layout_width="0dp"
+                    android:text="OwO 護眼助手"
+                    android:textColor="@color/text_primary"
+                    android:textSize="27sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="6dp"
-                    android:text="清除紀錄"
-                    android:textAllCaps="false" />
+                    android:layout_marginTop="3dp"
+                    android:text="守護視力，從現在開始  (｡･ω･｡)"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp" />
             </LinearLayout>
             <TextView
-                android:id="@+id/tvExecutionLog"
-                android:layout_width="match_parent"
-                android:layout_height="220dp"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_status"
-                android:padding="12dp"
-                android:fontFamily="monospace"
-                android:textColor="@color/text_primary"
-                android:textSize="12sp"
-                android:gravity="top|start"
-                android:scrollbars="vertical"
-                android:text="讀取執行紀錄中…" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="v1.0.3"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical"
+            android:padding="16dp">
+            <TextView style="@style/SectionTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🛡️  系統權限" />
+            <TextView style="@style/BodyText" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="請依照下列設定，開啟必要權限以正常使用所有功能。" />
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:background="@drawable/bg_permission_row" android:gravity="center_vertical" android:orientation="horizontal" android:padding="10dp">
+                <TextView android:layout_width="42dp" android:layout_height="42dp" android:gravity="center" android:text="♿" android:textSize="23sp" />
+                <TextView android:id="@+id/tvAccStatus" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:layout_weight="1" android:text="無障礙服務：檢查中" android:textColor="@color/text_primary" android:textSize="14sp" android:textStyle="bold" />
+                <Button android:id="@+id/btnOpenAccessibility" style="@style/AppButton" android:layout_width="wrap_content" android:layout_height="48dp" android:backgroundTint="@color/permission_accessibility_bg" android:minWidth="132dp" android:text="開啟無障礙服務" android:textColor="@color/permission_accessibility_text" />
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:background="@drawable/bg_permission_row" android:gravity="center_vertical" android:orientation="horizontal" android:padding="10dp">
+                <TextView android:layout_width="42dp" android:layout_height="42dp" android:gravity="center" android:text="▱" android:textSize="26sp" />
+                <TextView android:id="@+id/tvOverlayStatus" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:layout_weight="1" android:text="顯示在上層：檢查中" android:textColor="@color/text_primary" android:textSize="14sp" android:textStyle="bold" />
+                <Button android:id="@+id/btnOpenOverlay" style="@style/AppButton" android:layout_width="wrap_content" android:layout_height="48dp" android:backgroundTint="@color/permission_overlay_bg" android:minWidth="132dp" android:text="允許顯示在其他應用程式上層" android:textColor="@color/permission_overlay_text" />
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:background="@drawable/bg_permission_row" android:gravity="center_vertical" android:orientation="horizontal" android:padding="10dp">
+                <TextView android:layout_width="42dp" android:layout_height="42dp" android:gravity="center" android:text="📷" android:textSize="22sp" />
+                <TextView android:id="@+id/tvCameraStatus" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:layout_weight="1" android:text="相機權限：檢查中" android:textColor="@color/text_primary" android:textSize="14sp" android:textStyle="bold" />
+                <Button android:id="@+id/btnOpenCamera" style="@style/AppButton" android:layout_width="wrap_content" android:layout_height="48dp" android:backgroundTint="@color/permission_camera_bg" android:minWidth="132dp" android:text="允許相機權限" android:textColor="@color/permission_camera_text" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:background="@drawable/bg_card" android:orientation="vertical" android:padding="16dp">
+            <TextView style="@style/SectionTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⏱️  保護設定" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="時間設定（分鐘）" android:textColor="@color/text_primary" android:textStyle="bold" />
+            <EditText android:id="@+id/etLimitMinutes" style="@style/AppField" android:layout_marginTop="6dp" android:inputType="number" android:imeOptions="actionNext" android:maxLength="4" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="解除自訂 PIN" android:textColor="@color/text_primary" android:textStyle="bold" />
+            <EditText android:id="@+id/etPin" style="@style/AppField" android:layout_marginTop="6dp" android:hint="請輸入 4–6 位數字" android:inputType="numberPassword" android:imeOptions="actionNext" android:maxLength="6" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="停止自訂 PIN" android:textColor="@color/text_primary" android:textStyle="bold" />
+            <EditText android:id="@+id/etStopPin" style="@style/AppField" android:layout_marginTop="6dp" android:hint="請輸入 4–6 位數字" android:inputType="numberPassword" android:imeOptions="actionDone" android:maxLength="6" />
+            <Button android:id="@+id/btnToggleMode" style="@style/AppButton" android:layout_marginTop="14dp" android:backgroundTint="#E6EEFF" android:text="提醒模式（點擊切換）：全螢幕 PIN 鎖定" android:textColor="#3157D5" />
+            <Button android:id="@+id/btnSaveSettings" style="@style/AppButton" android:layout_marginTop="10dp" android:backgroundTint="#E8EEF8" android:text="儲存設定" android:textColor="#315B96" />
+            <Button android:id="@+id/btnToggleControl" style="@style/AppButton" android:layout_marginTop="10dp" android:text="啟動護眼魔法" />
+            <TextView android:id="@+id/tvProtectionStatus" style="@style/BodyText" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:background="@drawable/bg_status" android:padding="12dp" android:text="循環時間：檢查中&#10;保護控管：檢查中" />
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:background="@drawable/bg_card" android:orientation="vertical" android:padding="16dp">
+            <TextView style="@style/SectionTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="😊  守護距離" />
+            <TextView android:id="@+id/tvDistanceStatus" style="@style/BodyText" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:background="@drawable/bg_status" android:padding="14dp" android:text="守護距離：等待偵測" />
+            <Button android:id="@+id/btnCalibrate30" style="@style/AppButton" android:layout_marginTop="12dp" android:backgroundTint="#FFF0C7" android:text="設定護眼基準線" android:textColor="#91500B" />
+            <Button android:id="@+id/btnToggleDistance" style="@style/AppButton" android:layout_marginTop="10dp" android:text="啟動距離偵測" />
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:layout_marginBottom="20dp" android:background="@drawable/bg_execution_log" android:orientation="vertical" android:padding="16dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView style="@style/SectionTitle" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="📋  執行紀錄" />
+                <Button android:id="@+id/btnCopyExecutionLog" style="@style/AppButton" android:layout_width="wrap_content" android:layout_height="46dp" android:backgroundTint="@color/log_copy_bg" android:minWidth="105dp" android:text="複製紀錄" android:textColor="@color/log_copy_text" />
+                <Button android:id="@+id/btnClearExecutionLog" style="@style/AppButton" android:layout_width="wrap_content" android:layout_height="46dp" android:layout_marginStart="8dp" android:backgroundTint="@color/log_clear_bg" android:minWidth="105dp" android:text="清除紀錄" android:textColor="@color/log_clear_text" />
+            </LinearLayout>
+            <TextView android:id="@+id/tvExecutionLog" android:layout_width="match_parent" android:layout_height="240dp" android:layout_marginTop="12dp" android:background="@drawable/bg_log_panel" android:fontFamily="monospace" android:gravity="top|start" android:padding="14dp" android:scrollbars="vertical" android:text="讀取執行紀錄中…" android:textColor="@color/text_primary" android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
