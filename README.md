@@ -1,5 +1,7 @@
 # 👁️✨ OwO Eye Care Assistant (OwO 護眼助手)
 
+![OwO 護眼小助手 App 畫面](Screenshots/OwO_Showcase.png)
+
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 **OwO Eye Care Assistant** 是一款協助培養良好手機與平板使用習慣的 Android 應用程式。透過距離偵測、定時提醒與 PIN 鎖定，協助您與家人保持適當觀看距離，並記得適時休息。
