@@ -104,7 +104,10 @@ class MainActivity : AppCompatActivity() {
             vb.toggleDistance to vb.contentDistance,
             vb.toggleLogs to vb.contentLogs
         )
-        for ((toggle, content) in panels) {
+        for ((optionalToggle, optionalContent) in panels) {
+            // Binding references can be nullable across resource configurations.
+            val toggle = optionalToggle ?: continue
+            val content = optionalContent ?: continue
             if (toggle.visibility == android.view.View.GONE) continue
             val key = "panel_${content.id}"
             val expanded = saved?.getBoolean(key) ?: (content.visibility == android.view.View.VISIBLE)
@@ -119,7 +122,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        for (content in listOf(vb.contentPermissions, vb.contentProtection, vb.contentDistance, vb.contentLogs)) {
+        for (content in listOfNotNull(vb.contentPermissions, vb.contentProtection, vb.contentDistance, vb.contentLogs)) {
             outState.putBoolean("panel_${content.id}", content.visibility == android.view.View.VISIBLE)
         }
         super.onSaveInstanceState(outState)
