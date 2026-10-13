@@ -80,11 +80,19 @@ object ExecutionLogStore {
         } catch (error: Exception) { file.failWrite(stream); throw error }
     }
 
+    /** 畫面只使用四個兩字類別；完整事件資訊保留在訊息內容。 */
+    private fun displayCategory(category: String): String = when (category) {
+        "距離", "相機", "校正" -> "感測"
+        "提醒", "遮罩" -> "警示"
+        "錯誤", "診斷", "系統退出" -> "異常"
+        else -> "系統"
+    }
+
     private fun append(category: String, message: String, timestamp: Long = System.currentTimeMillis()) {
         load()
         val time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.TAIWAN).format(Date(timestamp))
         val clean = message.replace('\n', ' ').replace('\r', ' ').take(600)
-        lines.add("$time [$category] $clean")
+        lines.add("$time [${displayCategory(category)}] $clean")
         persist()
         notifyChanged()
     }

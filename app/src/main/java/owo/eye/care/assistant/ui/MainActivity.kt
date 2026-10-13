@@ -4,6 +4,11 @@ import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.text.method.ScrollingMovementMethod
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.BackgroundColorSpan
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import android.view.MotionEvent
 import owo.eye.care.assistant.diagnostics.ExecutionLogStore
 import android.content.Context
@@ -44,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         ExecutionLogStore.read { text ->
             executionLogReadPending = false
             if (executionLogVisible) {
-                vb.tvExecutionLog.text = text.ifEmpty { "尚無執行紀錄" }
+                vb.tvExecutionLog.text = if (text.isEmpty()) "尚無執行紀錄" else formatExecutionLog(text)
                 vb.tvExecutionLog.scrollTo(0, 0)
                 if (executionLogDirty) {
                     executionLogDirty = false
@@ -52,6 +57,43 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    /** 舊版已保存的類別也會在顯示時歸入四個兩字類別。 */
+    private fun logCategory(raw: String): String = when (raw) {
+        "距離", "相機", "校正", "感測" -> "感測"
+        "提醒", "遮罩", "警示" -> "警示"
+        "錯誤", "診斷", "系統退出", "退出", "異常" -> "異常"
+        else -> "系統"
+    }
+
+    private fun formatExecutionLog(text: String): CharSequence {
+        val result = SpannableStringBuilder()
+        text.lineSequence().filter { it.isNotBlank() }.forEachIndexed { index, line ->
+            val match = Regex("""^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) \[(.+?)] (.*)$""").matchEntire(line)
+            if (index > 0) result.append('\n')
+            if (match == null) {
+                result.append(line)
+            } else {
+                val (time, rawCategory, message) = match.destructured
+                val category = logCategory(rawCategory)
+                result.append(time).append("  ")
+                val start = result.length
+                result.append(" $category ")
+                val end = result.length
+                val colors = when (category) {
+                    "感測" -> Color.parseColor("#E2F5EC") to Color.parseColor("#137A4E")
+                    "警示" -> Color.parseColor("#FFF0D8") to Color.parseColor("#A85B00")
+                    "異常" -> Color.parseColor("#FDE4E4") to Color.parseColor("#B42318")
+                    else -> Color.parseColor("#E6EDFF") to Color.parseColor("#3157D5")
+                }
+                result.setSpan(BackgroundColorSpan(colors.first), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                result.setSpan(ForegroundColorSpan(colors.second), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                result.setSpan(StyleSpan(android.graphics.Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                result.append("  ").append(message)
+            }
+        }
+        return result
     }
 
     private fun setupExecutionLog() {
@@ -80,18 +122,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
         vb.btnClearExecutionLog.setOnClickListener {
-            AlertDialog.Builder(this)
-                .setTitle("清除執行紀錄")
-                .setMessage("只清除 APP 的本機紀錄，不影響 PIN、校正、計時或系統歷史紀錄。")
-                .setPositiveButton("確定") { _, _ ->
-                    ExecutionLogStore.clear { success ->
-                        if (executionLogVisible) {
-                            refreshExecutionLog()
-                            showToast(if (success) "執行紀錄已清除" else "清除紀錄失敗，請重試")
-                        }
-                    }
+            ExecutionLogStore.clear { success ->
+                if (executionLogVisible) {
+                    refreshExecutionLog()
+                    showToast(if (success) "執行紀錄已清除" else "清除紀錄失敗，請重試")
                 }
-                .setNegativeButton("取消", null).show()
+            }
         }
     }
 
@@ -182,23 +218,13 @@ class MainActivity : AppCompatActivity() {
         
         vb.btnToggleMode.setOnClickListener {
             val modes = ReminderMode.selectionOrder()
-            val labels = modes.map { ReminderMode.label(it) }.toTypedArray()
-            val selected = modes.indexOf(rules.getProtectionMode())
-            AlertDialog.Builder(this)
-                .setTitle("提醒模式")
-                .setSingleChoiceItems(labels, selected) { dialog, which ->
-                    val newMode = modes[which]
-                    if (newMode != rules.getProtectionMode()) {
-                        rules.setProtectionMode(newMode)
-                        if (!ReminderMode.usesPin(newMode)) distanceState.setBlocked(false)
-                        ExecutionLogStore.event("設定", "提醒模式：${ReminderMode.label(newMode)}")
-                        showToast("${ReminderMode.label(newMode)} \u2728")
-                        refreshUi()
-                    }
-                    dialog.dismiss()
-                }
-                .setNegativeButton("取消", null)
-                .show()
+            val currentIndex = modes.indexOf(rules.getProtectionMode()).coerceAtLeast(0)
+            val newMode = modes[(currentIndex + 1) % modes.size]
+            rules.setProtectionMode(newMode)
+            if (!ReminderMode.usesPin(newMode)) distanceState.setBlocked(false)
+            ExecutionLogStore.event("設定", "提醒模式：${ReminderMode.label(newMode)}")
+            showToast("${ReminderMode.label(newMode)} ✨")
+            refreshUi()
         }
 
         vb.etLimitMinutes.setText((rules.getCycleLimitSeconds() / 60).toString())

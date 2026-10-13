@@ -293,12 +293,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="執行紀錄" />
-            <TextView
-                style="@style/BodyText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="最新紀錄在上方；系統退出原因於再次開啟 APP 時讀取。" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
