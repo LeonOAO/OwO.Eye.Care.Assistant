@@ -1,0 +1,108 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/dashboard_canvas" android:fillViewport="true" android:clipToPadding="false">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="82dp" android:background="@drawable/dashboard_hero" android:gravity="center_vertical" android:orientation="horizontal" android:padding="20dp" android:layout_marginBottom="4dp">
+            <ImageView android:layout_width="54dp" android:layout_height="54dp" android:contentDescription="@string/app_name" android:src="@mipmap/ic_launcher_round" />
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
+                <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:fillViewport="true" android:scrollbars="none">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:text="OwO 護眼助手" android:textColor="@color/text_primary" android:textSize="23sp" android:textStyle="bold" android:scrollHorizontally="true" />
+                </HorizontalScrollView>
+                <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:fillViewport="true" android:scrollbars="none" android:layout_marginTop="2dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:text="守護視力，從現在開始  (｡･ω･｡)" android:textColor="@color/text_secondary" android:textSize="12sp" android:scrollHorizontally="true" />
+                </HorizontalScrollView>
+            </LinearLayout>
+            <HorizontalScrollView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fillViewport="true" android:scrollbars="none" android:layout_marginStart="6dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:text="v1.0.3" android:textColor="@color/text_secondary" android:textSize="11sp" android:scrollHorizontally="true" />
+            </HorizontalScrollView>
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:background="@drawable/dashboard_card" android:orientation="vertical" android:padding="18dp" android:elevation="2dp">
+            <View android:layout_width="40dp" android:layout_height="4dp" android:background="#9B8AC4" android:layout_marginBottom="12dp" />
+            <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:fillViewport="true" android:scrollbars="none">
+                <TextView style="@style/SectionTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:text="🛡️  系統權限" android:scrollHorizontally="true" />
+            </HorizontalScrollView>
+            <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:fillViewport="true" android:scrollbars="none" android:layout_marginTop="3dp">
+                <TextView style="@style/BodyText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:text="請依照下列設定，開啟必要權限以正常使用所有功能。" android:scrollHorizontally="true" />
+            </HorizontalScrollView>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:background="@drawable/bg_permission_row" android:orientation="vertical" android:padding="10dp" android:layout_weight="1" android:layout_marginStart="0dp">
+                    <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:fillViewport="true" android:scrollbars="none">
+                        <TextView android:id="@+id/tvAccStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:text="無障礙服務：檢查中" android:textColor="@color/text_primary" android:textSize="14sp" android:textStyle="bold" android:scrollHorizontally="true" />
+                    </HorizontalScrollView>
+                    <Button android:id="@+id/btnOpenAccessibility" style="@style/AppButton" android:layout_marginTop="8dp" android:backgroundTint="@color/permission_accessibility_bg" android:text="開啟無障礙服務" android:textColor="@color/permission_accessibility_text" />
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:background="@drawable/bg_permission_row" android:orientation="vertical" android:padding="10dp" android:layout_weight="1" android:layout_marginStart="8dp">
+                    <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:fillViewport="true" android:scrollbars="none">
+                        <TextView android:id="@+id/tvOverlayStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:text="顯示在上層：檢查中" android:textColor="@color/text_primary" android:textSize="14sp" android:textStyle="bold" android:scrollHorizontally="true" />
+                    </HorizontalScrollView>
+                    <Button android:id="@+id/btnOpenOverlay" style="@style/AppButton" android:layout_marginTop="8dp" android:backgroundTint="@color/permission_overlay_bg" android:text="允許顯示在其他應用程式上層" android:textColor="@color/permission_overlay_text" />
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:background="@drawable/bg_permission_row" android:orientation="vertical" android:padding="10dp" android:layout_weight="1" android:layout_marginStart="8dp">
+                    <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:fillViewport="true" android:scrollbars="none">
+                        <TextView android:id="@+id/tvCameraStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:text="相機權限：檢查中" android:textColor="@color/text_primary" android:textSize="14sp" android:textStyle="bold" android:scrollHorizontally="true" />
+                    </HorizontalScrollView>
+                    <Button android:id="@+id/btnOpenCamera" style="@style/AppButton" android:layout_marginTop="8dp" android:backgroundTint="@color/permission_camera_bg" android:text="允許相機權限" android:textColor="@color/permission_camera_text" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:baselineAligned="false">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:orientation="vertical" android:layout_weight="1" android:layout_marginStart="0dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:background="@drawable/dashboard_card" android:orientation="vertical" android:padding="18dp" android:elevation="2dp">
+                    <View android:layout_width="40dp" android:layout_height="4dp" android:background="#5572BA" android:layout_marginBottom="12dp" />
+                    <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:fillViewport="true" android:scrollbars="none">
+                        <TextView style="@style/SectionTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:text="⏱️  保護設定" android:scrollHorizontally="true" />
+                    </HorizontalScrollView>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/dashboard_inset" android:padding="12dp" android:layout_marginTop="10dp">
+                        <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:fillViewport="true" android:scrollbars="none" android:layout_marginTop="0dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:text="時間設定（分鐘）" android:textColor="@color/text_primary" android:textStyle="bold" android:scrollHorizontally="true" />
+                        </HorizontalScrollView>
+                        <EditText android:id="@+id/etLimitMinutes" style="@style/AppField" android:layout_marginTop="8dp" android:singleLine="true" android:inputType="number" android:imeOptions="actionNext" android:maxLength="4" />
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/dashboard_inset" android:padding="12dp" android:layout_marginTop="10dp">
+                        <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:fillViewport="true" android:scrollbars="none" android:layout_marginTop="0dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:text="解除自訂 PIN" android:textColor="@color/text_primary" android:textStyle="bold" android:scrollHorizontally="true" />
+                        </HorizontalScrollView>
+                        <EditText android:id="@+id/etPin" style="@style/AppField" android:layout_marginTop="8dp" android:singleLine="true" android:hint="請輸入 4–6 位數字" android:inputType="numberPassword" android:imeOptions="actionNext" android:maxLength="6" />
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/dashboard_inset" android:padding="12dp" android:layout_marginTop="10dp">
+                        <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:fillViewport="true" android:scrollbars="none" android:layout_marginTop="0dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:text="停止自訂 PIN" android:textColor="@color/text_primary" android:textStyle="bold" android:scrollHorizontally="true" />
+                        </HorizontalScrollView>
+                        <EditText android:id="@+id/etStopPin" style="@style/AppField" android:layout_marginTop="8dp" android:singleLine="true" android:hint="請輸入 4–6 位數字" android:inputType="numberPassword" android:imeOptions="actionDone" android:maxLength="6" />
+                    </LinearLayout>
+                    <Button android:id="@+id/btnToggleMode" style="@style/AppButton" android:layout_marginTop="12dp" android:backgroundTint="#E0E7FA" android:text="提醒模式（點擊切換）：全螢幕 PIN 鎖定" android:textColor="#314D87" />
+                    <Button android:id="@+id/btnSaveSettings" style="@style/AppButton" android:layout_marginTop="8dp" android:backgroundTint="#EEF0F5" android:text="儲存設定" android:textColor="#49556C" />
+                    <Button android:id="@+id/btnToggleControl" style="@style/AppButton" android:layout_marginTop="8dp" android:text="啟動護眼魔法" android:backgroundTint="#E9DBEF" android:textColor="#693B7A" />
+                    <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:fillViewport="true" android:scrollbars="none" android:layout_marginTop="10dp">
+                        <TextView android:id="@+id/tvProtectionStatus" style="@style/BodyText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/bg_status" android:padding="11dp" android:text="循環時間：檢查中&#10;保護控管：檢查中" android:scrollHorizontally="true" />
+                    </HorizontalScrollView>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:orientation="vertical" android:layout_weight="1" android:layout_marginStart="16dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:background="@drawable/dashboard_card" android:orientation="vertical" android:padding="18dp" android:elevation="2dp">
+                    <View android:layout_width="40dp" android:layout_height="4dp" android:background="#3C9B8A" android:layout_marginBottom="12dp" />
+                    <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:fillViewport="true" android:scrollbars="none">
+                        <TextView style="@style/SectionTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:text="😊  守護距離" android:scrollHorizontally="true" />
+                    </HorizontalScrollView>
+                    <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:fillViewport="true" android:scrollbars="none" android:layout_marginTop="8dp">
+                        <TextView android:id="@+id/tvDistanceStatus" style="@style/BodyText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/bg_status" android:padding="12dp" android:text="守護距離：等待偵測" android:scrollHorizontally="true" />
+                    </HorizontalScrollView>
+                    <Button android:id="@+id/btnCalibrate30" style="@style/AppButton" android:layout_marginTop="10dp" android:backgroundTint="#F5E9CE" android:text="設定護眼基準線" android:textColor="#805B20" />
+                    <Button android:id="@+id/btnToggleDistance" style="@style/AppButton" android:layout_marginTop="8dp" android:text="啟動距離偵測" android:backgroundTint="#D7EEE7" android:textColor="#245D50" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:layout_marginBottom="16dp" android:background="@drawable/dashboard_card" android:orientation="vertical" android:padding="18dp" android:elevation="2dp">
+            <View android:layout_width="40dp" android:layout_height="4dp" android:background="#BA7990" android:layout_marginBottom="12dp" />
+            <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:fillViewport="true" android:scrollbars="none">
+                <TextView style="@style/SectionTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:text="📋  執行紀錄" android:scrollHorizontally="true" />
+            </HorizontalScrollView>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:orientation="horizontal">
+                <Button android:id="@+id/btnCopyExecutionLog" style="@style/AppButton" android:layout_width="0dp" android:layout_weight="1" android:backgroundTint="@color/log_copy_bg" android:text="複製紀錄" android:textColor="@color/log_copy_text" />
+                <Button android:id="@+id/btnClearExecutionLog" style="@style/AppButton" android:layout_width="0dp" android:layout_marginStart="8dp" android:layout_weight="1" android:backgroundTint="@color/log_clear_bg" android:text="清除紀錄" android:textColor="@color/log_clear_text" />
+            </LinearLayout>
+            <HorizontalScrollView android:layout_width="match_parent" android:layout_height="220dp" android:fillViewport="true" android:scrollbars="none" android:layout_marginTop="10dp">
+                <TextView android:id="@+id/tvExecutionLog" android:layout_width="wrap_content" android:layout_height="220dp" android:background="@drawable/bg_log_panel" android:fontFamily="monospace" android:gravity="top|start" android:padding="12dp" android:scrollbars="vertical" android:text="讀取執行紀錄中…" android:textColor="@color/text_primary" android:textSize="11sp" android:scrollHorizontally="true" />
+            </HorizontalScrollView>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
